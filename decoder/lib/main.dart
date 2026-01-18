@@ -1,9 +1,26 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+
+// --- CONFIGURATION ---
+// REPLACE THIS with your actual Cloud Run URL
+const String kApiBaseUrl =
+    "https://decoder-222632046587.australia-southeast1.run.app";
+const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
+const String kTermsUrl = "https://digitalabcs.com.au/terms.html";
+const String kPremiumProductId = 'linguistic_decoder_premium';
+
+// --- THEME ---
+const Color kColorNavy = Color(0xFF1E3A8A);
+const Color kColorPurple = Color(0xFF7C3AED);
+const Color kColorBackground = Color(0xFFF3F4F6);
+const Color kColorError = Color(0xFFDC2626);
 
 void main() {
   runApp(const LinguisticDecoderApp());
@@ -307,7 +324,8 @@ class _DecoderScreenState extends State<DecoderScreen> {
     'Mixed Ages',
   ];
 
-  final String apiBaseUrl = "http://127.0.0.1:5000/analyze";
+ final String apiBaseUrl =
+      "https://decoder-222632046587.australia-southeast1.run.app/analyze";
 
   @override
   void dispose() {
