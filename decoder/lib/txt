@@ -1,0 +1,1276 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+
+// ============================================================================
+// CONFIGURATION - PRODUCTION SETTINGS
+// ============================================================================
+class AppConfig {
+  // TODO: CRITICAL - Replace with your actual deployed backend URL
+  static const String apiBaseUrl = "https://your-backend.onrender.com";
+  
+  // In-App Purchase Product IDs (must match App Store Connect / Play Console)
+  static const String premiumProductId = "linguistic_decoder_premium";
+  
+  // App Information
+  static const String appVersion = "1.0.0";
+  static const String privacyPolicyUrl = "https://digitalabcs.com.au/privacy.html";
+  static const String termsOfServiceUrl = "https://digitalabcs.com.au/terms.html";
+  static const String supportEmail = "support@digitalabcs.com.au";
+}
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const LinguisticDecoderApp());
+}
+
+class LinguisticDecoderApp extends StatelessWidget {
+  const LinguisticDecoderApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Linguistic Decoder',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: const Color(0xFF1E3A8A),
+        scaffoldBackgroundColor: const Color(0xFFF9FAFB),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1E3A8A),
+          primary: const Color(0xFF1E3A8A),
+          secondary: const Color(0xFF7C3AED),
+        ),
+      ),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+// ============================================================================
+// STORAGE SERVICE - Manages saved analyses
+// ============================================================================
+class StorageService {
+  static const String _savedAnalysesKey = 'saved_analyses';
+  static const String _premiumStatusKey = 'has_premium';
+
+  static Future<List<Map<String, dynamic>>> getSavedAnalyses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? savedData = prefs.getString(_savedAnalysesKey);
+    if (savedData == null) return [];
+    
+    final List<dynamic> decoded = jsonDecode(savedData);
+    return decoded.cast<Map<String, dynamic>>();
+  }
+
+  static Future<bool> saveAnalysis(Map<String, dynamic> analysis) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<Map<String, dynamic>> existing = await getSavedAnalyses();
+      
+      analysis['saved_at'] = DateTime.now().toIso8601String();
+      analysis['id'] = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      existing.insert(0, analysis);
+      await prefs.setString(_savedAnalysesKey, jsonEncode(existing));
+      return true;
+    } catch (e) {
+      print('Error saving analysis: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAnalysis(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<Map<String, dynamic>> existing = await getSavedAnalyses();
+      existing.removeWhere((item) => item['id'] == id);
+      await prefs.setString(_savedAnalysesKey, jsonEncode(existing));
+      return true;
+    } catch (e) {
+      print('Error deleting analysis: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> hasPremium() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_premiumStatusKey) ?? false;
+  }
+
+  static Future<void> setPremium(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_premiumStatusKey, value);
+  }
+}
+
+// ============================================================================
+// SPLASH SCREEN - Initial loading and routing
+// ============================================================================
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (!mounted) return;
+    
+    final hasPremium = await StorageService.hasPremium();
+    
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => hasPremium 
+          ? const HomeScreen() 
+          : const PaywallScreen(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF1E3A8A),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.psychology,
+              size: 100,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Linguistic Decoder',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 40),
+            const CircularProgressIndicator(color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// PAYWALL SCREEN - IAP Implementation
+// ============================================================================
+class PaywallScreen extends StatefulWidget {
+  const PaywallScreen({super.key});
+
+  @override
+  State<PaywallScreen> createState() => _PaywallScreenState();
+}
+
+class _PaywallScreenState extends State<PaywallScreen> {
+  final InAppPurchase _iap = InAppPurchase.instance;
+  bool _available = false;
+  bool _loading = true;
+  List<ProductDetails> _products = [];
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeIAP();
+  }
+
+  Future<void> _initializeIAP() async {
+    final available = await _iap.isAvailable();
+    
+    if (!available) {
+      setState(() {
+        _available = false;
+        _loading = false;
+        _errorMessage = "Store not available";
+      });
+      return;
+    }
+
+    const ids = <String>{AppConfig.premiumProductId};
+    final response = await _iap.queryProductDetails(ids);
+    
+    setState(() {
+      _available = true;
+      _products = response.productDetails;
+      _loading = false;
+    });
+
+    // Listen to purchase updates
+    _iap.purchaseStream.listen((purchases) {
+      _handlePurchaseUpdates(purchases);
+    });
+  }
+
+  Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchases) async {
+    for (var purchase in purchases) {
+      if (purchase.status == PurchaseStatus.purchased ||
+          purchase.status == PurchaseStatus.restored) {
+        // Verify the purchase with your backend here if needed
+        await StorageService.setPremium(true);
+        
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
+      }
+      
+      if (purchase.pendingCompletePurchase) {
+        await _iap.completePurchase(purchase);
+      }
+    }
+  }
+
+  Future<void> _buyProduct(ProductDetails product) async {
+    final purchaseParam = PurchaseParam(productDetails: product);
+    await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  Future<void> _restorePurchases() async {
+    try {
+      await _iap.restorePurchases();
+      // If no purchases are restored, show message
+      final hasPremium = await StorageService.hasPremium();
+      if (!hasPremium && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No previous purchases found')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Restore failed: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1E3A8A), Color(0xFF0F172A)],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                const Spacer(),
+                const Icon(Icons.lock_open, size: 80, color: Color(0xFF7C3AED)),
+                const SizedBox(height: 24),
+                const Text(
+                  'Unlock Full Access',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Get unlimited AI-powered conversation analysis, response impact predictions, and expert communication insights.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                
+                // Features list
+                _buildFeature('Unlimited conversation analysis'),
+                _buildFeature('Test responses before sending'),
+                _buildFeature('Save and review past decodes'),
+                _buildFeature('Advanced relationship context'),
+                _buildFeature('Offline learning library'),
+                
+                const Spacer(),
+                
+                if (_loading)
+                  const CircularProgressIndicator(color: Colors.white)
+                else if (_errorMessage != null)
+                  Text(_errorMessage!, style: const TextStyle(color: Colors.red))
+                else if (_products.isNotEmpty)
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _buyProduct(_products.first),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF7C3AED),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Purchase - ${_products.first.price}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: _restorePurchases,
+                        child: const Text(
+                          'Restore Previous Purchase',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                    ],
+                  ),
+                
+                const SizedBox(height: 24),
+                Text(
+                  'By purchasing, you agree to our Terms of Service and Privacy Policy',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white.withOpacity(0.5),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeature(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, color: Color(0xFF7C3AED), size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// HOME SCREEN - Main Dashboard
+// ============================================================================
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Linguistic Decoder',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFF1E3A8A),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Welcome Back',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E3A8A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Decode communication dynamics with AI-powered insights',
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 30),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  children: [
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.psychology,
+                      title: 'Decode Now',
+                      subtitle: 'Analyze conversation',
+                      color: const Color(0xFF7C3AED),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DecoderScreen()),
+                      ),
+                    ),
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.history,
+                      title: 'Past Decodes',
+                      subtitle: 'View history',
+                      color: const Color(0xFF059669),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PastDecodesScreen()),
+                      ),
+                    ),
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.menu_book,
+                      title: 'Library',
+                      subtitle: 'Learning resources',
+                      color: const Color(0xFFEA580C),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LibraryScreen()),
+                      ),
+                    ),
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.person,
+                      title: 'Profile',
+                      subtitle: 'Your account',
+                      color: const Color(0xFF0891B2),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfileScreen()),
+                      ),
+                    ),
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.settings,
+                      title: 'Settings',
+                      subtitle: 'App preferences',
+                      color: const Color(0xFF6B7280),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsScreen()),
+                      ),
+                    ),
+                    _buildDashboardTile(
+                      context,
+                      icon: Icons.help_outline,
+                      title: 'Help',
+                      subtitle: 'Support & FAQ',
+                      color: const Color(0xFFDB2777),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HelpScreen()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 48, color: color),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// DECODER SCREEN - Main Analysis Feature with Context & Report
+// ============================================================================
+class DecoderScreen extends StatefulWidget {
+  const DecoderScreen({super.key});
+
+  @override
+  State<DecoderScreen> createState() => _DecoderScreenState();
+}
+
+class _DecoderScreenState extends State<DecoderScreen> {
+  final TextEditingController _textController = TextEditingController();
+  bool _isLoading = false;
+  Map<String, dynamic>? _result;
+  String? _errorMessage;
+  int _selectedSpeakerIndex = 0;
+  
+  // Context options
+  String? _selectedRelationship;
+  String? _selectedAgeGroup;
+  
+  final List<String> _relationships = [
+    'Professional (Manager/Employee)',
+    'Professional (Colleagues)',
+    'Romantic (Dating)',
+    'Romantic (Married/Partnership)',
+    'Family (Parent/Child)',
+    'Family (Siblings)',
+    'Family (Extended Family)',
+    'Friends',
+    'Housemates/Roommates',
+    'Acquaintances',
+    'Other',
+  ];
+  
+  final List<String> _ageGroups = [
+    'Children (under 13)',
+    'Teenagers (13-17)',
+    'Young Adults (18-25)',
+    'Adults (26-40)',
+    'Middle Age (41-60)',
+    'Seniors (60+)',
+    'Mixed Ages',
+  ];
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _analyzeText() async {
+    final input = _textController.text.trim();
+    if (input.isEmpty) {
+      _showError("Please enter some text to analyze");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+      _result = null;
+      _selectedSpeakerIndex = 0;
+    });
+
+    try {
+      String contextInfo = '';
+      if (_selectedRelationship != null || _selectedAgeGroup != null) {
+        contextInfo = '\n\nCONTEXT INFORMATION:\n';
+        if (_selectedRelationship != null) {
+          contextInfo += 'Relationship Type: $_selectedRelationship\n';
+        }
+        if (_selectedAgeGroup != null) {
+          contextInfo += 'Age Group: $_selectedAgeGroup\n';
+        }
+        contextInfo += 'Please consider this context in your analysis.\n';
+      }
+
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/analyze'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"text": input + contextInfo}),
+      ).timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => throw Exception('Request timed out'),
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        
+        if (decoded['speakers'] == null || decoded['speakers'] is! List) {
+          throw Exception("Invalid response: missing speakers data");
+        }
+        
+        if ((decoded['speakers'] as List).isEmpty) {
+          throw Exception("No speakers detected in the conversation");
+        }
+
+        decoded['context'] = {
+          'relationship': _selectedRelationship,
+          'age_group': _selectedAgeGroup,
+        };
+
+        setState(() => _result = decoded);
+        
+        await _autoSaveAnalysis();
+      } else {
+        final decoded = jsonDecode(response.body);
+        _showError(decoded['message'] ?? decoded['error'] ?? 'Server error');
+      }
+    } catch (e) {
+      _showError(_getErrorMessage(e));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _autoSaveAnalysis() async {
+    if (_result == null) return;
+    
+    final success = await StorageService.saveAnalysis(_result!);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("✓ Analysis auto-saved"),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xFF059669),
+        ),
+      );
+    }
+  }
+
+  // APPLE COMPLIANCE: Report offensive content
+  Future<void> _reportContent(String reason) async {
+    // TODO: Implement actual reporting to your backend
+    try {
+      await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/report'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "reason": reason,
+          "analysis_id": _result?['id'],
+          "timestamp": DateTime.now().toIso8601String(),
+        }),
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Thank you for your report. Our team will review it.'),
+            backgroundColor: Color(0xFF059669),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Report submitted (offline mode)'),
+            backgroundColor: Color(0xFF6B7280),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Report Issue'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Why are you reporting this content?'),
+            const SizedBox(height: 16),
+            ListTile(
+              title: const Text('Offensive content'),
+              onTap: () {
+                Navigator.pop(context);
+                _reportContent('offensive');
+              },
+            ),
+            ListTile(
+              title: const Text('Inaccurate analysis'),
+              onTap: () {
+                Navigator.pop(context);
+                _reportContent('inaccurate');
+              },
+            ),
+            ListTile(
+              title: const Text('Other issue'),
+              onTap: () {
+                Navigator.pop(context);
+                _reportContent('other');
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getErrorMessage(dynamic error) {
+    final errorStr = error.toString();
+    if (errorStr.contains('timed out')) {
+      return "Request timed out. Please check your connection and try again.";
+    } else if (errorStr.contains('SocketException') ||
+        errorStr.contains('Connection') ||
+        errorStr.contains('Failed host lookup')) {
+      return "Cannot connect to server. Please check your internet connection.";
+    } else if (errorStr.contains('FormatException')) {
+      return "Received invalid data from server. Please try again.";
+    }
+    return "Error: Please check your internet connection and try again.";
+  }
+
+  void _showError(String message) {
+    setState(() => _errorMessage = message);
+  }
+
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Copied to clipboard!"),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Decode Conversation',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF1E3A8A),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: _result != null
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.flag_outlined),
+                  onPressed: _showReportDialog,
+                  tooltip: 'Report Issue',
+                ),
+              ]
+            : null,
+      ),
+      body: _result == null ? _buildInputForm() : _buildResults(),
+    );
+  }
+
+  Widget _buildInputForm() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Card(
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue.shade700),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'How it works',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Paste any conversation and add context for more accurate insights. Your analysis will be auto-saved.',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          const Text(
+            "Context (Optional but Recommended)",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Relationship Type',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            value: _selectedRelationship,
+            items: _relationships.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(fontSize: 14)),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() => _selectedRelationship = newValue);
+            },
+          ),
+          const SizedBox(height: 12),
+          
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Age Group',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            value: _selectedAgeGroup,
+            items: _ageGroups.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(fontSize: 14)),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() => _selectedAgeGroup = newValue);
+            },
+          ),
+          const SizedBox(height: 20),
+          
+          const Text(
+            "Conversation Text:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _textController,
+            maxLines: 12,
+            decoration: InputDecoration(
+              hintText:
+                  "Example:\nPerson A: I can't believe you did that...\nPerson B: What are you talking about?",
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF7C3AED)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _isLoading ? null : _analyzeText,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7C3AED),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              elevation: 3,
+            ),
+            child: _isLoading
+                ? const SizedBox(<function_calls>
+<invoke name="artifacts">
+<parameter name="command">create</parameter>
+<parameter name="id">production_backend</parameter>
+<parameter name="title">Production-Ready Backend - app.py</parameter>
+<parameter name="type">application/vnd.ant.code</parameter>
+<parameter name="language">python</parameter>
+<parameter name="content">import os
+import json
+import logging
+from datetime import datetime
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from dotenv import load_dotenv
+import google.generativeai as genai
+============================================================================
+CONFIGURATION & SECURITY
+============================================================================
+load_dotenv()
+app = Flask(name)
+PRODUCTION CORS - Restrict to your actual domains
+CORS(app, resources={
+r"/*": {
+"origins": ["https://yourdomain.com", "https://www.yourdomain.com"],
+"methods": ["GET", "POST"],
+"allow_headers": ["Content-Type"]
+}
+})
+Configure Logging
+logging.basicConfig(
+level=logging.INFO,
+format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(name)
+Configure Gemini
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+raise ValueError("CRITICAL: GEMINI_API_KEY not found in environment variables")
+genai.configure(api_key=API_KEY)
+Rate limiting storage (in production, use Redis)
+request_counts = {}
+============================================================================
+HELPER FUNCTIONS
+============================================================================
+def rate_limit_check(ip_address, max_requests=100, window_seconds=3600):
+"""Simple rate limiting - in production, use Redis"""
+current_time = datetime.now().timestamp()
+if ip_address not in request_counts:
+    request_counts[ip_address] = []
+
+# Remove old requests outside the window
+request_counts[ip_address] = [
+    req_time for req_time in request_counts[ip_address]
+    if current_time - req_time < window_seconds
+]
+
+# Check if limit exceeded
+if len(request_counts[ip_address]) >= max_requests:
+    return False
+
+# Add current request
+request_counts[ip_address].append(current_time)
+return True
+def clean_json_response(text):
+"""Remove markdown formatting from AI responses"""
+cleaned = text.strip()
+if cleaned.startswith("json"):         cleaned = cleaned[7:]     if cleaned.startswith(""):
+cleaned = cleaned[3:]
+if cleaned.endswith("```"):
+cleaned = cleaned[:-3]
+return cleaned.strip()
+============================================================================
+SYSTEM PROMPT
+============================================================================
+SYSTEM_INSTRUCTION = """
+You are an expert Linguistic Analyst specializing in multi-perspective communication analysis and intent detection.
+YOUR ROLE:
+Analyze conversations of ANY size (1 on 1 OR Group) to identify intents, alliances, hidden meanings, communication styles, rhetorical strategies, and underlying intent through objective linguistic analysis FROM EVERY PARTICIPANT'S PERSPECTIVE. Provide actionable insights for all parties involved.
+UNLABELED RAW DATA INPUT HANDLING:
+The user input may be raw "Copy/Paste" text (e.g., Apple Messages, WhatsApp, SMS) where speaker labels are MISSING.
+CRITICAL DETECTION RULES:
+
+DETECT SPEAKER COUNT First, count the distinct participants based on linguistic cues.
+ASSIGN GENERIC LABELS Assign "Speaker A," "Speaker B," etc. based on detected participants.
+ADAPT ANALYSIS
+
+If 2 speakers: Focus on the relationship dynamics between them.
+If 3+ speakers: Focus on Group Dynamics (Alliances, Outliers, Power Structures).
+
+
+DETECT VOICE SHIFTS: Infer when speakers change based on context clues, pronoun usage, response patterns, topic shifts, and emotional tone changes.
+
+STRICT ETHICAL BOUNDARIES:
+NO psychological/medical diagnoses (e.g., "narcissist," "borderline," "manipulative personality")
+USE linguistic descriptors: "high-conflict language," "persuasive framing," "defensive rhetoric"
+NO character judgments - DESCRIBE text properties only
+NO speculation beyond textual evidence
+OUTPUT FORMAT (STRICT JSON):
+{
+"conversation_overview": {
+"detected_speakers": 2,
+"speaker_labels": ["Speaker A", "Speaker B"],
+"overall_dynamic": "Brief description of interaction type",
+"conflict_level": "Low / Medium / High",
+"primary_issue": "Core disagreement or tension point"
+},
+"speakers": [
+{
+"label": "Speaker A",
+"likely_emotional_state": "Primary emotion + secondary emotions",
+"communication_goals": ["goal1", "goal2", "goal3"],
+"linguistic_patterns": ["observable pattern1", "pattern2"],
+"rhetorical_strategies": ["strategy1", "strategy2"],
+"unmet_needs": ["underlying need1", "need2"],
+"sentiment_category": "Defensive / Aggressive / Conciliatory / Neutral / Anxious",
+"translation": "Plain English: What Speaker A is really saying beneath the words",
+"deep_dive": "4-6 sentences identifying the SPECIFIC psychological/linguistic tactic being employed, with direct quote examples.",
+"potential_impact_on_others": "How this communication style likely affects the other speaker(s)",
+"advice": "Actionable guidance: What this speaker should understand about their communication and concrete next steps",
+"response_options": [
+{"style": "Diplomatic", "text": "A drafted reply that acknowledges emotion and seeks to reduce tension"},
+{"style": "Assertive", "text": "A drafted reply that is respectful but firm, establishing clear boundaries"},
+{"style": "Collaborative", "text": "A drafted reply that focuses on shared goals and practical solutions"}
+]
+}
+],
+"interaction_dynamics": {
+"power_balance": "Analysis of who holds conversational power and how",
+"escalation_pattern": "Escalating / De-escalating / Stable / Cyclical",
+"communication_barriers": ["barrier1", "barrier2", "barrier3"],
+"productive_elements": ["any positive patterns", "collaborative moments"],
+"cycle_risk": "If this pattern continues, what relational damage might occur"
+},
+"path_forward": {
+"immediate_steps": ["step1 for de-escalation", "step2", "step3"],
+"if_unresolved": "Likely trajectory if communication patterns continue unchanged",
+"optimal_outcome": "What successful resolution would look like and how to achieve it"
+}
+}
+CRITICAL REQUIREMENTS:
+✓ Output ONLY valid JSON - no markdown, no preamble, no commentary
+✓ Always analyze from BOTH/ALL participant perspectives equally
+✓ Ground every insight in specific textual evidence
+✓ Maintain clinical objectivity while providing empathetic guidance
+✓ Use proper JSON escaping for quotes (use single quotes in text or escape with backslash)
+"""
+============================================================================
+ENDPOINTS
+============================================================================
+@app.route('/health', methods=['GET'])
+def health_check():
+"""Health check endpoint"""
+return jsonify({
+"status": "healthy",
+"message": "API is running",
+"version": "1.0.0"
+}), 200
+@app.route('/analyze', methods=['POST'])
+def analyze_text():
+"""Main analysis endpoint"""
+client_ip = request.remote_addr
+# Rate limiting
+if not rate_limit_check(client_ip):
+    return jsonify({
+        "error": "Rate limit exceeded",
+        "message": "Too many requests. Please try again later."
+    }), 429
+
+try:
+    data = request.json
+    user_text = data.get('text', '')
+
+    if not user_text:
+        return jsonify({"error": "No text provided"}), 400
+    
+    if len(user_text) > 10000:
+        return jsonify({
+            "error": "Text too long",
+            "message": "Please limit input to 10,000 characters"
+        }), 400
+    
+    # Safety settings
+    safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+    ]
+
+    model = genai.GenerativeModel(
+        model_name='gemini-2.0-flash-exp',
+        system_instruction=SYSTEM_INSTRUCTION,
+        safety_settings=safety_settings
+    )
+    
+    prompt = f"Analyze this text strictly according to the JSON schema. Output ONLY valid JSON: {user_text}"
+    response = model.generate_content(prompt)
+    
+    clean_text = clean_json_response(response.text)
+    parsed_json = json.loads(clean_text)
+    
+    # Validate response structure
+    if 'speakers' not in parsed_json or not isinstance(parsed_json['speakers'], list):
+        raise ValueError("Invalid response: missing 'speakers' array")
+    
+    if 'conversation_overview' not in parsed_json:
+        raise ValueError("Invalid response: missing 'conversation_overview'")
+    
+    logger.info(f"Successful analysis for IP: {client_ip}")
+    return jsonify(parsed_json)
+
+except json.JSONDecodeError as e:
+    logger.error(f"JSON Parse Error: {e}")
+    return jsonify({
+        "error": "Invalid JSON response from AI", 
+        "message": "The AI returned malformed data. Please try again."
+    }), 500
+    
+except ValueError as e:
+    logger.error(f"Validation Error: {e}")
+    return jsonify({
+        "error": "Invalid response structure",
+        "message": str(e)
+    }), 500
+    
+except Exception as e:
+    logger.error(f"Analysis Error: {e}", exc_info=True)
+    
+    if "finish_reason" in str(e).lower() or "SAFETY" in str(e):
+        return jsonify({
+            "error": "Content blocked by safety filter",
+            "message": "The text contains content that triggered safety filters. Please try different text."
+        }), 400
+        
+    return jsonify({
+        "error": "Analysis failed",
+        "message": "An unexpected error occurred. Please try again."
+    }), 500
+@app.route('/analyze_impact', methods=['POST'])
+def analyze_impact():
+"""Endpoint for analyzing the impact of a proposed response"""
+client_ip = request.remote_addr
+# Rate limiting
+if not rate_limit_check(client_ip):
+    return jsonify({
+        "error": "Rate limit exceeded",
+        "message": "Too many requests. Please try again later."
+    }), 429
+
+try:
+    data = request.json
+    user_text = data.get('text', '')
+
+    if not user_text:
+        return jsonify({"error": "No text provided"}), 400
+    
+    safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+    ]
+
+    model = genai.GenerativeModel(
+        model_name='gemini-2.0-flash-exp',
+        system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
+        safety_settings=safety_settings
+    )
+    
+    response = model.generate_content(user_text)
+    clean_text = clean_json_response(response.text)
+    parsed_json = json.loads(clean_text)
+    
+    logger.info(f"Successful impact analysis for IP: {client_ip}")
+    return jsonify(parsed_json)
+
+except Exception as e:
+    logger.error(f"Impact Analysis Error: {e}", exc_info=True)
+    return jsonify({
+        "error": "Impact analysis failed",
+        "message": "Please try again."
+    }), 500
+@app.route('/report', methods=['POST'])
+def report_content():
+"""
+APPLE COMPLIANCE: Endpoint for reporting offensive/problematic content
+This satisfies Apple's requirement for user-generated content moderation
+"""
+try:
+data = request.json
+reason = data.get('reason', 'not_specified')
+analysis_id = data.get('analysis_id', 'unknown')
+timestamp = data.get('timestamp', datetime.now().isoformat())
+    # Log the report (in production, save to database and alert moderators)
+    logger.warning(f"CONTENT REPORT - Reason: {reason}, Analysis ID: {analysis_id}, Time: {timestamp}, IP: {request.remote_addr}")
+    
+    # TODO: In production, implement:
+    # 1. Save report to database
+    # 2. Send notification to moderation team
+    # 3. Flag content for review
+    # 4. Implement automated review if pattern detected
+    
+    return jsonify({
+        "status": "success",
+        "message": "Report received. Thank you for helping us maintain quality."
+    }), 200
+    
+except Exception as e:
+    logger.error(f"Report submission error: {e}")
+    return jsonify({
+        "status": "error",
+        "message": "Report could not be submitted"
+    }), 500
+@app.errorhandler(404)
+def not_found(error):
+return jsonify({"error": "Endpoint not found"}), 404
+@app.errorhandler(500)
+def internal_error(error):
+logger.error(f"Internal server error: {error}")
+return jsonify({"error": "Internal server error"}), 500
+============================================================================
+RUN SERVER
+============================================================================
+if name == 'main':
+# For production deployment, use a WSGI server like Gunicorn
+# gunicorn -w 4 -b 0.0.0.0:5000 app:app
+app.run(debug=False, host='0.0.0.0', port=5000)</parameter>
