@@ -89,23 +89,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: kColorNavy,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.psychology, size: 80, color: Colors.white),
-            const SizedBox(height: 20),
-            const Text(
+            Icon(Icons.psychology, size: 80, color: Colors.white),
+            SizedBox(height: 20),
+            Text(
               "Linguistic Decoder",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(color: kColorPurple),
+            SizedBox(height: 20),
+            CircularProgressIndicator(color: kColorPurple),
           ],
         ),
       ),
@@ -150,9 +150,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
     if (!isAvailable) return;
 
-    const Set<String> _kIds = {kPremiumProductId};
+    const Set<String> kIds = {kPremiumProductId};
     final ProductDetailsResponse response =
-        await _iap.queryProductDetails(_kIds);
+        await _iap.queryProductDetails(kIds);
 
     if (response.error == null) {
       setState(() => _products = response.productDetails);
