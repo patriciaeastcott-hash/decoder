@@ -424,6 +424,12 @@ class _DecoderScreenState extends State<DecoderScreen> {
                     : const Text("Analyze"),
               ),
             ),
+            const SizedBox(height: 8),
+            const Text(
+              "AI analysis can be inaccurate. Please verify important insights.",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             Expanded(
               child: _result == null

@@ -2,6 +2,7 @@ import os
 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import requests
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -295,6 +296,66 @@ def analyze_impact():
             "error": str(e), 
             "message": "Impact analysis failed. Please try again."
         }), 500
+
+@app.route('/report', methods=['POST'])
+def report_issue():
+    """
+    Handle content reports from the mobile app.
+    Apple Requirement: Users must be able to report offensive AI generation.
+    """
+    try:
+        data = request.json
+        # In a production app, save this to a database or send an email alert.
+        # For now, we log it and return success to the client.
+        print(f"⚠️ CONTENT REPORT RECEIVED: {data}")
+        return jsonify({"status": "received", "message": "Report logged successfully"}), 200
+    except Exception as e:
+        print(f"Report error: {e}")
+        return jsonify({"error": "Failed to log report"}), 500
+
+@app.route('/verify-purchase', methods=['POST'])
+def verify_purchase():
+    """
+    Validate Apple In-App Purchase Receipt.
+    Handles the Production -> Sandbox fallback automatically.
+    """
+    try:
+        data = request.json
+        receipt_data = data.get('receipt_data')
+        shared_secret = os.getenv("APPLE_SHARED_SECRET") # Optional: Required for subscriptions
+
+        if not receipt_data:
+            return jsonify({"valid": False, "error": "No receipt data"}), 400
+
+        # Apple Verify Receipt URLs
+        SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt"
+        PROD_URL = "https://buy.itunes.apple.com/verifyReceipt"
+
+        payload = {"receipt-data": receipt_data}
+        if shared_secret:
+            payload["password"] = shared_secret
+
+        # 1. Try Production First
+        response = requests.post(PROD_URL, json=payload)
+        result = response.json()
+
+        # 2. Check for Sandbox environment error (21007)
+        # If Apple says "This is a sandbox receipt sent to prod", retry in Sandbox
+        if result.get('status') == 21007:
+            print("⚠️ Sandbox receipt detected. Retrying with Sandbox URL...")
+            response = requests.post(SANDBOX_URL, json=payload)
+            result = response.json()
+
+        # 3. Check final status (0 = Valid)
+        if result.get('status') == 0:
+            return jsonify({"valid": True, "receipt": result.get("receipt")}), 200
+        else:
+            print(f"❌ Invalid Receipt. Status: {result.get('status')}")
+            return jsonify({"valid": False, "status": result.get('status')}), 400
+
+    except Exception as e:
+        print(f"Verification Error: {e}")
+        return jsonify({"valid": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
