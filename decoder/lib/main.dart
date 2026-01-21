@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Branding: Logo usage with fallback
-            Image.asset('logo.png', width: 120, height: 120, 
+            Image.asset('assets/logo.png', width: 120, height: 120, 
               errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 80, color: Colors.white)),
             const SizedBox(height: 20),
             const Text(
@@ -155,7 +155,7 @@ class AgeVerificationScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Branding: Logo usage
-            Image.asset('logo.png', width: 100, height: 100,
+            Image.asset('assets/logo.png', width: 100, height: 100,
               errorBuilder: (c, o, s) => const Icon(Icons.verified_user, size: 80, color: Colors.white)),
             const SizedBox(height: 24),
             const Text(
@@ -333,7 +333,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
             children: [
               const SizedBox(height: 20),
               // Branding: Logo usage
-              Image.asset('logo.png', width: 80, height: 80,
+              Image.asset('assets/logo.png', width: 80, height: 80,
                 errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 60, color: Color(0xFF7C3AED))),
               const SizedBox(height: 20),
               const Text("Unlock Full Analysis",

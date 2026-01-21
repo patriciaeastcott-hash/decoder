@@ -17,7 +17,10 @@ app = Flask(__name__)
 # In production, replace '*' with your specific web domain (e.g., "https://digitalabcs.com.au")
 # Note: Mobile apps do not typically send an 'Origin' header. To restrict mobile,
 # we check the 'X-Bundle-ID' header in the before_request hook below.
-CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
+
+
+#CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
+CORS(app)
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
