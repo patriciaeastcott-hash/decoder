@@ -155,7 +155,7 @@ class AgeVerificationScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Branding: Logo usage
-            Image.asset('assets/logo.png', width: 100, height: 100,
+            Image.asset('logo.png', width: 100, height: 100,
               errorBuilder: (c, o, s) => const Icon(Icons.verified_user, size: 80, color: Colors.white)),
             const SizedBox(height: 24),
             const Text(
@@ -333,7 +333,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
             children: [
               const SizedBox(height: 20),
               // Branding: Logo usage
-              Image.asset('assets/logo.png', width: 80, height: 80,
+              Image.asset('logo.png', width: 80, height: 80,
                 errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 60, color: Color(0xFF7C3AED))),
               const SizedBox(height: 20),
               const Text("Unlock Full Analysis",
@@ -471,7 +471,7 @@ class DashboardScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Image.asset('assets/logo.png',
+            Image.asset('logo.png',
                 height: 32,
                 errorBuilder: (_, __, ___) =>
                     const Icon(Icons.psychology, color: Colors.white)),
@@ -525,7 +525,7 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.support_agent,
               color: Colors.blueGrey,
               onTap: () {
-                launchUrl(Uri.parse("https://digitalabcs.com.au/contact"));
+                launchUrl(Uri.parse("https://digitalabcs.com.au/contact.html"));
               },
             ),
             _DashboardTile(
