@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Branding: Logo usage with fallback
-            Image.asset('assets/logo.png', width: 120, height: 120, 
+            Image.asset('logo.png', width: 120, height: 120, 
               errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 80, color: Colors.white)),
             const SizedBox(height: 20),
             const Text(
