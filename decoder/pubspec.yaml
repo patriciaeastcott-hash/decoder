@@ -25,6 +25,8 @@ dependencies:
   # In-App Purchases (Compliance)
   in_app_purchase: ^3.1.13
 
+  flutter_dotenv: ^5.1.0 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,3 +34,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+      - .env 

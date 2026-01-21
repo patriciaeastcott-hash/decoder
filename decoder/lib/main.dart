@@ -5,14 +5,17 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // --- CONFIGURATION ---
-// REPLACE THIS with your actual Cloud Run URL
-const String kApiBaseUrl =
-    "https://decoder-222632046587.australia-southeast1.run.app";
 const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
 const String kTermsUrl = "https://digitalabcs.com.au/terms.html";
-const String kPremiumProductId = 'linguistic_decoder_premium';
+
+// --- IN-APP PURCHASE CONFIGURATION ---
+// IDs must match exactly what you set in App Store Connect
+const String kMonthlyId = 'linguistic_decoder_monthly'; // $14.99
+const String kAnnualId = 'linguistic_decoder_annual'; // $8.99/mo
+const String kLifetimeId = 'linguistic_decoder_lifetime'; // $99.99
 
 // --- THEME ---
 const Color kColorNavy = Color(0xFF1E3A8A);
@@ -20,7 +23,10 @@ const Color kColorPurple = Color(0xFF7C3AED);
 const Color kColorBackground = Color(0xFFF3F4F6);
 const Color kColorError = Color(0xFFDC2626);
 
-void main() {
+void main() async {
+  // 1. Load Environment Variables
+  // Ensure you have a .env file in your assets with API_URL defined
+  await dotenv.load(fileName: ".env");
   runApp(const LinguisticDecoderApp());
 }
 
@@ -30,8 +36,8 @@ class LinguisticDecoderApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Linguistic Decoder',
       debugShowCheckedModeBanner: false,
+      title: 'Linguistic Decoder',
       theme: ThemeData(
         useMaterial3: true,
         primaryColor: kColorNavy,
@@ -116,39 +122,32 @@ class _SplashScreenState extends State<SplashScreen> {
 // ============================================================================
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
-
   @override
   State<PaywallScreen> createState() => _PaywallScreenState();
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
   final InAppPurchase _iap = InAppPurchase.instance;
-  bool _available = true;
-  bool _loading = false;
   List<ProductDetails> _products = [];
+  bool _loading = false;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
 
   @override
   void initState() {
     super.initState();
     final purchaseUpdated = _iap.purchaseStream;
-    _subscription =
-        purchaseUpdated.listen(_listenToPurchaseUpdated, onDone: () {
-      _subscription.cancel();
-    }, onError: (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $error")));
-    });
+    _subscription = purchaseUpdated.listen(_listenToPurchaseUpdated,
+        onDone: () => _subscription.cancel(),
+        onError: (error) => print("Error: $error"));
     _initStore();
   }
 
   Future<void> _initStore() async {
     final bool isAvailable = await _iap.isAvailable();
-    setState(() => _available = isAvailable);
-
     if (!isAvailable) return;
 
-    const Set<String> kIds = {kPremiumProductId};
+    // Query all 3 products
+    const Set<String> kIds = {kMonthlyId, kAnnualId, kLifetimeId};
     final ProductDetailsResponse response =
         await _iap.queryProductDetails(kIds);
 
@@ -164,15 +163,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
         setState(() => _loading = true);
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
+          setState(() => _loading = false);
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Purchase Failed")));
-          setState(() => _loading = false);
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
-          // Save locally
+          // Grant Access
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('hasPaidPremium', true);
-
           if (mounted) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const DashboardScreen()));
@@ -185,95 +183,178 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
-  void _buyProduct() {
-    if (_products.isEmpty) {
-      // Fallback for testing/review if store isn't connected yet
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Store not connected. (Using mock for review)")));
-      // UNCOMMENT FOR TESTING ONLY:
-      // _listenToPurchaseUpdated([]);
-      return;
-    }
-    final PurchaseParam purchaseParam =
-        PurchaseParam(productDetails: _products.first);
+  void _buyProduct(ProductDetails product) {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
-  void _restore() {
-    _iap.restorePurchases();
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
+  // DEMO ACCOUNT / BYPASS LOGIC
+  void _showDemoDialog() {
+    final TextEditingController _codeCtrl = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Text("Enter Demo Code"),
+              content: TextField(
+                  controller: _codeCtrl,
+                  decoration: const InputDecoration(hintText: "Code")),
+              actions: [
+                TextButton(
+                    onPressed: () async {
+                      if (_codeCtrl.text.trim() == "DEMO2025") {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('hasPaidPremium', true);
+                        if (mounted) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const DashboardScreen()));
+                        }
+                      } else {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Invalid Code")));
+                      }
+                    },
+                    child: const Text("Redeem"))
+              ],
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
+    // Sort products if needed, or find specific ones
+    final monthly = _products.firstWhere((p) => p.id == kMonthlyId,
+        orElse: () => _nullProduct);
+    final annual = _products.firstWhere((p) => p.id == kAnnualId,
+        orElse: () => _nullProduct);
+    final lifetime = _products.firstWhere((p) => p.id == kLifetimeId,
+        orElse: () => _nullProduct);
+
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(24),
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kColorNavy, Colors.black],
+      backgroundColor: const Color(0xFF1E3A8A), // Navy
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              const Icon(Icons.psychology, size: 60, color: Color(0xFF7C3AED)),
+              const SizedBox(height: 20),
+              const Text("Unlock Full Analysis",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              const Text("Choose a plan that works for you.",
+                  style: TextStyle(color: Colors.white70, fontSize: 16)),
+              const Spacer(),
+              if (_loading)
+                const CircularProgressIndicator(color: Colors.white),
+              if (!_loading) ...[
+                // ANNUAL (Highlight this one)
+                _SubscriptionCard(
+                  title: "Annual (Best Value)",
+                  price: annual.id == 'null' ? "\$107.88/yr" : annual.price,
+                  subtitle: "Just \$8.99/mo, billed annually",
+                  isHighlighted: true,
+                  onTap: () => annual.id != 'null' ? _buyProduct(annual) : null,
+                ),
+                const SizedBox(height: 12),
+
+                // MONTHLY
+                _SubscriptionCard(
+                  title: "Monthly",
+                  price: monthly.id == 'null' ? "\$14.99/mo" : monthly.price,
+                  subtitle: "Cancel anytime",
+                  onTap: () =>
+                      monthly.id != 'null' ? _buyProduct(monthly) : null,
+                ),
+                const SizedBox(height: 12),
+
+                // LIFETIME
+                _SubscriptionCard(
+                  title: "Lifetime Access",
+                  price: lifetime.id == 'null' ? "\$99.99" : lifetime.price,
+                  subtitle: "One-time payment",
+                  onTap: () =>
+                      lifetime.id != 'null' ? _buyProduct(lifetime) : null,
+                ),
+              ],
+              const Spacer(),
+              TextButton(
+                  onPressed: () => _iap.restorePurchases(),
+                  child: const Text("Restore Purchases",
+                      style: TextStyle(color: Colors.white70))),
+              TextButton(
+                  onPressed: _showDemoDialog,
+                  child: const Text("Redeem Code",
+                      style: TextStyle(color: Colors.grey, fontSize: 12))),
+            ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      ),
+    );
+  }
+
+  // Helper for dummy product
+  ProductDetails get _nullProduct => ProductDetails(
+      id: 'null',
+      title: '',
+      description: '',
+      price: '',
+      currencyCode: '',
+      rawPrice: 0);
+}
+
+class _SubscriptionCard extends StatelessWidget {
+  final String title, price, subtitle;
+  final bool isHighlighted;
+  final VoidCallback onTap;
+
+  const _SubscriptionCard(
+      {required this.title,
+      required this.price,
+      required this.subtitle,
+      this.isHighlighted = false,
+      required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isHighlighted
+              ? const Color(0xFF7C3AED)
+              : Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border:
+              isHighlighted ? Border.all(color: Colors.white, width: 2) : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Icon(Icons.lock_open, size: 60, color: kColorPurple),
-            const SizedBox(height: 24),
-            const Text(
-              "Unlock Full Access",
-              style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "One-time purchase for unlimited AI analysis.",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 40),
-            if (_loading)
-              const CircularProgressIndicator(color: Colors.white)
-            else
-              ElevatedButton(
-                onPressed: _buyProduct,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kColorPurple,
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: Text(_products.isEmpty
-                    ? "Loading Store..."
-                    : "Purchase - ${_products.first.price}"),
-              ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: _restore,
-              child: const Text("Restore Purchases",
-                  style: TextStyle(color: Colors.white70)),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextButton(
-                    onPressed: () => launchUrl(Uri.parse(kPrivacyUrl)),
-                    child: const Text("Privacy",
-                        style: TextStyle(fontSize: 12, color: Colors.grey))),
-                TextButton(
-                    onPressed: () => launchUrl(Uri.parse(kTermsUrl)),
-                    child: const Text("Terms",
-                        style: TextStyle(fontSize: 12, color: Colors.grey))),
+                Text(title,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+                Text(subtitle,
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12)),
               ],
-            )
+            ),
+            Text(price,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18)),
           ],
         ),
       ),
@@ -332,6 +413,10 @@ class _DecoderScreenState extends State<DecoderScreen> {
 
   Future<void> _analyze() async {
     if (_inputController.text.isEmpty) return;
+
+    // Use default localhost if .env is missing (Safety fallback)
+    final String baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:5000';
+
     setState(() {
       _isLoading = true;
       _result = null;
@@ -340,7 +425,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
     try {
       final response = await http
           .post(
-            Uri.parse("$kApiBaseUrl/analyze"),
+            Uri.parse("$baseUrl/analyze"),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode({"text": _inputController.text}),
           )
@@ -361,19 +446,28 @@ class _DecoderScreenState extends State<DecoderScreen> {
   }
 
   Future<void> _reportIssue() async {
+    final String baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:5000';
+
     // APPLE COMPLIANCE: Must have a way to report bad AI generation
-    await http.post(
-      Uri.parse("$kApiBaseUrl/report"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "text": _inputController.text,
-        "reason": "User reported offensive/incorrect content"
-      }),
-    );
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("Report sent. Thank you.")));
-    Navigator.pop(context);
+    try {
+      await http.post(
+        Uri.parse("$baseUrl/report"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "input_text": _inputController.text,
+          "output_text": jsonEncode(_result),
+          "reason": "User reported offensive/incorrect content"
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Report sent. Thank you.")));
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to send report.")));
+    }
   }
 
   void _showReportDialog() {

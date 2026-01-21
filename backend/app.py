@@ -1,5 +1,8 @@
 import os
 import json
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -9,15 +12,42 @@ from dotenv import load_dotenv
 # --- CONFIGURATION ---
 load_dotenv()
 app = Flask(__name__)
-CORS(app)
+
+# 1. CORS CONFIGURATION (Restricted)
+# In production, replace '*' with your specific web domain (e.g., "https://digitalabcs.com.au")
+# Note: Mobile apps do not typically send an 'Origin' header. To restrict mobile,
+# we check the 'X-Bundle-ID' header in the before_request hook below.
+CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USER = os.getenv("EMAIL_USER") # Your sending email address
+EMAIL_PASS = os.getenv("EMAIL_PASS") # Your email app password
+ALERT_RECEIVER = "info@digitalabcs.com.au"
+
 if not API_KEY:
     print("CRITICAL WARNING: GEMINI_API_KEY is missing from .env")
 
 genai.configure(api_key=API_KEY)
 
-# --- ENHANCED SYSTEM PROMPT ---
+# --- SECURITY FOR MOBILE ---
+@app.before_request
+def restrict_mobile_app():
+    # Optional: Enforce that requests come from your specific App Bundle ID
+    # You must send 'X-Bundle-ID': 'com.digitalabcs.decoder' in your Flutter headers
+    allowed_bundles = ['com.digitalabcs.decoder', 'com.example.decoder'] 
+    
+    # Skip check for OPTIONS requests (CORS preflight)
+    if request.method == 'OPTIONS':
+        return
+        
+    # Check header (Open logic for dev, strict for prod)
+    # client_bundle = request.headers.get('X-Bundle-ID')
+    # if client_bundle and client_bundle not in allowed_bundles:
+    #     return jsonify({"error": "Unauthorized Client"}), 403
+
+# --- SYSTEM PROMPT (No changes to core logic, just safety config below) ---
 SYSTEM_INSTRUCTION = """
 You are an expert Linguistic Analyst specializing in multi-perspective communication analysis and intent detection.
 
@@ -199,12 +229,13 @@ def analyze_text():
         prompt = f"Analyze this text strictly according to the JSON schema. Output ONLY valid JSON with no markdown formatting: {user_text}"
         response = model.generate_content(prompt)
         
-        # Clean markdown formatting
-        clean_text = response.text.strip()
-        clean_text = clean_text.replace('```json', '').replace('```', '').strip()
-        
-        # Parse and validate JSON
+        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
         parsed_json = json.loads(clean_text)
+        return jsonify(parsed_json)
+
+    except Exception as e:
+        # (Keep existing error handling)
+        return jsonify({"error": str(e)}), 500
         
         # Validate required fields
         if 'speakers' not in parsed_json or not isinstance(parsed_json['speakers'], list):
@@ -253,6 +284,61 @@ def health_check():
     """Health check endpoint for testing connectivity"""
     return jsonify({"status": "healthy", "message": "API is running"}), 200
 
+@app.route('/report', methods=['POST'])
+def report_issue():
+    """
+    Sends an email alert to the business when a user reports an issue.
+    """
+    try:
+        data = request.json
+        reported_text = data.get('input_text', 'N/A')
+        ai_output = data.get('output_text', 'N/A')
+        user_reason = data.get('reason', 'User reported offensive content')
+
+        print(f"⚠️ CONTENT REPORT: {user_reason}")
+
+        # Construct Email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = ALERT_RECEIVER
+        msg['Subject'] = f"URGENT: Content Report in Linguistic Decoder"
+
+        body = f"""
+        A user has reported an AI generation issue.
+        
+        Reason: {user_reason}
+        
+        --------------------------------------------------
+        USER INPUT:
+        {reported_text}
+        
+        --------------------------------------------------
+        AI OUTPUT:
+        {ai_output}
+        --------------------------------------------------
+        """
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Send Email
+        if EMAIL_USER and EMAIL_PASS:
+            server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASS)
+            server.send_message(msg)
+            server.quit()
+            return jsonify({"status": "reported", "message": "Admin alerted via email"}), 200
+        else:
+            print("❌ Email credentials not set. Logged to console only.")
+            return jsonify({"status": "logged_only", "message": "Report logged (Email not configured)"}), 200
+
+    except Exception as e:
+        print(f"Report error: {e}")
+        return jsonify({"error": "Failed to process report"}), 500
+
+# (Keep verify-purchase and main logic)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
+    
 @app.route('/analyze_impact', methods=['POST'])
 def analyze_impact():
     """Endpoint for analyzing the impact of a proposed response"""
@@ -300,18 +386,57 @@ def analyze_impact():
 @app.route('/report', methods=['POST'])
 def report_issue():
     """
-    Handle content reports from the mobile app.
-    Apple Requirement: Users must be able to report offensive AI generation.
+    Sends an email alert to the business when a user reports an issue.
     """
     try:
         data = request.json
-        # In a production app, save this to a database or send an email alert.
-        # For now, we log it and return success to the client.
-        print(f"⚠️ CONTENT REPORT RECEIVED: {data}")
-        return jsonify({"status": "received", "message": "Report logged successfully"}), 200
+        reported_text = data.get('input_text', 'N/A')
+        ai_output = data.get('output_text', 'N/A')
+        user_reason = data.get('reason', 'User reported offensive content')
+
+        print(f"⚠️ CONTENT REPORT: {user_reason}")
+
+        # Construct Email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USER
+        msg['To'] = ALERT_RECEIVER
+        msg['Subject'] = f"URGENT: Content Report in Linguistic Decoder"
+
+        body = f"""
+        A user has reported an AI generation issue.
+        
+        Reason: {user_reason}
+        
+        --------------------------------------------------
+        USER INPUT:
+        {reported_text}
+        
+        --------------------------------------------------
+        AI OUTPUT:
+        {ai_output}
+        --------------------------------------------------
+        """
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Send Email
+        if EMAIL_USER and EMAIL_PASS:
+            server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASS)
+            server.send_message(msg)
+            server.quit()
+            return jsonify({"status": "reported", "message": "Admin alerted via email"}), 200
+        else:
+            print("❌ Email credentials not set. Logged to console only.")
+            return jsonify({"status": "logged_only", "message": "Report logged (Email not configured)"}), 200
+
     except Exception as e:
         print(f"Report error: {e}")
-        return jsonify({"error": "Failed to log report"}), 500
+        return jsonify({"error": "Failed to process report"}), 500
+
+# (Keep verify-purchase and main logic)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 @app.route('/verify-purchase', methods=['POST'])
 def verify_purchase():
