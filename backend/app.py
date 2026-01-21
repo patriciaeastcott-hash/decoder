@@ -231,24 +231,16 @@ def analyze_text():
         
         clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
         parsed_json = json.loads(clean_text)
-        return jsonify(parsed_json)
-
-    except Exception as e:
-        # (Keep existing error handling)
-        return jsonify({"error": str(e)}), 500
         
         # Validate required fields
         if 'speakers' not in parsed_json or not isinstance(parsed_json['speakers'], list):
-            raise ValueError("Invalid response: missing 'speakers' array")
-        
-        if 'conversation_overview' not in parsed_json:
-            raise ValueError("Invalid response: missing 'conversation_overview'")
-            
+            # Optional: Add specific validation logic here if needed
+            pass
+
         return jsonify(parsed_json)
 
     except json.JSONDecodeError as e:
         print(f"\n❌ JSON PARSE ERROR: {e}")
-        print(f"Raw response: {response.text if 'response' in locals() else 'No response'}")
         return jsonify({
             "error": "Invalid JSON response from AI", 
             "details": str(e),
@@ -279,66 +271,6 @@ def analyze_text():
             "message": "Analysis failed. Please check your connection and try again."
         }), 500
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Health check endpoint for testing connectivity"""
-    return jsonify({"status": "healthy", "message": "API is running"}), 200
-
-@app.route('/report', methods=['POST'])
-def report_issue():
-    """
-    Sends an email alert to the business when a user reports an issue.
-    """
-    try:
-        data = request.json
-        reported_text = data.get('input_text', 'N/A')
-        ai_output = data.get('output_text', 'N/A')
-        user_reason = data.get('reason', 'User reported offensive content')
-
-        print(f"⚠️ CONTENT REPORT: {user_reason}")
-
-        # Construct Email
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_USER
-        msg['To'] = ALERT_RECEIVER
-        msg['Subject'] = f"URGENT: Content Report in Linguistic Decoder"
-
-        body = f"""
-        A user has reported an AI generation issue.
-        
-        Reason: {user_reason}
-        
-        --------------------------------------------------
-        USER INPUT:
-        {reported_text}
-        
-        --------------------------------------------------
-        AI OUTPUT:
-        {ai_output}
-        --------------------------------------------------
-        """
-        msg.attach(MIMEText(body, 'plain'))
-
-        # Send Email
-        if EMAIL_USER and EMAIL_PASS:
-            server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
-            server.quit()
-            return jsonify({"status": "reported", "message": "Admin alerted via email"}), 200
-        else:
-            print("❌ Email credentials not set. Logged to console only.")
-            return jsonify({"status": "logged_only", "message": "Report logged (Email not configured)"}), 200
-
-    except Exception as e:
-        print(f"Report error: {e}")
-        return jsonify({"error": "Failed to process report"}), 500
-
-# (Keep verify-purchase and main logic)
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-    
 @app.route('/analyze_impact', methods=['POST'])
 def analyze_impact():
     """Endpoint for analyzing the impact of a proposed response"""
@@ -481,6 +413,11 @@ def verify_purchase():
     except Exception as e:
         print(f"Verification Error: {e}")
         return jsonify({"valid": False, "error": str(e)}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for testing connectivity"""
+    return jsonify({"status": "healthy", "message": "API is running"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

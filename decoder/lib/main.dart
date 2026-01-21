@@ -26,7 +26,12 @@ const Color kColorError = Color(0xFFDC2626);
 void main() async {
   // 1. Load Environment Variables
   // Ensure you have a .env file in your assets with API_URL defined
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    // Prevent crash if .env is missing. Will fall back to localhost in DecoderScreen.
+    debugPrint("⚠️ .env not found, using defaults: $e");
+  }
   runApp(const LinguisticDecoderApp());
 }
 
@@ -78,6 +83,16 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkStatus() async {
     await Future.delayed(const Duration(seconds: 2)); // Branding moment
     final prefs = await SharedPreferences.getInstance();
+    
+    // 1. AGE ASSURANCE (17+ Requirement)
+    final isAgeVerified = prefs.getBool('isAgeVerified') ?? false;
+    if (!isAgeVerified) {
+      if (!mounted) return;
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (_) => const AgeVerificationScreen()));
+      return;
+    }
+
     final hasPaid = prefs.getBool('hasPaidPremium') ?? false;
 
     if (!mounted) return;
@@ -110,6 +125,62 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             SizedBox(height: 20),
             CircularProgressIndicator(color: kColorPurple),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// 1.5 AGE VERIFICATION SCREEN
+// ============================================================================
+class AgeVerificationScreen extends StatelessWidget {
+  const AgeVerificationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kColorNavy,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.verified_user, size: 80, color: Colors.white),
+            const SizedBox(height: 24),
+            const Text(
+              "Age Verification",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "This app contains AI-generated content. You must be 17+ to use this application.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, fontSize: 16),
+            ),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kColorPurple,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isAgeVerified', true);
+                  if (context.mounted) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const SplashScreen()));
+                  }
+                },
+                child: const Text("I am 17 or older"),
+              ),
+            ),
           ],
         ),
       ),
@@ -382,8 +453,22 @@ class DashboardScreen extends StatelessWidget {
             title: "New Decode",
             icon: Icons.add_circle,
             color: kColorPurple,
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const DecoderScreen())),
+            onTap: () async {
+              // PARENTAL CONTROL CHECK
+              final prefs = await SharedPreferences.getInstance();
+              final String? pin = prefs.getString('parentalPin');
+              if (pin != null && pin.isNotEmpty) {
+                if (!context.mounted) return;
+                final bool? verified = await showDialog<bool>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (ctx) => _PinDialog(correctPin: pin));
+                if (verified != true) return;
+              }
+              if (!context.mounted) return;
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const DecoderScreen()));
+            },
           ),
           const SizedBox(height: 16),
           _MenuCard(
@@ -395,6 +480,51 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PinDialog extends StatefulWidget {
+  final String correctPin;
+  const _PinDialog({required this.correctPin});
+  @override
+  State<_PinDialog> createState() => _PinDialogState();
+}
+
+class _PinDialogState extends State<_PinDialog> {
+  final TextEditingController _ctrl = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Parental Control"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("Enter PIN to access Decoder"),
+          TextField(
+            controller: _ctrl,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 4,
+            decoration: const InputDecoration(hintText: "####"),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel")),
+        TextButton(
+            onPressed: () {
+              if (_ctrl.text == widget.correctPin) {
+                Navigator.pop(context, true);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Incorrect PIN")));
+              }
+            },
+            child: const Text("Unlock")),
+      ],
     );
   }
 }
@@ -644,6 +774,58 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.description),
             title: const Text("Terms of Service"),
             onTap: () => launchUrl(Uri.parse(kTermsUrl)),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text("Parental Controls"),
+            subtitle: const Text("Restrict access to Decoder"),
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              final currentPin = prefs.getString('parentalPin');
+              
+              if (!context.mounted) return;
+
+              if (currentPin != null) {
+                // Remove PIN
+                final bool? verified = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => _PinDialog(correctPin: currentPin));
+                if (verified == true) {
+                  await prefs.remove('parentalPin');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Parental PIN removed")));
+                  }
+                }
+              } else {
+                // Set PIN
+                final TextEditingController _pinCtrl = TextEditingController();
+                await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                          title: const Text("Set Parental PIN"),
+                          content: TextField(
+                            controller: _pinCtrl,
+                            keyboardType: TextInputType.number,
+                            maxLength: 4,
+                            decoration: const InputDecoration(hintText: "Enter 4 digits"),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () async {
+                                  if (_pinCtrl.text.length == 4) {
+                                    await prefs.setString('parentalPin', _pinCtrl.text);
+                                    Navigator.pop(ctx);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("PIN Set Successfully")));
+                                  }
+                                },
+                                child: const Text("Save"))
+                          ],
+                        ));
+              }
+            },
           ),
           ListTile(
             leading: const Icon(Icons.delete, color: kColorError),

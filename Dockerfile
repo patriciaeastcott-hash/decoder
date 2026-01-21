@@ -15,7 +15,7 @@ COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 3. Copy the rest of the backend code into the container
-COPY backend/ ./
+COPY backend/ .
 
 # Run the web service on container startup.
 # Timeout is set to 0 to allow Cloud Run to handle instance scaling.
