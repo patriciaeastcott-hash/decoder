@@ -3,7 +3,7 @@ import datetime
 
 # --- Configuration ---
 # Replace this with the specific URL causing the issue
-TARGET_URL = "{$kApiBaseUrl}/debug-500"
+TARGET_URL = "https://decoder-backend-222632046587.australia-southeast1.run.app/health"
 
 def inspect_server_error(url):
     print(f"--- Starting Diagnostic on: {url} ---")

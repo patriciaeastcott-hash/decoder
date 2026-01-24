@@ -19,8 +19,8 @@ app = Flask(__name__)
 # we check the 'X-Bundle-ID' header in the before_request hook below.
 
 
-#CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
+#CORS(app)
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
@@ -316,6 +316,103 @@ def analyze_impact():
         return jsonify({
             "error": str(e), 
             "message": "Impact analysis failed. Please try again."
+        }), 500
+
+
+@app.route('/simulate', methods=['POST'])
+def simulate_response():
+    data = request.json
+    incoming_message = data.get('context', '')
+    draft_reply = data.get('draft', '')
+
+    if not draft_reply:
+        return jsonify({"error": "No draft provided"}), 400
+
+    # Construct the prompt for Gemini
+        prompt = f"""
+    You are an expert in conflict resolution, interpersonal dynamics, and pragmatic communication analysis.
+    Your task is to evaluate a drafted reply within its conversational and emotional context.
+
+    INPUTS:
+    1. context_msg (message received from the other party):
+    "{incoming_message}"
+
+    2. user_draft (the response the user is considering sending):
+    "{draft_reply}"
+
+    ANALYSIS INSTRUCTIONS:
+    Analyze the 'user_draft' strictly as a response to the 'context_msg'.  
+    Go beyond surface tone and assess emotional undercurrents, implicit intent, and likely interpretation by the recipient.
+
+    Specifically evaluate:
+    - Emotional subtext (e.g., defensiveness, validation, withdrawal, appeasement, dominance, repair attempt)
+    - Power and boundary dynamics (who is leading, conceding, or setting limits)
+    - Alignment or misalignment of intent between messages
+    - Risk of escalation, misunderstanding, or emotional fallout
+    - Whether the reply invites clarity, shuts conversation down, or subtly redirects it
+
+    PREDICTION TASK:
+    Predict how a reasonable but emotionally involved recipient is most likely to receive this reply in the short term.
+
+    OUTPUT FORMAT:
+    Return ONLY valid JSON. Do not include commentary or markdown.
+
+    REQUIRED KEYS:
+    - reception: 
+    (Short label describing likely reception, e.g. 
+    "Disarming", "Calm but Distant", "Boundary-Setting", "Subtly Escalatory", 
+    "Invalidating", "Emotionally Neutral", "Repair-Oriented")
+
+    - score:
+    (Integer 0–100 where:
+    90–100 = emotionally intelligent, de-escalating, and constructive
+    70–89  = mostly constructive with minor risk
+    40–69  = mixed signals or likely misunderstanding
+    0–39   = escalatory, dismissive, or emotionally harmful)
+
+    - emotional_read:
+    (One sentence describing what the recipient is likely to *feel* after reading it)
+
+    - analysis:
+    (One concise sentence explaining WHY it will likely be received this way)
+
+    - risk_flags:
+    (Array of strings. Include any that apply, e.g.
+    ["Escalation Risk", "Defensiveness Trigger", "Ambiguity", "Boundary Blur", 
+        "Emotional Withdrawal", "Power Struggle", "Over-Apologising"]
+    Use an empty array if none apply.)
+
+    OPTIONAL BUT HIGH-VALUE KEYS:
+    - intent_alignment:
+    (String: "Aligned", "Partially Aligned", or "Misaligned")
+
+    - suggested_adjustment:
+    (One short sentence suggesting how the reply could be improved *without changing the user's core intent*.
+    If no improvement is needed, return null.)
+
+    CONSTRAINTS:
+    - Do not judge morality or assign blame.
+    - Do not rewrite the message unless explicitly asked.
+    - Be factual, emotionally literate, and neutral.
+    """
+
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        # Clean the response to ensure it's valid JSON
+        clean_json = response.text.replace('```json', '').replace('```', '').strip()
+        analysis_data = json.loads(clean_json)
+        
+        return jsonify(analysis_data)
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        # Fallback if AI fails
+        return jsonify({
+            "reception": "Analysis Error", 
+            "score": 50, 
+            "analysis": "Could not connect to AI. Please check internet."
         }), 500
 
 @app.route('/report', methods=['POST'])
