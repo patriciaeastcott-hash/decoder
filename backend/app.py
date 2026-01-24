@@ -13,14 +13,9 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
-# 1. CORS CONFIGURATION (Restricted)
-# In production, replace '*' with your specific web domain (e.g., "https://digitalabcs.com.au")
-# Note: Mobile apps do not typically send an 'Origin' header. To restrict mobile,
-# we check the 'X-Bundle-ID' header in the before_request hook below.
-
-
+# 1. CORS CONFIGURATION
+# In production, replace '*' with your specific web domain
 CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
-#CORS(app)
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
@@ -38,7 +33,6 @@ genai.configure(api_key=API_KEY)
 @app.before_request
 def restrict_mobile_app():
     # Optional: Enforce that requests come from your specific App Bundle ID
-    # You must send 'X-Bundle-ID': 'com.digitalabcs.decoder' in your Flutter headers
     allowed_bundles = ['com.digitalabcs.decoder', 'com.example.decoder'] 
     
     # Skip check for OPTIONS requests (CORS preflight)
@@ -50,7 +44,7 @@ def restrict_mobile_app():
     # if client_bundle and client_bundle not in allowed_bundles:
     #     return jsonify({"error": "Unauthorized Client"}), 403
 
-# --- SYSTEM PROMPT (No changes to core logic, just safety config below) ---
+# --- SYSTEM PROMPT ---
 SYSTEM_INSTRUCTION = """
 You are an expert Linguistic Analyst specializing in multi-perspective communication analysis and intent detection.
 
@@ -63,8 +57,7 @@ The user input may be raw "Copy/Paste" text (e.g., Apple Messages, WhatsApp, SMS
 CRITICAL DETECTION RULES:
 1. **DETECT SPEAKER COUNT** First, count the distinct participants based on linguistic cues.
 2. **ASSIGN GENERIC LABELS** Assign "Speaker A," "Speaker B," etc. based on detected participants.
-3. **ADAPT ANALYSIS** 
-    - If 2 speakers: Focus on the relationship dynamics between them. (Speaker A vs. Speaker B).
+3. **ADAPT ANALYSIS** - If 2 speakers: Focus on the relationship dynamics between them. (Speaker A vs. Speaker B).
     - If 3+ speakers: Focus on Group Dynamics (Alliances, Outliers, Power Structures).
 4. **DETECT VOICE SHIFTS:** You MUST infer when speakers change based on:
    - Context clues (defensive statement -> clarifying statement)
@@ -329,7 +322,7 @@ def simulate_response():
         return jsonify({"error": "No draft provided"}), 400
 
     # Construct the prompt for Gemini
-        prompt = f"""
+    prompt = f"""
     You are an expert in conflict resolution, interpersonal dynamics, and pragmatic communication analysis.
     Your task is to evaluate a drafted reply within its conversational and emotional context.
 
@@ -465,10 +458,6 @@ def report_issue():
     except Exception as e:
         print(f"Report error: {e}")
         return jsonify({"error": "Failed to process report"}), 500
-
-# (Keep verify-purchase and main logic)
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
 
 @app.route('/verify-purchase', methods=['POST'])
 def verify_purchase():
