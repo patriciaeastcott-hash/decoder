@@ -321,83 +321,190 @@ def simulate_response():
     if not draft_reply:
         return jsonify({"error": "No draft provided"}), 400
 
-    # Construct the prompt for Gemini
+# 2. The New Forensic Prompt
     prompt = f"""
-    You are an expert in conflict resolution, interpersonal dynamics, and pragmatic communication analysis.
-    Your task is to evaluate a drafted reply within its conversational and emotional context.
+    You are a **Forensic Behavioral Analyst & Communication Psychologist**.
 
-    INPUTS:
-    1. context_msg (message received from the other party):
-    "{incoming_message}"
+    You specialize in identifying psychological patterns, defense mechanisms, relational strategies, and risk indicators *strictly from written communication over time*.  
+    You do **not** diagnose mental illness. You infer behavioral strategies only where supported by textual evidence.
 
-    2. user_draft (the response the user is considering sending):
-    "{draft_reply}"
+    ────────────────────────────
+    INPUT DATA
+    ────────────────────────────
 
-    ANALYSIS INSTRUCTIONS:
-    Analyze the 'user_draft' strictly as a response to the 'context_msg'.  
-    Go beyond surface tone and assess emotional undercurrents, implicit intent, and likely interpretation by the recipient.
+    1. Target Speaker Identifier:
+       - Speaker Name / Label: "{speaker_name}"
 
-    Specifically evaluate:
-    - Emotional subtext (e.g., defensiveness, validation, withdrawal, appeasement, dominance, repair attempt)
-    - Power and boundary dynamics (who is leading, conceding, or setting limits)
-    - Alignment or misalignment of intent between messages
-    - Risk of escalation, misunderstanding, or emotional fallout
-    - Whether the reply invites clarity, shuts conversation down, or subtly redirects it
+    2. Conversation Logs (Chronological):
+       - Each log entry may contain:
+         • Speaker identifier (name, handle, role, or index)
+         • Timestamp (if available)
+         • Message content
 
-    PREDICTION TASK:
-    Predict how a reasonable but emotionally involved recipient is most likely to receive this reply in the short term.
+       Raw Log:
+       {history_text}
 
-    OUTPUT FORMAT:
-    Return ONLY valid JSON. Do not include commentary or markdown.
+    ────────────────────────────
+    PRE-PROCESSING INSTRUCTIONS
+    ────────────────────────────
 
-    REQUIRED KEYS:
-    - reception: 
-    (Short label describing likely reception, e.g. 
-    "Disarming", "Calm but Distant", "Boundary-Setting", "Subtly Escalatory", 
-    "Invalidating", "Emotionally Neutral", "Repair-Oriented")
+    1. **Speaker Isolation**
+       - Identify all speakers in the log.
+       - Isolate and analyze only messages authored by "{speaker_name}".
+       - Use other speakers' messages *only for contextual interpretation* (triggers, responses, power dynamics).
 
-    - score:
-    (Integer 0–100 where:
-    90–100 = emotionally intelligent, de-escalating, and constructive
-    70–89  = mostly constructive with minor risk
-    40–69  = mixed signals or likely misunderstanding
-    0–39   = escalatory, dismissive, or emotionally harmful)
+    2. **Temporal Awareness**
+       - Preserve chronological order.
+       - Detect changes across time (early vs later behaviour).
+       - Identify state shifts after conflict, reassurance, rejection, silence, or boundary enforcement.
 
-    - emotional_read:
-    (One sentence describing what the recipient is likely to *feel* after reading it)
+    ────────────────────────────
+    ANALYTICAL OBJECTIVES
+    ────────────────────────────
 
-    - analysis:
-    (One concise sentence explaining WHY it will likely be received this way)
+    Build a comprehensive behavioral profile of "{speaker_name}" based *solely* on communication patterns.
 
-    - risk_flags:
-    (Array of strings. Include any that apply, e.g.
-    ["Escalation Risk", "Defensiveness Trigger", "Ambiguity", "Boundary Blur", 
-        "Emotional Withdrawal", "Power Struggle", "Over-Apologising"]
-    Use an empty array if none apply.)
+    Analyze across the following dimensions:
 
-    OPTIONAL BUT HIGH-VALUE KEYS:
-    - intent_alignment:
-    (String: "Aligned", "Partially Aligned", or "Misaligned")
+    ### 1. Engagement Style
+    - How does the speaker initiate, maintain, escalate, or withdraw from interaction?
+    - Do they seek control, reassurance, dominance, validation, avoidance, or symmetry?
+    - Do they respond proportionally or disproportionately to stimuli?
 
-    - suggested_adjustment:
-    (One short sentence suggesting how the reply could be improved *without changing the user's core intent*.
-    If no improvement is needed, return null.)
+    ### 2. Defense Mechanisms (Primary & Secondary)
+    Identify **defense mechanisms inferred from language**, such as:
+    - Intellectualization
+    - Minimization
+    - Rationalization
+    - Projection
+    - Deflection / Humor as avoidance
+    - Gaslighting
+    - Stonewalling
+    - Emotional Withholding
+    - Over-Explanation as Control
+    - Victim Positioning
+    - Aggressive Compliance
+    - Passive Aggression
 
-    CONSTRAINTS:
-    - Do not judge morality or assign blame.
-    - Do not rewrite the message unless explicitly asked.
-    - Be factual, emotionally literate, and neutral.
+    For each identified mechanism:
+    - Explain *how* it appears linguistically.
+    - Explain *what function* it serves for the speaker.
+
+    ### 3. Power & Control Strategies
+    - Boundary testing
+    - Guilt induction
+    - Obligation framing
+    - Conditional affection
+    - Intermittent reinforcement
+    - DARVO (Deny → Attack → Reverse Victim/Offender)
+    - Love bombing followed by withdrawal
+    - Threats (explicit or implied)
+    - Compliance pressure disguised as concern
+
+    ### 4. Emotional Regulation Patterns
+    - How does the speaker handle:
+      • Rejection
+      • Delay or silence
+      • Disagreement
+      • Accountability
+    - Do they externalize distress or internalize it?
+    - Is emotional expression used to connect or to control?
+
+    ### 5. Consistency & Contradictions
+    - Identify stated values vs enacted behaviour.
+    - Highlight contradictions across time.
+    - Note narrative shifts that reframe past events.
+
+    ### 6. Escalation & Risk Trajectory
+    - Is behaviour intensifying, stabilizing, or de-escalating?
+    - Are there indicators of:
+      • Obsession
+      • Dependency
+      • Retaliation
+      • Entitlement
+      • Psychological coercion
+
+    ────────────────────────────
+    EVIDENCE STANDARDS
+    ────────────────────────────
+
+    - Every conclusion must be grounded in **observable language patterns**.
+    - Avoid speculative motive claims unless repeatedly supported.
+    - When uncertain, flag ambiguity rather than over-assert.
+
+    ────────────────────────────
+    OUTPUT FORMAT (STRICT JSON ONLY)
+    ────────────────────────────
+
+    {{
+      "risk_level": "Low" | "Medium" | "High" | "Critical",
+
+      "dominant_engagement_style": "Concise descriptor (e.g., 'Anxious-Pursuit', 'Control-Oriented Avoidance', 'Validation-Seeking with Withdrawal')",
+
+      "core_behavioral_pattern": "Name of dominant pattern (e.g., 'Intermittent Reinforcement', 'Defensive Victimization Cycle', 'Escalating Control Through Emotional Leverage')",
+
+      "defense_mechanisms": [
+        {{
+          "mechanism": "Name",
+          "evidence": "Brief description of repeated linguistic indicators",
+          "function": "What this defense protects or achieves for the speaker"
+        }}
+      ],
+
+      "summary": "2–4 sentences explaining the core psychological dynamic observed over time.",
+
+      "notable_contradictions": [
+        "Example contradiction with brief explanation"
+      ],
+
+      "escalation_trend": "Increasing" | "Decreasing" | "Stable",
+
+      "risk_indicators": [
+        "Specific observable behaviors that elevate concern"
+      ],
+
+      "strategic_recommendation": "Clear, practical guidance for engaging safely and effectively with this individual, tailored to their patterns"
+    }}
+
+    IMPORTANT:
+    - Return JSON only.
+    - Do not moralize.
+    - Do not diagnose.
+    - Do not include advice unrelated to the observed behavior.
     """
 
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
         
-        # Clean the response to ensure it's valid JSON
         clean_json = response.text.replace('```json', '').replace('```', '').strip()
         analysis_data = json.loads(clean_json)
         
+        # --- BACKWARDS COMPATIBILITY LAYER ---
+        # Maps the new "Forensic" keys to the existing "Frontend" keys
+        # so you don't have to rewrite your React Native code immediately.
+        
+        # 1. Map 'core_behavioral_pattern' -> 'pattern'
+        if 'core_behavioral_pattern' in analysis_data:
+            analysis_data['pattern'] = analysis_data['core_behavioral_pattern']
+            
+        # 2. Map 'strategic_recommendation' -> 'recommendation'
+        if 'strategic_recommendation' in analysis_data:
+            analysis_data['recommendation'] = analysis_data['strategic_recommendation']
+            
+        # 3. Create 'traits' array from mechanisms + risk indicators
+        traits = []
+        if 'defense_mechanisms' in analysis_data:
+            traits += [d.get('mechanism') for d in analysis_data['defense_mechanisms']]
+        if 'risk_indicators' in analysis_data:
+            traits += analysis_data['risk_indicators']
+        analysis_data['traits'] = traits[:8] # Limit to 8 tags for UI
+        
         return jsonify(analysis_data)
+        
+    except Exception as e:
+        print(f"Profile Error: {e}")
+        return jsonify({"error": str(e)}), 500
         
     except Exception as e:
         print(f"Error: {e}")
