@@ -103,18 +103,18 @@ class SafeModeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightBlue[100],
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.wb_sunny, size: 100, color: Colors.amber),
-            const SizedBox(height: 20),
-            const Text("72°F",
+            Icon(Icons.wb_sunny, size: 100, color: Colors.amber),
+            SizedBox(height: 20),
+            Text("72°F",
                 style: TextStyle(
                     fontSize: 60,
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
-            const Text("Sunny",
+            Text("Sunny",
                 style: TextStyle(fontSize: 24, color: Colors.white)),
           ],
         ),
@@ -238,11 +238,12 @@ class AgeVerificationScreen extends StatelessWidget {
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isAgeVerified', true);
-                  if (context.mounted)
+                  if (context.mounted) {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (_) => const PaywallScreen()));
+                  }
                 },
                 child: const Text(
                     "Confirm Eligibility"),              ),
@@ -288,8 +289,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
     const Set<String> kIds = {kMonthlyId, kAnnualId, kLifetimeId};
     final ProductDetailsResponse response =
         await _iap!.queryProductDetails(kIds);
-    if (response.error == null)
+    if (response.error == null) {
       setState(() => _products = response.productDetails);
+    }
   }
 
   Future<void> _listenToPurchaseUpdated(
@@ -306,12 +308,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
             purchaseDetails.status == PurchaseStatus.restored) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('hasPaidPremium', true);
-          if (mounted)
+          if (mounted) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const DashboardScreen()));
+          }
         }
-        if (purchaseDetails.pendingCompletePurchase)
+        if (purchaseDetails.pendingCompletePurchase) {
           await _iap?.completePurchase(purchaseDetails);
+        }
       }
     }
   }
@@ -336,11 +340,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       if (codeCtrl.text.trim().toUpperCase() == "DEMO2025") {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('hasPaidPremium', true);
-                        if (mounted)
+                        if (mounted) {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (_) => const DashboardScreen()));
+                        }
                       } else {
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -1002,7 +1007,7 @@ class _ResultCard extends StatelessWidget {
                               ],
                             ),
                           ))
-                      .toList()
+                      
                 ],
               ),
             ),
@@ -1050,7 +1055,7 @@ class _ResultCard extends StatelessWidget {
                     ),
                   ),
                 ))
-            .toList()
+            
       ],
     );
   }
