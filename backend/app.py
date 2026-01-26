@@ -227,6 +227,10 @@ def analyze_text():
         clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
         parsed_json = json.loads(clean_text)
         
+    except Exception as e:
+        print(f"Analyze Error: {e}")
+        return jsonify({"error": str(e)}), 500
+        
         # Validate required fields
         if 'speakers' not in parsed_json or not isinstance(parsed_json['speakers'], list):
             # Optional: Add specific validation logic here if needed
@@ -265,78 +269,17 @@ def analyze_text():
             "error_type": type(e).__name__,
             "message": "Analysis failed. Please check your connection and try again."
         }), 500
-
-@app.route('/analyze_impact', methods=['POST'])
-def analyze_impact():
-    """Endpoint for analyzing the impact of a proposed response"""
-    try:
-        data = request.json
-        user_text = data.get('text', '')
-
-        if not user_text:
-            return jsonify({"error": "No text provided"}), 400
         
-        safety_settings = [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ]
-
-        model = genai.GenerativeModel(
-            model_name='gemini-1.5-pro',
-            system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
-            safety_settings=safety_settings
-        )
-        
-        response = model.generate_content(user_text)
-        clean_text = response.text.strip()
-        clean_text = clean_text.replace('```json', '').replace('```', '').strip()
-        parsed_json = json.loads(clean_text)
-            
-        return jsonify(parsed_json)
-
-    except json.JSONDecodeError as e:
-        print(f"\n❌ JSON PARSE ERROR: {e}")
-        return jsonify({
-            "error": "Invalid JSON response from AI", 
-            "message": "The AI returned malformed data. Please try again."
-        }), 500
-        
-    except Exception as e:
-        print(f"\n❌ ERROR DETAIL: {e}")
-        return jsonify({
-            "error": str(e), 
-            "message": "Impact analysis failed. Please try again."
-        }), 500
-
-
-@app.route('/simulate', methods=['POST'])
-def simulate_response():
-    data = request.json
-    incoming_message = data.get('context', '')
-    draft_reply = data.get('draft', '')
-
-    if not draft_reply:
-        return jsonify({"error": "No draft provided"}), 400
-    
-    # Simple simulation logic (or integrate AI here if desired)
-    return jsonify({
-        "response": "Simulation placeholder",
-        "score": 85,
-        "analysis": "This is a placeholder simulation response."
-    })
-
-# --- NEW ROUTE: Speaker Profile Analysis ---
+# --- NEW: PROFILE ANALYST ENDPOINT (Fixes Connection Error) ---
 @app.route('/analyze-profile', methods=['POST'])
 def analyze_profile():
     try:
         data = request.json
-        speaker_name = data.get('name', 'Unknown Speaker')
+        speaker_name = data.get('name', 'Target')
         logs = data.get('logs', [])
         
-        # Combine past logs into one history text for analysis
-        history_text = "\n".join([f"[{log['date']}] {log['text']}" for log in logs[-10:]]) # Limit to last 10 for context
+        # Merge history
+        history = "\n".join([f"[{log['date']}] {log['text']}" for log in logs[-15:]])
 
         prompt = f"""
         You are a **Forensic Behavioral Analyst & Communication Psychologist**.
@@ -488,16 +431,13 @@ def analyze_profile():
         - Do not diagnose.
         - Do not include advice unrelated to the observed behavior.
         """
-
+        
         model = genai.GenerativeModel('gemini-1.5-pro')
         response = model.generate_content(prompt)
-        
-        clean_json = response.text.replace('```json', '').replace('```', '').strip()
-        analysis_data = json.loads(clean_json)
-        
-        # --- BACKWARDS COMPATIBILITY LAYER ---
-        # Maps the new "Forensic" keys to the existing "Frontend" keys
-        
+        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
+        return jsonify(json.loads(clean_text))
+
+    # --- BACKWARDS COMPATIBILITY LAYER ---
         # 1. Map 'core_behavioral_pattern' -> 'pattern'
         if 'core_behavioral_pattern' in analysis_data:
             analysis_data['pattern'] = analysis_data['core_behavioral_pattern']
@@ -515,10 +455,88 @@ def analyze_profile():
         analysis_data['traits'] = traits[:8] # Limit to 8 tags for UI
         
         return jsonify(analysis_data)
-        
+
     except Exception as e:
         print(f"Profile Error: {e}")
         return jsonify({"error": str(e)}), 500
+
+    except Exception as e:
+        print(f"Profile Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# --- NEW: RESPONSE SIMULATOR ENDPOINT ---
+@app.route('/simulate', methods=['POST'])
+def simulate_response():
+    try:
+        data = request.json
+        context = data.get('context', '')
+        draft = data.get('draft', '')
+        
+        prompt = f"""
+        CONTEXT: {context}
+        DRAFT REPLY: {draft}
+        
+        Simulate how the other person will likely react to this draft.
+        OUTPUT JSON ONLY:
+        {{
+          "score": 85,
+          "response": "Likely Reaction (e.g. 'Defensive Escalation')",
+          "analysis": "Explanation of why this draft is good or bad."
+        }}
+        """
+        model = genai.GenerativeModel('gemini-1.5-pro')
+        response = model.generate_content(prompt)
+        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
+        return jsonify(json.loads(clean_text))
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/analyze_impact', methods=['POST'])
+def analyze_impact():
+    """Endpoint for analyzing the impact of a proposed response"""
+    try:
+        data = request.json
+        user_text = data.get('text', '')
+
+        if not user_text:
+            return jsonify({"error": "No text provided"}), 400
+        
+        safety_settings = [
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+        ]
+
+        model = genai.GenerativeModel(
+            model_name='gemini-1.5-pro',
+            system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
+            safety_settings=safety_settings
+        )
+        
+        response = model.generate_content(user_text)
+        clean_text = response.text.strip()
+        clean_text = clean_text.replace('```json', '').replace('```', '').strip()
+        parsed_json = json.loads(clean_text)
+            
+        return jsonify(parsed_json)
+
+    except json.JSONDecodeError as e:
+        print(f"\n❌ JSON PARSE ERROR: {e}")
+        return jsonify({
+            "error": "Invalid JSON response from AI", 
+            "message": "The AI returned malformed data. Please try again."
+        }), 500
+        
+    except Exception as e:
+        print(f"\n❌ ERROR DETAIL: {e}")
+        return jsonify({
+            "error": str(e), 
+            "message": "Impact analysis failed. Please try again."
+        }), 500
+
 
 @app.route('/report', methods=['POST'])
 def report_issue():
