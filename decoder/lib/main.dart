@@ -16,23 +16,27 @@ const String kApiBaseUrl =
     "https://decoder-backend-222632046587.australia-southeast1.run.app";
 
 // --- IN-APP PURCHASE CONFIGURATION ---
-const String kMonthlyId = 'linguistic_decoder_monthly';
-const String kAnnualId = 'linguistic_decoder_annual';
-const String kLifetimeId = 'linguistic_decoder_lifetime';
+// IDs must match exactly what you set in App Store Connect
+const String kMonthlyId = 'linguistic_decoder_monthly'; // $14.99
+const String kAnnualId = 'linguistic_decoder_annual'; // $8.99/mo
+const String kLifetimeId = 'linguistic_decoder_lifetime'; // $99.99
 
 // --- THEME ---
 const Color kColorNavy = Color(0xFF1E3A8A);
 const Color kColorPurple = Color(0xFF7C3AED);
 const Color kColorBackground = Color(0xFFF3F4F6);
-const Color kColorGreen = Color(0xFF10B981);
+const Color kColorGreen = Color(0xFF10B981); // Digital ABCs CTA Color
 const Color kColorError = Color(0xFFDC2626);
 const Color kColorGold = Color(0xFFD4AF37);
 
 void main() async {
+  // 1. Load Environment Variables
+  // Ensure you have a .env file in your assets with API_URL defined
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
+    // Prevent crash if .env is missing. Will fall back to localhost in DecoderScreen.
     debugPrint("⚠️ .env not found, using defaults: $e");
   }
   runApp(const LinguisticDecoderApp());
@@ -47,14 +51,14 @@ class LinguisticDecoderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Linguistic Decoder',
       theme: ThemeData(
-        fontFamily: 'Inter',
+        fontFamily: 'Inter', // Branding: Inter font family
         useMaterial3: true,
         primaryColor: kColorNavy,
         scaffoldBackgroundColor: kColorBackground,
         colorScheme: ColorScheme.fromSeed(seedColor: kColorNavy),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: kColorGreen,
+            backgroundColor: kColorGreen, // Branding: Green for CTAs
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             shape:
@@ -66,7 +70,6 @@ class LinguisticDecoderApp extends StatelessWidget {
     );
   }
 }
-
 // ============================================================================
 // WIDGETS: Quick Exit & Safe Mode
 // ============================================================================
@@ -111,7 +114,8 @@ class SafeModeScreen extends StatelessWidget {
                     fontSize: 60,
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
-            Text("Sunny", style: TextStyle(fontSize: 24, color: Colors.white)),
+            Text("Sunny",
+                style: TextStyle(fontSize: 24, color: Colors.white)),
           ],
         ),
       ),
@@ -120,10 +124,11 @@ class SafeModeScreen extends StatelessWidget {
 }
 
 // ============================================================================
-// 1. SPLASH SCREEN
+// 1. SPLASH SCREEN (Routing Logic)
 // ============================================================================
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -149,6 +154,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final hasPaid = prefs.getBool('hasPaidPremium') ?? false;
     if (!mounted) return;
 
+    // Replace with Dashboard if paid, Paywall if not
     if (hasPaid) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
@@ -166,17 +172,16 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/logo.png',
-                width: 120,
-                height: 120,
-                errorBuilder: (c, o, s) => const Icon(Icons.psychology,
-                    size: 80, color: Colors.white)),
+            Image.asset('assets/logo.png', width: 120, height: 120, 
+              errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 80, color: Colors.white)),
             const SizedBox(height: 20),
-            const Text("Linguistic Decoder",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold)),
+            const Text(
+              "Linguistic Decoder",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
             const CircularProgressIndicator(color: kColorPurple),
           ],
@@ -201,11 +206,9 @@ class AgeVerificationScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/logo.png',
-                width: 100,
-                height: 100,
-                errorBuilder: (c, o, s) => const Icon(Icons.verified_user,
-                    size: 80, color: Colors.white)),
+            // Branding: Logo usage
+            Image.asset('assets/logo.png', width: 100, height: 100,
+              errorBuilder: (c, o, s) => const Icon(Icons.verified_user, size: 80, color: Colors.white)),
             const SizedBox(height: 24),
             const Text("Age Verification",
                 style: TextStyle(
@@ -235,14 +238,15 @@ class AgeVerificationScreen extends StatelessWidget {
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isAgeVerified', true);
-                  if (context.mounted)
+                  if (context.mounted) {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (_) => const PaywallScreen()));
+                  }
                 },
-                child: const Text("Confirm Eligibility"),
-              ),
+                child: const Text(
+                    "Confirm Eligibility"),              ),
             ),
           ],
         ),
@@ -252,7 +256,7 @@ class AgeVerificationScreen extends StatelessWidget {
 }
 
 // ============================================================================
-// 2. PAYWALL SCREEN
+// 2. PAYWALL SCREEN (In-App Purchases)
 // ============================================================================
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
@@ -273,7 +277,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
       _iap = InAppPurchase.instance;
       final purchaseUpdated = _iap!.purchaseStream;
       _subscription = purchaseUpdated.listen(_listenToPurchaseUpdated,
-          onDone: () => _subscription?.cancel(), onError: (error) => {});
+          onDone: () => _subscription?.cancel(),
+          onError: (error) => print("Error: $error"));
       _initStore();
     }
   }
@@ -284,8 +289,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
     const Set<String> kIds = {kMonthlyId, kAnnualId, kLifetimeId};
     final ProductDetailsResponse response =
         await _iap!.queryProductDetails(kIds);
-    if (response.error == null)
+    if (response.error == null) {
       setState(() => _products = response.productDetails);
+    }
   }
 
   Future<void> _listenToPurchaseUpdated(
@@ -302,12 +308,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
             purchaseDetails.status == PurchaseStatus.restored) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('hasPaidPremium', true);
-          if (mounted)
+          if (mounted) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const DashboardScreen()));
+          }
         }
-        if (purchaseDetails.pendingCompletePurchase)
+        if (purchaseDetails.pendingCompletePurchase) {
           await _iap?.completePurchase(purchaseDetails);
+        }
       }
     }
   }
@@ -332,11 +340,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       if (codeCtrl.text.trim().toUpperCase() == "DEMO2025") {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('hasPaidPremium', true);
-                        if (mounted)
+                        if (mounted) {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (_) => const DashboardScreen()));
+                        }
                       } else {
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -358,18 +367,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
         orElse: () => _nullProduct);
 
     return Scaffold(
-      backgroundColor: kColorNavy,
+      backgroundColor: const Color(0xFF1E3A8A), // Navy
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
               const SizedBox(height: 20),
-              Image.asset('assets/logo.png',
-                  width: 80,
-                  height: 80,
-                  errorBuilder: (c, o, s) => const Icon(Icons.psychology,
-                      size: 60, color: kColorPurple)),
+              Image.asset('assets/logo.png', width: 80, height: 80,
+                errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 60, color: Color(0xFF7C3AED))),
               const SizedBox(height: 20),
               const Text("Unlock Full Analysis",
                   style: TextStyle(
@@ -383,27 +389,34 @@ class _PaywallScreenState extends State<PaywallScreen> {
               if (_loading)
                 const CircularProgressIndicator(color: Colors.white),
               if (!_loading) ...[
+                // ANNUAL (Highlight this one)
                 _SubscriptionCard(
-                    title: "Annual (Best Value)",
-                    price: annual.price.isEmpty ? "\$107.88/yr" : annual.price,
-                    subtitle: "Just \$8.99/mo, billed annually",
-                    isHighlighted: true,
-                    onTap: () =>
-                        annual.id != 'null' ? _buyProduct(annual) : null),
+                  title: "Annual (Best Value)",
+                  price: annual.id == 'null' ? "\$107.88/yr" : annual.price,
+                  subtitle: "Just \$8.99/mo, billed annually",
+                  isHighlighted: true,
+                  onTap: () => annual.id != 'null' ? _buyProduct(annual) : null,
+                ),
                 const SizedBox(height: 12),
+
+                // MONTHLY
                 _SubscriptionCard(
-                    title: "Monthly",
-                    price: monthly.price.isEmpty ? "\$14.99/mo" : monthly.price,
-                    subtitle: "Cancel anytime",
-                    onTap: () =>
-                        monthly.id != 'null' ? _buyProduct(monthly) : null),
+                  title: "Monthly",
+                  price: monthly.id == 'null' ? "\$14.99/mo" : monthly.price,
+                  subtitle: "Cancel anytime",
+                  onTap: () =>
+                      monthly.id != 'null' ? _buyProduct(monthly) : null,
+                ),
                 const SizedBox(height: 12),
+
+                // LIFETIME
                 _SubscriptionCard(
-                    title: "Lifetime Access",
-                    price: lifetime.price.isEmpty ? "\$99.99" : lifetime.price,
-                    subtitle: "One-time payment",
-                    onTap: () =>
-                        lifetime.id != 'null' ? _buyProduct(lifetime) : null),
+                  title: "Lifetime Access",
+                  price: lifetime.id == 'null' ? "\$99.99" : lifetime.price,
+                  subtitle: "One-time payment",
+                  onTap: () =>
+                      lifetime.id != 'null' ? _buyProduct(lifetime) : null,
+                ),
               ],
               const Spacer(),
               TextButton(
@@ -421,6 +434,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     );
   }
 
+  // Helper for dummy product
   ProductDetails get _nullProduct => ProductDetails(
       id: 'null',
       title: '',
@@ -434,6 +448,7 @@ class _SubscriptionCard extends StatelessWidget {
   final String title, price, subtitle;
   final bool isHighlighted;
   final VoidCallback onTap;
+
   const _SubscriptionCard(
       {required this.title,
       required this.price,
@@ -448,7 +463,9 @@ class _SubscriptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isHighlighted ? kColorPurple : Colors.white.withOpacity(0.1),
+          color: isHighlighted
+              ? const Color(0xFF7C3AED)
+              : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border:
               isHighlighted ? Border.all(color: Colors.white, width: 2) : null,
@@ -456,15 +473,19 @@ class _SubscriptionCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16)),
-              Text(subtitle,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
-            ]),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+                Text(subtitle,
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ),
             Text(price,
                 style: const TextStyle(
                     color: Colors.white,
@@ -478,7 +499,7 @@ class _SubscriptionCard extends StatelessWidget {
 }
 
 // ============================================================================
-// 4. DASHBOARD
+// 3. DASHBOARD & DECODER (Main Features)
 // ============================================================================
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -490,74 +511,79 @@ class DashboardScreen extends StatelessWidget {
         backgroundColor: kColorNavy,
         automaticallyImplyLeading: false,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: const [
-              Text("Linguistic Decoder",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16)),
-              Text("by", style: TextStyle(color: Colors.white70, fontSize: 10)),
-            ]),
-            const SizedBox(width: 8),
-            Image.asset('assets/logo.png',
-                width: 40,
-                height: 40,
+            Image.asset('logo.png',
+                height: 32,
                 errorBuilder: (_, __, ___) =>
                     const Icon(Icons.psychology, color: Colors.white)),
+            const SizedBox(width: 12),
+            const Text("Lingustic Decoder by Digital ABCs",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.1,
-              children: [
-                _DashboardTile(
-                    title: "AI Decoder",
-                    icon: Icons.psychology,
-                    color: kColorGreen,
-                    onTap: () => _navigateToDecoder(context)),
-                _DashboardTile(
-                    title: "Speaker Profiles",
-                    icon: Icons.people,
-                    color: kColorGold,
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const SpeakerProfilesScreen()))),
-                _DashboardTile(
-                    title: "Library",
-                    icon: Icons.menu_book,
-                    color: kColorPurple,
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const LibraryScreen()))),
-                _DashboardTile(
-                    title: "Settings",
-                    icon: Icons.settings,
-                    color: Colors.grey,
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const SettingsScreen()))),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.1,
+          children: [
+            _DashboardTile(
+              title: "AI Decoder",
+              icon: Icons.psychology,
+              color: kColorGreen,
+              onTap: () => _navigateToDecoder(context),
             ),
-          ),
-          const QuickExitButton(),
-        ],
+            _DashboardTile(
+              title: "Library",
+              icon: Icons.menu_book,
+              color: kColorPurple,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const LibraryScreen())),
+            ),
+            _DashboardTile(
+              title: "My History",
+              icon: Icons.history,
+              color: kColorNavy,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("History coming soon!")));
+              },
+            ),
+            _DashboardTile(
+              title: "Safety Plan",
+              icon: Icons.health_and_safety,
+              color: kColorNavy,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Safety Plan coming soon!")));
+              },
+            ),
+            _DashboardTile(
+              title: "Support",
+              icon: Icons.support_agent,
+              color: Colors.blueGrey,
+              onTap: () {
+                launchUrl(Uri.parse("https://digitalabcs.com.au/contact.html"));
+              },
+            ),
+            _DashboardTile(
+              title: "Settings",
+              icon: Icons.settings,
+              color: Colors.grey,
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _navigateToDecoder(BuildContext context) async {
+    // PARENTAL CONTROL CHECK
     final prefs = await SharedPreferences.getInstance();
     final String? pin = prefs.getString('parentalPin');
     if (pin != null && pin.isNotEmpty) {
@@ -579,6 +605,7 @@ class _DashboardTile extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+
   const _DashboardTile(
       {required this.title,
       required this.icon,
@@ -598,10 +625,13 @@ class _DashboardTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color: color.withOpacity(0.1), shape: BoxShape.circle),
-                child: Icon(icon, size: 32, color: color)),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 32, color: color),
+            ),
             const SizedBox(height: 12),
             Text(title,
                 style:
@@ -613,9 +643,176 @@ class _DashboardTile extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// 5. DECODER SCREEN (Updated with Simulator & Transcript)
-// ============================================================================
+class LibraryScreen extends StatelessWidget {
+  const LibraryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Library", style: TextStyle(color: Colors.white)),
+        backgroundColor: kColorNavy,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: kOfflineArticles.length,
+        itemBuilder: (context, index) {
+          final article = kOfflineArticles[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: kColorPurple.withOpacity(0.1),
+                child: Icon(_getIcon(article.iconName), color: kColorPurple),
+              ),
+              title: Text(article.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(article.summary,
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ArticleDetailScreen(article: article))),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  IconData _getIcon(String name) {
+    switch (name) {
+      case 'favorite': return Icons.favorite;
+      case 'share': return Icons.share;
+      case 'block': return Icons.block;
+      case 'switch_video': return Icons.switch_video;
+      case 'group': return Icons.group;
+      case 'schedule': return Icons.schedule;
+      case 'blur_on': return Icons.blur_on;
+      case 'cyclone': return Icons.cyclone;
+      case 'flash_on': return Icons.flash_on;
+      case 'link': return Icons.link;
+      case 'grain': return Icons.grain;
+      case 'person_remove': return Icons.person_remove;
+      case 'sports_score': return Icons.sports_score;
+      case 'warning': return Icons.warning;
+      case 'casino': return Icons.casino;
+      case 'handshake': return Icons.handshake;
+      case 'psychology': return Icons.psychology;
+      case 'cloud_queue': return Icons.cloud_queue;
+      case 'shield': return Icons.shield;
+      case 'phishing': return Icons.phishing;
+      case 'campaign': return Icons.campaign;
+      case 'fingerprint': return Icons.fingerprint;
+      case 'volume_off': return Icons.volume_off;
+      case 'fence': return Icons.fence;
+      case 'build_circle': return Icons.build_circle;
+      case 'edit_note': return Icons.edit_note;
+      case 'sentiment_satisfied': return Icons.sentiment_satisfied;
+      case 'balance': return Icons.balance;
+      case 'cleaning_services': return Icons.cleaning_services;
+      case 'verified': return Icons.verified;
+      case 'sentiment_dissatisfied': return Icons.sentiment_dissatisfied;
+      case 'compare_arrows': return Icons.compare_arrows;
+      case 'theater_comedy': return Icons.theater_comedy;
+      default: return Icons.article;
+    }
+  }
+}
+
+class ArticleDetailScreen extends StatelessWidget {
+  final Article article;
+  const ArticleDetailScreen({super.key, required this.article});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(article.title, style: const TextStyle(color: Colors.white)),
+        backgroundColor: kColorNavy,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(article.title,
+                style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: kColorNavy)),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kColorPurple.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kColorPurple.withOpacity(0.3)),
+              ),
+              child: Text(article.summary,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black87)),
+            ),
+            const SizedBox(height: 24),
+            Text(article.content,
+                style: const TextStyle(fontSize: 16, height: 1.6)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PinDialog extends StatefulWidget {
+  final String correctPin;
+  const _PinDialog({required this.correctPin});
+  @override
+  State<_PinDialog> createState() => _PinDialogState();
+}
+
+class _PinDialogState extends State<_PinDialog> {
+  final TextEditingController _ctrl = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Parental Control"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("Enter PIN to access Decoder"),
+          TextField(
+            controller: _ctrl,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 4,
+            decoration: const InputDecoration(hintText: "####"),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel")),
+        TextButton(
+            onPressed: () {
+              if (_ctrl.text == widget.correctPin) {
+                Navigator.pop(context, true);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Incorrect PIN")));
+              }
+            },
+            child: const Text("Unlock")),
+      ],
+    );
+  }
+}
+
 class DecoderScreen extends StatefulWidget {
   const DecoderScreen({super.key});
   @override
@@ -635,7 +832,9 @@ class _DecoderScreenState extends State<DecoderScreen> {
     });
 
     try {
+      // Safe fallback if .env is missing
       final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
+
       final response = await http
           .post(
             Uri.parse("$baseUrl/analyze"),
@@ -658,106 +857,125 @@ class _DecoderScreenState extends State<DecoderScreen> {
     }
   }
 
+  Future<void> _reportIssue() async {
+    final String baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:5000';
+
+    // APPLE COMPLIANCE: Must have a way to report bad AI generation
+    try {
+      await http.post(
+        Uri.parse("$baseUrl/report"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "input_text": _inputController.text,
+          "output_text": jsonEncode(_result),
+          "reason": "User reported offensive/incorrect content"
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Report sent. Thank you.")));
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to send report.")));
+    }
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Report Content"),
+        content:
+            const Text("Is this analysis offensive, harmful, or incorrect?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+          TextButton(
+              onPressed: _reportIssue,
+              child: const Text("Report", style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: const Text("Decoder", style: TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                    controller: _inputController,
-                    maxLines: 5,
-                    decoration: const InputDecoration(
-                        hintText: "Paste conversation...",
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white)),
-                const SizedBox(height: 16),
-                SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: _isLoading ? null : _analyze,
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : const Text("Analyze"))),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: _result == null
-                      ? const Center(
-                          child: Text("Ready to decode.",
-                              style: TextStyle(color: Colors.grey)))
-                      : ListView(
-                          padding: const EdgeInsets.only(bottom: 80),
-                          children: [
-                            _AnalysisResultView(
-                                result: _result!,
-                                originalText: _inputController.text),
-                          ],
-                        ),
-                ),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _inputController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: "Paste conversation here...",
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+              ),
             ),
-          ),
-          const QuickExitButton(),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: kColorGreen), // Branding: CTA
+                onPressed: _isLoading ? null : _analyze,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Analyze"),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text( // Ethics: Enhanced disclaimer
+              "AI analysis can be inaccurate. Advice is anchored in lived experience but does not replace professional help.",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: _result == null
+                  ? const Center(
+                      child: Text("Ready to decode.",
+                          style: TextStyle(color: Colors.grey)))
+                  : ListView(
+                      children: [
+                        // COMPLIANCE: Report Button on results
+                        Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                                onPressed: _showReportDialog,
+                                icon: const Icon(Icons.flag, size: 16),
+                                label: const Text("Report Issue",
+                                    style: TextStyle(fontSize: 12)))),
+                        _ResultCard(data: _result!),
+                      ],
+                    ),
+            ),
+            const QuickExitButton(),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _AnalysisResultView extends StatefulWidget {
-  final Map<String, dynamic> result;
-  final String originalText;
-  const _AnalysisResultView({required this.result, required this.originalText});
-
-  @override
-  State<_AnalysisResultView> createState() => _AnalysisResultViewState();
-}
-
-class _AnalysisResultViewState extends State<_AnalysisResultView> {
-  final TextEditingController _draftCtrl = TextEditingController();
-  bool _simLoading = false;
-  Map<String, dynamic>? _simulation;
-
-  Future<void> _simulate() async {
-    if (_draftCtrl.text.isEmpty) return;
-    setState(() {
-      _simLoading = true;
-      _simulation = null;
-    });
-    try {
-      final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
-      final response = await http.post(
-        Uri.parse("$baseUrl/simulate"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(
-            {"context": widget.originalText, "draft": _draftCtrl.text}),
-      );
-      if (response.statusCode == 200) {
-        setState(() => _simulation = jsonDecode(response.body));
-      }
-    } catch (e) {
-      // Handle error
-    } finally {
-      setState(() => _simLoading = false);
-    }
-  }
+class _ResultCard extends StatelessWidget {
+  final Map<String, dynamic> data;
+  const _ResultCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final speakers = widget.result['speakers'] as List? ?? [];
-    final transcript = widget.result['transcript_log'] as List? ?? [];
-
+    final speakers = data['speakers'] as List? ?? [];
+    final transcript = data['transcript_log'] as List? ?? [];
     return Column(
       children: [
-        // 1. Transcript Verification
+// 1. Transcript Verification
         if (transcript.isNotEmpty)
           Card(
             color: Colors.white,
@@ -789,7 +1007,7 @@ class _AnalysisResultViewState extends State<_AnalysisResultView> {
                               ],
                             ),
                           ))
-                      .toList()
+                      
                 ],
               ),
             ),
@@ -837,84 +1055,7 @@ class _AnalysisResultViewState extends State<_AnalysisResultView> {
                     ),
                   ),
                 ))
-            .toList(),
-
-        // 3. Response Simulator
-        Card(
-          shape: RoundedRectangleBorder(
-              side: const BorderSide(color: kColorGold),
-              borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(children: [
-                  Icon(Icons.science, color: kColorGold),
-                  SizedBox(width: 8),
-                  Text("Response Simulator",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: kColorNavy,
-                          fontSize: 16))
-                ]),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _draftCtrl,
-                  maxLines: 2,
-                  decoration: const InputDecoration(
-                      hintText: "Draft your reply...",
-                      border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: kColorNavy),
-                    onPressed: _simLoading ? null : _simulate,
-                    child: _simLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child:
-                                CircularProgressIndicator(color: Colors.white))
-                        : const Text("Test Reply"),
-                  ),
-                ),
-                if (_simulation != null)
-                  Container(
-                    margin: const EdgeInsets.top(12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: (_simulation!['score'] ?? 0) > 70
-                          ? Colors.green[50]
-                          : Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: (_simulation!['score'] ?? 0) > 70
-                              ? Colors.green
-                              : Colors.red),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            "${_simulation!['response']} (Score: ${_simulation!['score']}/100)",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: (_simulation!['score'] ?? 0) > 70
-                                    ? Colors.green[800]
-                                    : Colors.red[800])),
-                        const SizedBox(height: 4),
-                        Text(_simulation!['analysis'] ?? ''),
-                      ],
-                    ),
-                  )
-              ],
-            ),
-          ),
-        )
+            
       ],
     );
   }
@@ -930,34 +1071,7 @@ class SpeakerProfilesScreen extends StatefulWidget {
 }
 
 class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
-  List<Map<String, dynamic>> _profiles = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfiles();
-  }
-
-  Future<void> _loadProfiles() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? data = prefs.getString('speaker_profiles');
-    if (data != null) {
-      setState(
-          () => _profiles = List<Map<String, dynamic>>.from(jsonDecode(data)));
-    }
-  }
-
-  Future<void> _createProfile(String name) async {
-    final newProfile = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'name': name,
-      'logs': []
-    };
-    setState(() => _profiles.add(newProfile));
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('speaker_profiles', jsonEncode(_profiles));
-  }
-
+  // Placeholder implementation for UI demo
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -965,230 +1079,24 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
           title: const Text("Speaker Profiles",
               style: TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy),
-      body: _profiles.isEmpty
-          ? const Center(
-              child: Text("No profiles yet. Create one to track patterns."))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _profiles.length,
-              itemBuilder: (ctx, i) {
-                final p = _profiles[i];
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                        backgroundColor: kColorGold.withOpacity(0.2),
-                        child: const Icon(Icons.person, color: kColorGold)),
-                    title: Text(p['name'],
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle:
-                        Text("${(p['logs'] as List).length} Analysis Logs"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => SpeakerDetailScreen(profile: p))),
-                  ),
-                );
-              },
-            ),
+      body:
+          const Center(child: Text("Profiles feature coming in next update.")),
       floatingActionButton: FloatingActionButton(
         backgroundColor: kColorGreen,
         child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          final ctrl = TextEditingController();
-          showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                    title: const Text("New Profile"),
-                    content: TextField(
-                        controller: ctrl,
-                        decoration: const InputDecoration(
-                            hintText: "Name (e.g. Ex-Partner)")),
-                    actions: [
-                      TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: const Text("Cancel")),
-                      TextButton(
-                          onPressed: () {
-                            if (ctrl.text.isNotEmpty) {
-                              _createProfile(ctrl.text);
-                              Navigator.pop(ctx);
-                            }
-                          },
-                          child: const Text("Create")),
-                    ],
-                  ));
-        },
+        onPressed: () {},
       ),
     );
   }
 }
 
-class SpeakerDetailScreen extends StatefulWidget {
-  final Map<String, dynamic> profile;
-  const SpeakerDetailScreen({super.key, required this.profile});
 
-  @override
-  State<SpeakerDetailScreen> createState() => _SpeakerDetailScreenState();
-}
-
-class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
-  bool _analyzing = false;
-  Map<String, dynamic>? _insight;
-
-  Future<void> _analyzeHistory() async {
-    final logs = widget.profile['logs'] as List;
-    if (logs.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Need at least 3 logs for analysis.")));
-      return;
-    }
-    setState(() {
-      _analyzing = true;
-      _insight = null;
-    });
-    try {
-      final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
-      final response = await http.post(
-        Uri.parse("$baseUrl/analyze-profile"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"name": widget.profile['name'], "logs": logs}),
-      );
-      if (response.statusCode == 200)
-        setState(() => _insight = jsonDecode(response.body));
-    } catch (e) {
-      // Handle error
-    } finally {
-      setState(() => _analyzing = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final logs = widget.profile['logs'] as List;
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(widget.profile['name'],
-              style: const TextStyle(color: Colors.white)),
-          backgroundColor: kColorNavy),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(children: [
-                    Icon(Icons.analytics, color: kColorNavy),
-                    SizedBox(width: 8),
-                    Text("Behavioral Profile",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold))
-                  ]),
-                  const SizedBox(height: 16),
-                  if (_insight == null)
-                    Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: kColorPurple),
-                        onPressed: _analyzing ? null : _analyzeHistory,
-                        child: _analyzing
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : const Text("Generate Full Profile"),
-                      ),
-                    )
-                  else ...[
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Chip(
-                              label: Text(_insight!['risk_level'] ?? 'UNKNOWN',
-                                  style: const TextStyle(color: Colors.white)),
-                              backgroundColor: kColorError),
-                          Text("Trend: ${_insight!['escalation_trend']}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey)),
-                        ]),
-                    const SizedBox(height: 8),
-                    Text(_insight!['pattern'] ?? '',
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: kColorNavy)),
-                    const SizedBox(height: 8),
-                    Text(_insight!['summary'] ?? ''),
-                    const SizedBox(height: 16),
-                    Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Text("Advice: ${_insight!['recommendation']}",
-                            style:
-                                const TextStyle(fontStyle: FontStyle.italic))),
-                  ]
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text("History Log",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: kColorNavy)),
-          const SizedBox(height: 10),
-          ...logs.reversed
-              .map((l) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      title: Text(l['date'].toString().split('T')[0],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Colors.grey)),
-                      subtitle: Text(l['text'],
-                          maxLines: 2, overflow: TextOverflow.ellipsis),
-                    ),
-                  ))
-              .toList()
-        ],
-      ),
-    );
-  }
-}
-
+//============================================================================
+// 6.   SETTINGS
 // ============================================================================
-// 7. LIBRARY & SETTINGS (Keep existing)
-// ============================================================================
-class LibraryScreen extends StatelessWidget {
-  const LibraryScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const Text("Library", style: TextStyle(color: Colors.white)),
-          backgroundColor: kColorNavy),
-      body: ListView(padding: const EdgeInsets.all(16), children: const [
-        Card(
-            child: ListTile(
-                title: Text("Understanding DARVO"),
-                subtitle: Text("Deny, Attack, Reverse Victim & Offender"))),
-        Card(
-            child: ListTile(
-                title: Text("Grey Rock Method"),
-                subtitle: Text("How to become uninteresting to toxic people"))),
-      ]),
-    );
-  }
-}
-
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1199,16 +1107,70 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-              leading: const Icon(Icons.privacy_tip),
-              title: const Text("Privacy Policy"),
-              onTap: () => launchUrl(Uri.parse(kPrivacyUrl))),
+            leading: const Icon(Icons.privacy_tip),
+            title: const Text("Privacy Policy"),
+            onTap: () => launchUrl(Uri.parse(kPrivacyUrl)),
+          ),
           ListTile(
-              leading: const Icon(Icons.description),
-              title: const Text("Terms of Service"),
-              onTap: () => launchUrl(Uri.parse(kTermsUrl))),
+            leading: const Icon(Icons.description),
+            title: const Text("Terms of Service"),
+            onTap: () => launchUrl(Uri.parse(kTermsUrl)),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: const Text("Parental Controls"),
+            subtitle: const Text("Restrict access to Decoder"),
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              final currentPin = prefs.getString('parentalPin');
+              
+              if (!context.mounted) return;
+
+              if (currentPin != null) {
+                // Remove PIN
+                final bool? verified = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => _PinDialog(correctPin: currentPin));
+                if (verified == true) {
+                  await prefs.remove('parentalPin');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Parental PIN removed")));
+                  }
+                }
+              } else {
+                // Set PIN
+                final TextEditingController pinCtrl = TextEditingController();
+                await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                          title: const Text("Set Parental PIN"),
+                          content: TextField(
+                            controller: pinCtrl,
+                            keyboardType: TextInputType.number,
+                            maxLength: 4,
+                            decoration: const InputDecoration(hintText: "Enter 4 digits"),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () async {
+                                  if (pinCtrl.text.length == 4) {
+                                    await prefs.setString('parentalPin', pinCtrl.text);
+                                    Navigator.pop(ctx);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("PIN Set Successfully")));
+                                  }
+                                },
+                                child: const Text("Save"))
+                          ],
+                        ));
+              }
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.delete, color: kColorError),
-            title: const Text("Reset App Data",
+            title: const Text("Delete All My Data", // Compliance: Clear data control
                 style: TextStyle(color: kColorError)),
             onTap: () async {
               final prefs = await SharedPreferences.getInstance();
@@ -1221,38 +1183,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _PinDialog extends StatefulWidget {
-  final String correctPin;
-  const _PinDialog({required this.correctPin});
-  @override
-  State<_PinDialog> createState() => _PinDialogState();
-}
-
-class _PinDialogState extends State<_PinDialog> {
-  final TextEditingController _ctrl = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Parental Control"),
-      content: TextField(
-          controller: _ctrl,
-          keyboardType: TextInputType.number,
-          obscureText: true,
-          maxLength: 4,
-          decoration: const InputDecoration(hintText: "####")),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel")),
-        TextButton(
-            onPressed: () =>
-                Navigator.pop(context, _ctrl.text == widget.correctPin),
-            child: const Text("Unlock")),
-      ],
     );
   }
 }
