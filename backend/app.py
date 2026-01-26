@@ -216,7 +216,7 @@ def analyze_text():
         ]
 
         model = genai.GenerativeModel(
-            model_name='gemini-3-pro',
+            model_name='gemini-1.5-pro',
             system_instruction=SYSTEM_INSTRUCTION,
             safety_settings=safety_settings
         )
@@ -284,7 +284,7 @@ def analyze_impact():
         ]
 
         model = genai.GenerativeModel(
-            model_name='gemini-3-pro',
+            model_name='gemini-1.5-pro',
             system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
             safety_settings=safety_settings
         )
@@ -489,7 +489,7 @@ def analyze_profile():
         - Do not include advice unrelated to the observed behavior.
         """
 
-        model = genai.GenerativeModel('gemini-3-pro')
+        model = genai.GenerativeModel('gemini-1.5-pro')
         response = model.generate_content(prompt)
         
         clean_json = response.text.replace('```json', '').replace('```', '').strip()
