@@ -12,6 +12,8 @@ import 'content_data.dart';
 // --- CONFIGURATION ---
 const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
 const String kTermsUrl = "https://digitalabcs.com.au/terms.html";
+const String kApiBaseUrl =
+    "https://decoder-backend-222632046587.australia-southeast1.run.app";
 
 // --- IN-APP PURCHASE CONFIGURATION ---
 // IDs must match exactly what you set in App Store Connect
@@ -25,6 +27,7 @@ const Color kColorPurple = Color(0xFF7C3AED);
 const Color kColorBackground = Color(0xFFF3F4F6);
 const Color kColorGreen = Color(0xFF10B981); // Digital ABCs CTA Color
 const Color kColorError = Color(0xFFDC2626);
+const Color kColorGold = Color(0xFFD4AF37);
 
 void main() async {
   // 1. Load Environment Variables
@@ -67,6 +70,58 @@ class LinguisticDecoderApp extends StatelessWidget {
     );
   }
 }
+// ============================================================================
+// WIDGETS: Quick Exit & Safe Mode
+// ============================================================================
+class QuickExitButton extends StatelessWidget {
+  const QuickExitButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 30,
+      left: 20,
+      child: FloatingActionButton.extended(
+        backgroundColor: kColorError,
+        onPressed: () {
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const SafeModeScreen()),
+            (route) => false,
+          );
+        },
+        icon: const Icon(Icons.exit_to_app, color: Colors.white),
+        label: const Text("QUICK EXIT",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+}
+
+class SafeModeScreen extends StatelessWidget {
+  const SafeModeScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.lightBlue[100],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.wb_sunny, size: 100, color: Colors.amber),
+            const SizedBox(height: 20),
+            const Text("72°F",
+                style: TextStyle(
+                    fontSize: 60,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold)),
+            const Text("Sunny",
+                style: TextStyle(fontSize: 24, color: Colors.white)),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 // ============================================================================
 // 1. SPLASH SCREEN (Routing Logic)
@@ -86,12 +141,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkStatus() async {
-    await Future.delayed(const Duration(seconds: 2)); // Branding moment
+    await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
-    
-    // 1. AGE ASSURANCE (17+ Requirement)
-    final isAgeVerified = prefs.getBool('isAgeVerified') ?? false;
-    if (!isAgeVerified) {
+
+    if (!(prefs.getBool('isAgeVerified') ?? false)) {
       if (!mounted) return;
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (_) => const AgeVerificationScreen()));
@@ -99,9 +152,9 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     final hasPaid = prefs.getBool('hasPaidPremium') ?? false;
-
     if (!mounted) return;
 
+    // Replace with Dashboard if paid, Paywall if not
     if (hasPaid) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
@@ -119,7 +172,6 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Branding: Logo usage with fallback
             Image.asset('assets/logo.png', width: 120, height: 120, 
               errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 80, color: Colors.white)),
             const SizedBox(height: 20),
@@ -158,47 +210,42 @@ class AgeVerificationScreen extends StatelessWidget {
             Image.asset('assets/logo.png', width: 100, height: 100,
               errorBuilder: (c, o, s) => const Icon(Icons.verified_user, size: 80, color: Colors.white)),
             const SizedBox(height: 24),
-            const Text(
-              "Age Verification",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold),
-            ),
+            const Text("Age Verification",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const Text(
-              "This tool utilizes AI to decode communication. For safety and compliance, you must be 17+ to use this application.",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
+                "This tool utilizes AI to decode communication. You must be 17+ to use this application.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 16)),
             const SizedBox(height: 16),
-            // Compliance: Explicit EULA agreement for Apple/Google
             GestureDetector(
               onTap: () => launchUrl(Uri.parse(kTermsUrl)),
               child: const Text(
-                "By continuing, you agree to our Terms of Service & EULA.",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white54, decoration: TextDecoration.underline, fontSize: 12),
-              ),
+                  "By continuing, you agree to our Terms of Service.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white54,
+                      decoration: TextDecoration.underline,
+                      fontSize: 12)),
             ),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kColorGreen, // Branding: CTA Green
-                  foregroundColor: Colors.white,
-                ),
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isAgeVerified', true);
-                  if (context.mounted) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => const SplashScreen()));
-                  }
-                }, 
-                child: const Text("Confirm Eligibility"), // Branding: Architect Tone
-              ),
+                  if (context.mounted)
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const PaywallScreen()));
+                },
+                child: const Text(
+                    "Confirm Eligibility"),              ),
             ),
           ],
         ),
@@ -238,15 +285,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
   Future<void> _initStore() async {
     final bool isAvailable = await _iap?.isAvailable() ?? false;
     if (!isAvailable) return;
-
-    // Query all 3 products
     const Set<String> kIds = {kMonthlyId, kAnnualId, kLifetimeId};
     final ProductDetailsResponse response =
         await _iap!.queryProductDetails(kIds);
-
-    if (response.error == null) {
+    if (response.error == null)
       setState(() => _products = response.productDetails);
-    }
   }
 
   Future<void> _listenToPurchaseUpdated(
@@ -261,17 +304,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
               .showSnackBar(const SnackBar(content: Text("Purchase Failed")));
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
-          // Grant Access
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('hasPaidPremium', true);
-          if (mounted) {
+          if (mounted)
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const DashboardScreen()));
-          }
         }
-        if (purchaseDetails.pendingCompletePurchase) {
+        if (purchaseDetails.pendingCompletePurchase)
           await _iap?.completePurchase(purchaseDetails);
-        }
       }
     }
   }
@@ -281,7 +321,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
     _iap?.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
-  // DEMO ACCOUNT / BYPASS LOGIC
   void _showDemoDialog() {
     final TextEditingController codeCtrl = TextEditingController();
     showDialog(
@@ -294,15 +333,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
               actions: [
                 TextButton(
                     onPressed: () async {
-                      if (codeCtrl.text.trim() == "DEMO2025") {
+                      if (codeCtrl.text.trim().toUpperCase() == "DEMO2025") {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('hasPaidPremium', true);
-                        if (mounted) {
+                        if (mounted)
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (_) => const DashboardScreen()));
-                        }
                       } else {
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -316,7 +354,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Sort products if needed, or find specific ones
     final monthly = _products.firstWhere((p) => p.id == kMonthlyId,
         orElse: () => _nullProduct);
     final annual = _products.firstWhere((p) => p.id == kAnnualId,
@@ -332,7 +369,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // Branding: Logo usage
               Image.asset('assets/logo.png', width: 80, height: 80,
                 errorBuilder: (c, o, s) => const Icon(Icons.psychology, size: 60, color: Color(0xFF7C3AED))),
               const SizedBox(height: 20),
@@ -476,7 +512,7 @@ class DashboardScreen extends StatelessWidget {
                 errorBuilder: (_, __, ___) =>
                     const Icon(Icons.psychology, color: Colors.white)),
             const SizedBox(width: 12),
-            const Text("Digital ABCs",
+            const Text("Lingustic Decoder by Digital ABCs",
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
@@ -774,7 +810,6 @@ class _PinDialogState extends State<_PinDialog> {
 
 class DecoderScreen extends StatefulWidget {
   const DecoderScreen({super.key});
-
   @override
   State<DecoderScreen> createState() => _DecoderScreenState();
 }
@@ -786,16 +821,15 @@ class _DecoderScreenState extends State<DecoderScreen> {
 
   Future<void> _analyze() async {
     if (_inputController.text.isEmpty) return;
-
-    // Use default localhost if .env is missing (Safety fallback)
-    final String baseUrl = dotenv.env['API_URL'] ?? 'http://localhost:5000';
-
     setState(() {
       _isLoading = true;
       _result = null;
     });
 
     try {
+      // Safe fallback if .env is missing
+      final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
+
       final response = await http
           .post(
             Uri.parse("$baseUrl/analyze"),
@@ -918,6 +952,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
                       ],
                     ),
             ),
+            const QuickExitButton(),
           ],
         ),
       ),
@@ -932,40 +967,128 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final speakers = data['speakers'] as List? ?? [];
+    final transcript = data['transcript_log'] as List? ?? [];
     return Column(
-      children: speakers
-          .map((s) => Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(s['label'] ?? 'Speaker',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18)),
-                      const Divider(),
-                      Text(
-                          "Emotion: ${s['likely_emotional_state'] ?? 'Unknown'}",
-                          style: const TextStyle(color: kColorPurple)),
-                      const SizedBox(height: 8),
-                      const Text("Translation:",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(s['translation'] ?? ''),
-                      const SizedBox(height: 8),
-                      const Text("Advice:",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(s['advice'] ?? '',
-                          style: const TextStyle(fontStyle: FontStyle.italic)),
-                    ],
+      children: [
+// 1. Transcript Verification
+        if (transcript.isNotEmpty)
+          Card(
+            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Transcript Verification",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: kColorNavy)),
+                  const SizedBox(height: 8),
+                  ...transcript
+                      .map((t) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("${t['speaker']}: ",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12)),
+                                Expanded(
+                                    child: Text(t['text'],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 12))),
+                              ],
+                            ),
+                          ))
+                      .toList()
+                ],
+              ),
+            ),
+          ),
+
+        // 2. Speaker Analysis
+        ...speakers
+            .map((s) => Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s['label'] ?? 'Speaker',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
+                        const Divider(),
+                        Text(
+                            "Emotion: ${s['likely_emotional_state'] ?? 'Unknown'}",
+                            style: const TextStyle(color: kColorPurple)),
+                        if (s['deep_dive'] != null)
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.red[50],
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Text("TACTIC: ${s['deep_dive']}",
+                                style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.black87)),
+                          ),
+                        const SizedBox(height: 8),
+                        const Text("Translation:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(s['translation'] ?? ''),
+                        const SizedBox(height: 8),
+                        const Text("Advice:",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(s['advice'] ?? '',
+                            style:
+                                const TextStyle(fontStyle: FontStyle.italic)),
+                      ],
+                    ),
                   ),
-                ),
-              ))
-          .toList(),
+                ))
+            .toList()
+      ],
     );
   }
 }
 
+// ============================================================================
+// 6. SPEAKER PROFILES
+// ============================================================================
+class SpeakerProfilesScreen extends StatefulWidget {
+  const SpeakerProfilesScreen({super.key});
+  @override
+  State<SpeakerProfilesScreen> createState() => _SpeakerProfilesScreenState();
+}
+
+class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
+  // Placeholder implementation for UI demo
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text("Speaker Profiles",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: kColorNavy),
+      body:
+          const Center(child: Text("Profiles feature coming in next update.")),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: kColorGreen,
+        child: const Icon(Icons.add, color: Colors.white),
+        onPressed: () {},
+      ),
+    );
+  }
+}
+
+
+//============================================================================
+// 6.   SETTINGS
+// ============================================================================
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
