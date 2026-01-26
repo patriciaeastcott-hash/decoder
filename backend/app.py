@@ -56,20 +56,19 @@ The user input may be raw "Copy/Paste" text (e.g., Apple Messages, WhatsApp, SMS
 
 CRITICAL DETECTION RULES:
 1. **DETECT SPEAKER COUNT** First, count the distinct participants based on linguistic cues.
-2. **ASSIGN GENERIC LABELS** Assign "Speaker A," "Speaker B," etc. based on detected participants.
-3. **ADAPT ANALYSIS** - If 2 speakers: Focus on the relationship dynamics between them. (Speaker A vs. Speaker B).
+2. **LOOK FOR NAMES:** If the text contains labels like "John: Hello" or "Mom: Stop it", you MUST use "John" and "Mom" as the speaker labels. DO NOT use "Speaker A" if a name is available.
+3. **STRICT SEGMENTATION:** You must correctly attribute every sentence to the correct speaker.
+5. **ADAPT ANALYSIS** - If 2 speakers: Focus on the relationship dynamics between them. (Speaker A vs. Speaker B).
     - If 3+ speakers: Focus on Group Dynamics (Alliances, Outliers, Power Structures).
-4. **DETECT VOICE SHIFTS:** You MUST infer when speakers change based on:
+6. **DETECT VOICE SHIFTS:** You MUST infer when speakers change based on:
    - Context clues (defensive statement -> clarifying statement)
    - Pronoun usage changes ("I think you..." -> "No, I didn't...")
    - Response patterns (question -> answer, accusation -> defense)
    - Topic shifts and conversational turn-taking
    - Temporal markers ("earlier you said..." indicates response)
    - Contrasting emotional tones (anger -> calm explanation)
-
-5. **TREAT AS MULTI-PARTY INTERACTION:** Never analyze as a monologue. Always assume there is an interlocutor(s) responding, even if not explicitly shown.
-
-6. **IGNORE FORMATTING NOISE:** Disregard typos ("your" vs "you're"), inconsistent newlines, missing punctuation, or casual text abbreviations. These can be common in digital communication, and may provide clues to whom is speaking.
+7. **TREAT AS MULTI-PARTY INTERACTION:** Never analyze as a monologue. Always assume there is an interlocutor(s) responding, even if not explicitly shown.
+8. **IGNORE FORMATTING NOISE:** Disregard typos ("your" vs "you're"), inconsistent newlines, missing punctuation, or casual text abbreviations. These can be common in digital communication, and may provide clues to whom is speaking.
 
 CORE ANALYTICAL PRINCIPLES:
 1. **Objectivity**: Describe what the language reveals, NOT what the person "is"
@@ -222,7 +221,7 @@ def analyze_text():
             safety_settings=safety_settings
         )
         
-        prompt = f"Analyze this text strictly according to the JSON schema. Output ONLY valid JSON with no markdown formatting: {user_text}"
+        prompt = f"Analyze this text strictly according to the JSON schema. Identify speakers by NAME if possible. Output ONLY valid JSON with no markdown formatting: {user_text}"
         response = model.generate_content(prompt)
         
         clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
@@ -320,161 +319,177 @@ def simulate_response():
 
     if not draft_reply:
         return jsonify({"error": "No draft provided"}), 400
+    
+    # Simple simulation logic (or integrate AI here if desired)
+    return jsonify({
+        "response": "Simulation placeholder",
+        "score": 85,
+        "analysis": "This is a placeholder simulation response."
+    })
 
-# 2. The New Forensic Prompt
-    prompt = f"""
-    You are a **Forensic Behavioral Analyst & Communication Psychologist**.
-
-    You specialize in identifying psychological patterns, defense mechanisms, relational strategies, and risk indicators *strictly from written communication over time*.  
-    You do **not** diagnose mental illness. You infer behavioral strategies only where supported by textual evidence.
-
-    ────────────────────────────
-    INPUT DATA
-    ────────────────────────────
-
-    1. Target Speaker Identifier:
-       - Speaker Name / Label: "{speaker_name}"
-
-    2. Conversation Logs (Chronological):
-       - Each log entry may contain:
-         • Speaker identifier (name, handle, role, or index)
-         • Timestamp (if available)
-         • Message content
-
-       Raw Log:
-       {history_text}
-
-    ────────────────────────────
-    PRE-PROCESSING INSTRUCTIONS
-    ────────────────────────────
-
-    1. **Speaker Isolation**
-       - Identify all speakers in the log.
-       - Isolate and analyze only messages authored by "{speaker_name}".
-       - Use other speakers' messages *only for contextual interpretation* (triggers, responses, power dynamics).
-
-    2. **Temporal Awareness**
-       - Preserve chronological order.
-       - Detect changes across time (early vs later behaviour).
-       - Identify state shifts after conflict, reassurance, rejection, silence, or boundary enforcement.
-
-    ────────────────────────────
-    ANALYTICAL OBJECTIVES
-    ────────────────────────────
-
-    Build a comprehensive behavioral profile of "{speaker_name}" based *solely* on communication patterns.
-
-    Analyze across the following dimensions:
-
-    ### 1. Engagement Style
-    - How does the speaker initiate, maintain, escalate, or withdraw from interaction?
-    - Do they seek control, reassurance, dominance, validation, avoidance, or symmetry?
-    - Do they respond proportionally or disproportionately to stimuli?
-
-    ### 2. Defense Mechanisms (Primary & Secondary)
-    Identify **defense mechanisms inferred from language**, such as:
-    - Intellectualization
-    - Minimization
-    - Rationalization
-    - Projection
-    - Deflection / Humor as avoidance
-    - Gaslighting
-    - Stonewalling
-    - Emotional Withholding
-    - Over-Explanation as Control
-    - Victim Positioning
-    - Aggressive Compliance
-    - Passive Aggression
-
-    For each identified mechanism:
-    - Explain *how* it appears linguistically.
-    - Explain *what function* it serves for the speaker.
-
-    ### 3. Power & Control Strategies
-    - Boundary testing
-    - Guilt induction
-    - Obligation framing
-    - Conditional affection
-    - Intermittent reinforcement
-    - DARVO (Deny → Attack → Reverse Victim/Offender)
-    - Love bombing followed by withdrawal
-    - Threats (explicit or implied)
-    - Compliance pressure disguised as concern
-
-    ### 4. Emotional Regulation Patterns
-    - How does the speaker handle:
-      • Rejection
-      • Delay or silence
-      • Disagreement
-      • Accountability
-    - Do they externalize distress or internalize it?
-    - Is emotional expression used to connect or to control?
-
-    ### 5. Consistency & Contradictions
-    - Identify stated values vs enacted behaviour.
-    - Highlight contradictions across time.
-    - Note narrative shifts that reframe past events.
-
-    ### 6. Escalation & Risk Trajectory
-    - Is behaviour intensifying, stabilizing, or de-escalating?
-    - Are there indicators of:
-      • Obsession
-      • Dependency
-      • Retaliation
-      • Entitlement
-      • Psychological coercion
-
-    ────────────────────────────
-    EVIDENCE STANDARDS
-    ────────────────────────────
-
-    - Every conclusion must be grounded in **observable language patterns**.
-    - Avoid speculative motive claims unless repeatedly supported.
-    - When uncertain, flag ambiguity rather than over-assert.
-
-    ────────────────────────────
-    OUTPUT FORMAT (STRICT JSON ONLY)
-    ────────────────────────────
-
-    {{
-      "risk_level": "Low" | "Medium" | "High" | "Critical",
-
-      "dominant_engagement_style": "Concise descriptor (e.g., 'Anxious-Pursuit', 'Control-Oriented Avoidance', 'Validation-Seeking with Withdrawal')",
-
-      "core_behavioral_pattern": "Name of dominant pattern (e.g., 'Intermittent Reinforcement', 'Defensive Victimization Cycle', 'Escalating Control Through Emotional Leverage')",
-
-      "defense_mechanisms": [
-        {{
-          "mechanism": "Name",
-          "evidence": "Brief description of repeated linguistic indicators",
-          "function": "What this defense protects or achieves for the speaker"
-        }}
-      ],
-
-      "summary": "2–4 sentences explaining the core psychological dynamic observed over time.",
-
-      "notable_contradictions": [
-        "Example contradiction with brief explanation"
-      ],
-
-      "escalation_trend": "Increasing" | "Decreasing" | "Stable",
-
-      "risk_indicators": [
-        "Specific observable behaviors that elevate concern"
-      ],
-
-      "strategic_recommendation": "Clear, practical guidance for engaging safely and effectively with this individual, tailored to their patterns"
-    }}
-
-    IMPORTANT:
-    - Return JSON only.
-    - Do not moralize.
-    - Do not diagnose.
-    - Do not include advice unrelated to the observed behavior.
-    """
-
+# --- NEW ROUTE: Speaker Profile Analysis ---
+@app.route('/analyze-profile', methods=['POST'])
+def analyze_profile():
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        data = request.json
+        speaker_name = data.get('name', 'Unknown Speaker')
+        logs = data.get('logs', [])
+        
+        # Combine past logs into one history text for analysis
+        history_text = "\n".join([f"[{log['date']}] {log['text']}" for log in logs[-10:]]) # Limit to last 10 for context
+
+        prompt = f"""
+        You are a **Forensic Behavioral Analyst & Communication Psychologist**.
+
+        You specialize in identifying psychological patterns, defense mechanisms, relational strategies, and risk indicators *strictly from written communication over time*. 
+        You do **not** diagnose mental illness. You infer behavioral strategies only where supported by textual evidence.
+
+        ────────────────────────────
+        INPUT DATA
+        ────────────────────────────
+
+        1. Target Speaker Identifier:
+           - Speaker Name / Label: "{speaker_name}"
+
+        2. Conversation Logs (Chronological):
+           - Each log entry may contain:
+             • Speaker identifier (name, handle, role, or index)
+             • Timestamp (if available)
+             • Message content
+
+           Raw Log:
+           {history_text}
+
+        ────────────────────────────
+        PRE-PROCESSING INSTRUCTIONS
+        ────────────────────────────
+
+        1. **Speaker Isolation**
+           - Identify all speakers in the log.
+           - Isolate and analyze only messages authored by "{speaker_name}".
+           - Use other speakers' messages *only for contextual interpretation* (triggers, responses, power dynamics).
+
+        2. **Temporal Awareness**
+           - Preserve chronological order.
+           - Detect changes across time (early vs later behaviour).
+           - Identify state shifts after conflict, reassurance, rejection, silence, or boundary enforcement.
+
+        ────────────────────────────
+        ANALYTICAL OBJECTIVES
+        ────────────────────────────
+
+        Build a comprehensive behavioral profile of "{speaker_name}" based *solely* on communication patterns.
+
+        Analyze across the following dimensions:
+
+        ### 1. Engagement Style
+        - How does the speaker initiate, maintain, escalate, or withdraw from interaction?
+        - Do they seek control, reassurance, dominance, validation, avoidance, or symmetry?
+        - Do they respond proportionally or disproportionately to stimuli?
+
+        ### 2. Defense Mechanisms (Primary & Secondary)
+        Identify **defense mechanisms inferred from language**, such as:
+        - Intellectualization
+        - Minimization
+        - Rationalization
+        - Projection
+        - Deflection / Humor as avoidance
+        - Gaslighting
+        - Stonewalling
+        - Emotional Withholding
+        - Over-Explanation as Control
+        - Victim Positioning
+        - Aggressive Compliance
+        - Passive Aggression
+
+        For each identified mechanism:
+        - Explain *how* it appears linguistically.
+        - Explain *what function* it serves for the speaker.
+
+        ### 3. Power & Control Strategies
+        - Boundary testing
+        - Guilt induction
+        - Obligation framing
+        - Conditional affection
+        - Intermittent reinforcement
+        - DARVO (Deny → Attack → Reverse Victim/Offender)
+        - Love bombing followed by withdrawal
+        - Threats (explicit or implied)
+        - Compliance pressure disguised as concern
+
+        ### 4. Emotional Regulation Patterns
+        - How does the speaker handle:
+          • Rejection
+          • Delay or silence
+          • Disagreement
+          • Accountability
+        - Do they externalize distress or internalize it?
+        - Is emotional expression used to connect or to control?
+
+        ### 5. Consistency & Contradictions
+        - Identify stated values vs enacted behaviour.
+        - Highlight contradictions across time.
+        - Note narrative shifts that reframe past events.
+
+        ### 6. Escalation & Risk Trajectory
+        - Is behaviour intensifying, stabilizing, or de-escalating?
+        - Are there indicators of:
+          • Obsession
+          • Dependency
+          • Retaliation
+          • Entitlement
+          • Psychological coercion
+
+        ────────────────────────────
+        EVIDENCE STANDARDS
+        ────────────────────────────
+
+        - Every conclusion must be grounded in **observable language patterns**.
+        - Avoid speculative motive claims unless repeatedly supported.
+        - When uncertain, flag ambiguity rather than over-assert.
+
+        ────────────────────────────
+        OUTPUT FORMAT (STRICT JSON ONLY)
+        ────────────────────────────
+
+        {{
+          "risk_level": "Low" | "Medium" | "High" | "Critical",
+
+          "dominant_engagement_style": "Concise descriptor (e.g., 'Anxious-Pursuit', 'Control-Oriented Avoidance', 'Validation-Seeking with Withdrawal')",
+
+          "core_behavioral_pattern": "Name of dominant pattern (e.g., 'Intermittent Reinforcement', 'Defensive Victimization Cycle', 'Escalating Control Through Emotional Leverage')",
+
+          "defense_mechanisms": [
+            {{
+              "mechanism": "Name",
+              "evidence": "Brief description of repeated linguistic indicators",
+              "function": "What this defense protects or achieves for the speaker"
+            }}
+          ],
+
+          "summary": "2–4 sentences explaining the core psychological dynamic observed over time.",
+
+          "notable_contradictions": [
+            "Example contradiction with brief explanation"
+          ],
+
+          "escalation_trend": "Increasing" | "Decreasing" | "Stable",
+
+          "risk_indicators": [
+            "Specific observable behaviors that elevate concern"
+          ],
+
+          "strategic_recommendation": "Clear, practical guidance for engaging safely and effectively with this individual, tailored to their patterns"
+        }}
+
+        IMPORTANT:
+        - Return JSON only.
+        - Do not moralize.
+        - Do not diagnose.
+        - Do not include advice unrelated to the observed behavior.
+        """
+
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
         response = model.generate_content(prompt)
         
         clean_json = response.text.replace('```json', '').replace('```', '').strip()
@@ -482,7 +497,6 @@ def simulate_response():
         
         # --- BACKWARDS COMPATIBILITY LAYER ---
         # Maps the new "Forensic" keys to the existing "Frontend" keys
-        # so you don't have to rewrite your React Native code immediately.
         
         # 1. Map 'core_behavioral_pattern' -> 'pattern'
         if 'core_behavioral_pattern' in analysis_data:
@@ -505,15 +519,6 @@ def simulate_response():
     except Exception as e:
         print(f"Profile Error: {e}")
         return jsonify({"error": str(e)}), 500
-        
-    except Exception as e:
-        print(f"Error: {e}")
-        # Fallback if AI fails
-        return jsonify({
-            "reception": "Analysis Error", 
-            "score": 50, 
-            "analysis": "Could not connect to AI. Please check internet."
-        }), 500
 
 @app.route('/report', methods=['POST'])
 def report_issue():
