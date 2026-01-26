@@ -216,7 +216,7 @@ def analyze_text():
         ]
 
         model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash-exp',
+            model_name='gemini-3.0-pro',
             system_instruction=SYSTEM_INSTRUCTION,
             safety_settings=safety_settings
         )
@@ -432,7 +432,7 @@ def analyze_profile():
         - Do not include advice unrelated to the observed behavior.
         """
         
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        model = genai.GenerativeModel('gemini-3.0-pro')
         response = model.generate_content(prompt)
         clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
         return jsonify(json.loads(clean_text))
@@ -484,7 +484,7 @@ def simulate_response():
           "analysis": "Explanation of why this draft is good or bad."
         }}
         """
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        model = genai.GenerativeModel('gemini-3.0-pro')
         response = model.generate_content(prompt)
         clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
         return jsonify(json.loads(clean_text))
@@ -511,7 +511,7 @@ def analyze_impact():
         ]
 
         model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash-exp',
+            model_name='gemini-3.0-pro',
             system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
             safety_settings=safety_settings
         )
