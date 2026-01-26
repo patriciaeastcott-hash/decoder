@@ -489,7 +489,7 @@ def analyze_profile():
         - Do not include advice unrelated to the observed behavior.
         """
 
-        model = genai.GenerativeModel('ggemini-3-pro')
+        model = genai.GenerativeModel('gemini-3-pro')
         response = model.generate_content(prompt)
         
         clean_json = response.text.replace('```json', '').replace('```', '').strip()
