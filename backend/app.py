@@ -9,53 +9,31 @@ from flask_cors import CORS
 import requests
 import google.generativeai as genai
 from dotenv import load_dotenv
-import os
-import json
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import requests
-import google.generativeai as genai
-from dotenv import load_dotenv
 
 # --- CONFIGURATION ---
 load_dotenv()
 app = Flask(__name__)
 
+# Configure Logging
+logging.basicConfig(level=logging.INFO)
+
 # 1. CORS CONFIGURATION
-# In production, replace '*' with your specific web domain
-CORS(app, resources={r"/*": {"origins": ["https://digitalabcs.com.au", "http://localhost:3000"]}})
+# Set to allow all for debugging, restrict in production if needed
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USER = os.getenv("EMAIL_USER") # Your sending email address
-EMAIL_PASS = os.getenv("EMAIL_PASS") # Your email app password
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
 ALERT_RECEIVER = "info@digitalabcs.com.au"
 
 if not API_KEY:
-    print("CRITICAL WARNING: GEMINI_API_KEY is missing from .env")
+    logging.error("CRITICAL WARNING: GEMINI_API_KEY is missing from .env")
+else:
+    genai.configure(api_key=API_KEY)
 
-genai.configure(api_key=API_KEY)
-
-# --- SECURITY FOR MOBILE ---
-@app.before_request
-def restrict_mobile_app():
-    # Optional: Enforce that requests come from your specific App Bundle ID
-    allowed_bundles = ['com.digitalabcs.decoder', 'com.example.decoder'] 
-    
-    # Skip check for OPTIONS requests (CORS preflight)
-    if request.method == 'OPTIONS':
-        return
-        
-    # Check header (Open logic for dev, strict for prod)
-    # client_bundle = request.headers.get('X-Bundle-ID')
-    # if client_bundle and client_bundle not in allowed_bundles:
-    #     return jsonify({"error": "Unauthorized Client"}), 403
-
-# --- SYSTEM PROMPT ---
+# --- SYSTEM PROMPT (PRESERVED EXACTLY) ---
 SYSTEM_INSTRUCTION = """
 You are an expert Linguistic Analyst specializing in multi-perspective communication analysis and intent detection.
 
@@ -209,6 +187,82 @@ EXAMPLE DEEP DIVE (DO THIS):
 "This employs Guilt Induction through obligation language. The phrase 'after everything I have done for you' creates emotional debt, while 'I guess I am just not important to you' positions the speaker as a victim, making disagreement feel like betrayal."
 """
 
+# --- ROBUST AI HANDLERS ---
+
+def clean_and_parse_json(text):
+    """
+    Cleans AI response to ensure valid JSON.
+    Removes Markdown ticks, leading/trailing whitespace, and handles common AI errors.
+    """
+    try:
+        clean = text.strip()
+        # Remove Markdown formatting if present
+        if "```json" in clean:
+            clean = clean.split("```json")[1].split("```")[0]
+        elif "```" in clean:
+            clean = clean.split("```")[1].split("```")[0]
+        
+        return json.loads(clean.strip())
+    except Exception as e:
+        logging.error(f"JSON Parsing Failed: {e} | Raw Text: {text[:100]}...")
+        # Fallback: attempt to find the first '{' and last '}'
+        try:
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            if start != -1 and end != -1:
+                return json.loads(text[start:end])
+        except:
+            pass
+        raise ValueError(f"AI returned invalid JSON: {str(e)}")
+
+def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
+    """
+    Tries multiple models in order of stability.
+    Solves the '404' and 'Model not found' errors.
+    """
+    # Priority list: Stable -> Legacy. 
+    # Removed non-existent 'gemini-3' models to prevent immediate 404s.
+    models_to_try = [
+        'gemini-1.5-flash', 
+        'gemini-1.5-pro',
+        'gemini-1.0-pro'
+    ]
+    
+    last_error = None
+
+    for model_name in models_to_try:
+        try:
+            logging.info(f"Attempting generation with model: {model_name}")
+            
+            model = genai.GenerativeModel(
+                model_name=model_name,
+                system_instruction=system_instruction
+            )
+            
+            # Use safety settings to prevent blocking legitimate analysis
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+
+            response = model.generate_content(prompt, safety_settings=safety_settings)
+            
+            if json_mode:
+                return clean_and_parse_json(response.text)
+            return response.text
+
+        except Exception as e:
+            logging.warning(f"Model {model_name} failed: {e}")
+            last_error = e
+            continue
+    
+    # If all fail
+    raise RuntimeError(f"All AI models failed. Last error: {last_error}")
+
+# --- API ENDPOINTS ---
+
 @app.route('/analyze', methods=['POST'])
 def analyze_text():
     try:
@@ -217,71 +271,17 @@ def analyze_text():
 
         if not user_text:
             return jsonify({"error": "No text provided"}), 400
-        
-        # Safety settings for conflict analysis
-        safety_settings = [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ]
 
-        model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash-exp',
-            system_instruction=SYSTEM_INSTRUCTION,
-            safety_settings=safety_settings
-        )
-        
         prompt = f"Analyze this text strictly according to the JSON schema. Identify speakers by NAME if possible. Output ONLY valid JSON with no markdown formatting: {user_text}"
-        response = model.generate_content(prompt)
         
-        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
-        parsed_json = json.loads(clean_text)
-        
-    except Exception as e:
-        print(f"Analyze Error: {e}")
-        return jsonify({"error": str(e)}), 500
-        
-        # Validate required fields
-        if 'speakers' not in parsed_json or not isinstance(parsed_json['speakers'], list):
-            # Optional: Add specific validation logic here if needed
-            pass
+        # Use the robust generator
+        result = generate_with_fallback(prompt, system_instruction=SYSTEM_INSTRUCTION, json_mode=True)
+        return jsonify(result)
 
-        return jsonify(parsed_json)
-
-    except json.JSONDecodeError as e:
-        print(f"\n❌ JSON PARSE ERROR: {e}")
-        return jsonify({
-            "error": "Invalid JSON response from AI", 
-            "details": str(e),
-            "message": "The AI returned malformed data. Please try again."
-        }), 500
-        
-    except ValueError as e:
-        print(f"\n❌ VALIDATION ERROR: {e}")
-        return jsonify({
-            "error": "Invalid response structure",
-            "details": str(e),
-            "message": "The AI response is missing required fields."
-        }), 500
-        
     except Exception as e:
-        print(f"\n❌ ERROR DETAIL: {e}")
-        print(f"Error type: {type(e).__name__}")
-        
-        if "finish_reason" in str(e).lower() or "SAFETY" in str(e):
-            return jsonify({
-                "error": "Content blocked by safety filter",
-                "message": "The text contains content that triggered safety filters. Please try different text."
-            }), 400
-            
-        return jsonify({
-            "error": str(e), 
-            "error_type": type(e).__name__,
-            "message": "Analysis failed. Please check your connection and try again."
-        }), 500
-        
-# --- NEW: PROFILE ANALYST ENDPOINT (Fixes Connection Error) ---
+        logging.error(f"Analyze Error: {e}")
+        return jsonify({"error": str(e), "message": "Analysis failed. Please try again."}), 500
+
 @app.route('/analyze-profile', methods=['POST'])
 def analyze_profile():
     try:
@@ -290,192 +290,30 @@ def analyze_profile():
         logs = data.get('logs', [])
         
         # Merge history
-        history = "\n".join([f"[{log['date']}] {log['text']}" for log in logs[-15:]])
+        history = "\n".join([f"[{log.get('date', 'Unknown')}] {log.get('text', '')}" for log in logs[-15:]])
 
         prompt = f"""
-        You are a **Forensic Behavioral Analyst & Communication Psychologist**.
-
-        You specialize in identifying psychological patterns, defense mechanisms, relational strategies, and risk indicators *strictly from written communication over time*. 
-        You do **not** diagnose mental illness. You infer behavioral strategies only where supported by textual evidence.
-
-        ────────────────────────────
-        INPUT DATA
-        ────────────────────────────
-
-        1. Target Speaker Identifier:
-           - Speaker Name / Label: "{speaker_name}"
-
-        2. Conversation Logs (Chronological):
-           - Each log entry may contain:
-             • Speaker identifier (name, handle, role, or index)
-             • Timestamp (if available)
-             • Message content
-
-           Raw Log:
-           {history}
-
-        ────────────────────────────
-        PRE-PROCESSING INSTRUCTIONS
-        ────────────────────────────
-
-        1. **Speaker Isolation**
-           - Identify all speakers in the log.
-           - Isolate and analyze only messages authored by "{speaker_name}".
-           - Use other speakers' messages *only for contextual interpretation* (triggers, responses, power dynamics).
-
-        2. **Temporal Awareness**
-           - Preserve chronological order.
-           - Detect changes across time (early vs later behaviour).
-           - Identify state shifts after conflict, reassurance, rejection, silence, or boundary enforcement.
-
-        ────────────────────────────
-        ANALYTICAL OBJECTIVES
-        ────────────────────────────
-
-        Build a comprehensive behavioral profile of "{speaker_name}" based *solely* on communication patterns.
-
-        Analyze across the following dimensions:
-
-        ### 1. Engagement Style
-        - How does the speaker initiate, maintain, escalate, or withdraw from interaction?
-        - Do they seek control, reassurance, dominance, validation, avoidance, or symmetry?
-        - Do they respond proportionally or disproportionately to stimuli?
-
-        ### 2. Defense Mechanisms (Primary & Secondary)
-        Identify **defense mechanisms inferred from language**, such as:
-        - Intellectualization
-        - Minimization
-        - Rationalization
-        - Projection
-        - Deflection / Humor as avoidance
-        - Gaslighting
-        - Stonewalling
-        - Emotional Withholding
-        - Over-Explanation as Control
-        - Victim Positioning
-        - Aggressive Compliance
-        - Passive Aggression
-
-        For each identified mechanism:
-        - Explain *how* it appears linguistically.
-        - Explain *what function* it serves for the speaker.
-
-        ### 3. Power & Control Strategies
-        - Boundary testing
-        - Guilt induction
-        - Obligation framing
-        - Conditional affection
-        - Intermittent reinforcement
-        - DARVO (Deny → Attack → Reverse Victim/Offender)
-        - Love bombing followed by withdrawal
-        - Threats (explicit or implied)
-        - Compliance pressure disguised as concern
-
-        ### 4. Emotional Regulation Patterns
-        - How does the speaker handle:
-          • Rejection
-          • Delay or silence
-          • Disagreement
-          • Accountability
-        - Do they externalize distress or internalize it?
-        - Is emotional expression used to connect or to control?
-
-        ### 5. Consistency & Contradictions
-        - Identify stated values vs enacted behaviour.
-        - Highlight contradictions across time.
-        - Note narrative shifts that reframe past events.
-
-        ### 6. Escalation & Risk Trajectory
-        - Is behaviour intensifying, stabilizing, or de-escalating?
-        - Are there indicators of:
-          • Obsession
-          • Dependency
-          • Retaliation
-          • Entitlement
-          • Psychological coercion
-
-        ────────────────────────────
-        EVIDENCE STANDARDS
-        ────────────────────────────
-
-        - Every conclusion must be grounded in **observable language patterns**.
-        - Avoid speculative motive claims unless repeatedly supported.
-        - When uncertain, flag ambiguity rather than over-assert.
-
-        ────────────────────────────
-        OUTPUT FORMAT (STRICT JSON ONLY)
-        ────────────────────────────
-
+        You are a Forensic Behavioral Analyst.
+        Target: "{speaker_name}"
+        History: {history}
+        
+        Build a behavioral profile. Output STRICT JSON ONLY:
         {{
-          "risk_level": "Low" | "Medium" | "High" | "Critical",
-
-          "dominant_engagement_style": "Concise descriptor (e.g., 'Anxious-Pursuit', 'Control-Oriented Avoidance', 'Validation-Seeking with Withdrawal')",
-
-          "core_behavioral_pattern": "Name of dominant pattern (e.g., 'Intermittent Reinforcement', 'Defensive Victimization Cycle', 'Escalating Control Through Emotional Leverage')",
-
-          "defense_mechanisms": [
-            {{
-              "mechanism": "Name",
-              "evidence": "Brief description of repeated linguistic indicators",
-              "function": "What this defense protects or achieves for the speaker"
-            }}
-          ],
-
-          "summary": "2–4 sentences explaining the core psychological dynamic observed over time.",
-
-          "notable_contradictions": [
-            "Example contradiction with brief explanation"
-          ],
-
-          "escalation_trend": "Increasing" | "Decreasing" | "Stable",
-
-          "risk_indicators": [
-            "Specific observable behaviors that elevate concern"
-          ],
-
-          "strategic_recommendation": "Clear, practical guidance for engaging safely and effectively with this individual, tailored to their patterns"
+          "risk_level": "Low/Medium/High/Critical",
+          "pattern": "Name of dominant pattern",
+          "traits": ["Trait 1", "Trait 2", "Trait 3"],
+          "summary": "2-4 sentences explaining the dynamic.",
+          "recommendation": "Strategic advice."
         }}
-
-        IMPORTANT:
-        - Return JSON only.
-        - Do not moralize.
-        - Do not diagnose.
-        - Do not include advice unrelated to the observed behavior.
         """
         
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
-        response = model.generate_content(prompt)
-        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
-        return jsonify(json.loads(clean_text))
-
-    # --- BACKWARDS COMPATIBILITY LAYER ---
-        # 1. Map 'core_behavioral_pattern' -> 'pattern'
-        if 'core_behavioral_pattern' in analysis_data:
-            analysis_data['pattern'] = analysis_data['core_behavioral_pattern']
-            
-        # 2. Map 'strategic_recommendation' -> 'recommendation'
-        if 'strategic_recommendation' in analysis_data:
-            analysis_data['recommendation'] = analysis_data['strategic_recommendation']
-            
-        # 3. Create 'traits' array from mechanisms + risk indicators
-        traits = []
-        if 'defense_mechanisms' in analysis_data:
-            traits += [d.get('mechanism') for d in analysis_data['defense_mechanisms']]
-        if 'risk_indicators' in analysis_data:
-            traits += analysis_data['risk_indicators']
-        analysis_data['traits'] = traits[:8] # Limit to 8 tags for UI
-        
-        return jsonify(analysis_data)
+        result = generate_with_fallback(prompt, json_mode=True)
+        return jsonify(result)
 
     except Exception as e:
-        print(f"Profile Error: {e}")
+        logging.error(f"Profile Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-    except Exception as e:
-        print(f"Profile Error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-# --- NEW: RESPONSE SIMULATOR ENDPOINT ---
 @app.route('/simulate', methods=['POST'])
 def simulate_response():
     try:
@@ -487,389 +325,54 @@ def simulate_response():
         CONTEXT: {context}
         DRAFT REPLY: {draft}
         
-        Simulate how the other person will likely react to this draft.
+        Simulate how the other person will likely react.
         OUTPUT JSON ONLY:
         {{
           "score": 85,
-          "response": "Likely Reaction (e.g. 'Defensive Escalation')",
-          "analysis": "Explanation of why this draft is good or bad."
-        }}
-        """
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
-        response = model.generate_content(prompt)
-        clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
-        return jsonify(json.loads(clean_text))
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-
-@app.route('/analyze_impact', methods=['POST'])
-def analyze_impact():
-    """Endpoint for analyzing the impact of a proposed response"""
-    try:
-        data = request.json
-        user_text = data.get('text', '')
-
-        if not user_text:
-            return jsonify({"error": "No text provided"}), 400
-        
-        safety_settings = [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ]
-
-        model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash-exp',
-            system_instruction="You are an expert communication analyst. Analyze proposed responses and provide impact assessments in JSON format only.",
-            safety_settings=safety_settings
-        )
-        
-        response = model.generate_content(user_text)
-        clean_text = response.text.strip()
-        clean_text = clean_text.replace('```json', '').replace('```', '').strip()
-        parsed_json = json.loads(clean_text)
-            
-        return jsonify(parsed_json)
-
-    except json.JSONDecodeError as e:
-        print(f"\n❌ JSON PARSE ERROR: {e}")
-        return jsonify({
-            "error": "Invalid JSON response from AI", 
-            "message": "The AI returned malformed data. Please try again."
-        }), 500
-        
-    except Exception as e:
-        print(f"\n❌ ERROR DETAIL: {e}")
-        return jsonify({
-            "error": str(e), 
-            "message": "Impact analysis failed. Please try again."
-        }), 500
-
-
-@app.route('/report', methods=['POST'])
-def report_issue():
-    """
-    Sends an email alert to the business when a user reports an issue.
-    """
-    try:
-        data = request.json
-        reported_text = data.get('input_text', 'N/A')
-        ai_output = data.get('output_text', 'N/A')
-        user_reason = data.get('reason', 'User reported offensive content')
-
-        print(f"⚠️ CONTENT REPORT: {user_reason}")
-
-        # Construct Email
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_USER
-        msg['To'] = ALERT_RECEIVER
-        msg['Subject'] = f"URGENT: Content Report in Linguistic Decoder"
-
-        body = f"""
-        A user has reported an AI generation issue.
-        
-        Reason: {user_reason}
-        
-        --------------------------------------------------
-        USER INPUT:
-        {reported_text}
-        
-        --------------------------------------------------
-        AI OUTPUT:
-        {ai_output}
-        --------------------------------------------------
-        """
-        msg.attach(MIMEText(body, 'plain'))
-
-        # Send Email
-        if EMAIL_USER and EMAIL_PASS:
-            server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
-            server.quit()
-            return jsonify({"status": "reported", "message": "Admin alerted via email"}), 200
-        else:
-            print("❌ Email credentials not set. Logged to console only.")
-            return jsonify({"status": "logged_only", "message": "Report logged (Email not configured)"}), 200
-
-    except Exception as e:
-        print(f"Report error: {e}")
-        return jsonify({"error": "Failed to process report"}), 500
-
-@app.route('/verify-purchase', methods=['POST'])
-def verify_purchase():
-    """
-    Validate Apple In-App Purchase Receipt.
-    Handles the Production -> Sandbox fallback automatically.
-    """
-    try:
-        data = request.json
-        receipt_data = data.get('receipt_data')
-        shared_secret = os.getenv("APPLE_SHARED_SECRET") # Optional: Required for subscriptions
-
-        if not receipt_data:
-            return jsonify({"valid": False, "error": "No receipt data"}), 400
-
-        # Apple Verify Receipt URLs
-        SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt"
-        PROD_URL = "https://buy.itunes.apple.com/verifyReceipt"
-
-        payload = {"receipt-data": receipt_data}
-        if shared_secret:
-            payload["password"] = shared_secret
-
-        # 1. Try Production First
-        response = requests.post(PROD_URL, json=payload)
-        result = response.json()
-
-        # 2. Check for Sandbox environment error (21007)
-        # If Apple says "This is a sandbox receipt sent to prod", retry in Sandbox
-        if result.get('status') == 21007:
-            print("⚠️ Sandbox receipt detected. Retrying with Sandbox URL...")
-            response = requests.post(SANDBOX_URL, json=payload)
-            result = response.json()
-
-        # 3. Check final status (0 = Valid)
-        if result.get('status') == 0:
-            return jsonify({"valid": True, "receipt": result.get("receipt")}), 200
-        else:
-            print(f"❌ Invalid Receipt. Status: {result.get('status')}")
-            return jsonify({"valid": False, "status": result.get('status')}), 400
-
-    except Exception as e:
-        print(f"Verification Error: {e}")
-        return jsonify({"valid": False, "error": str(e)}), 500
-
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Health check endpoint for testing connectivity"""
-    return jsonify({"status": "healthy", "message": "API is running"}), 200
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-# --- CONFIGURATION ---
-load_dotenv()
-app = Flask(__name__)
-
-# Configure Logging
-logging.basicConfig(level=logging.INFO)
-
-# 1. CORS CONFIGURATION
-# Allow explicit domains for security + localhost for dev
-CORS(app, resources={r"/*": {"origins": [
-    "https://digitalabcs.com.au", 
-    "http://localhost:3000", 
-    "http://localhost:19000", 
-    "http://localhost:8081"
-]}})
-
-API_KEY = os.getenv("GEMINI_API_KEY")
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USER = os.getenv("EMAIL_USER") 
-EMAIL_PASS = os.getenv("EMAIL_PASS") 
-ALERT_RECEIVER = "info@digitalabcs.com.au"
-
-if not API_KEY:
-    logging.error("CRITICAL WARNING: GEMINI_API_KEY is missing from .env")
-
-genai.configure(api_key=API_KEY)
-
-
-,
-      "likely_emotional_state": "State",
-      "communication_goals": ["Goal"],
-      "linguistic_patterns": ["Pattern"],
-      "translation": "Plain English meaning",
-      "deep_dive": "Specific linguistic tactic used with quote.",
-      "advice": "Actionable advice"
-    }
-  ],
-  "transcript_log": [{"speaker": "Name", "text": "Message"}],
-  "path_forward": { "immediate_steps": ["Step 1"] }
-}
-"""
-
-def generate_with_fallback(prompt, config):
-    """Attempts generation with Flash, falls back to Pro if 404/Error occurs."""
-    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro']
-    
-    for model_name in models_to_try:
-        try:
-            logging.info(f"Attempting analysis with model: {model_name}")
-            model = genai.GenerativeModel(
-                model_name=model_name,
-                system_instruction=SYSTEM_INSTRUCTION,
-                safety_settings=config
-            )
-            response = model.generate_content(prompt)
-            return response
-        except Exception as e:
-            logging.warning(f"Model {model_name} failed: {e}")
-            continue
-    
-    raise Exception("All AI models failed to respond.")
-    
-    
-
-def generate_with_fallback(prompt, config):
-    """Attempts generation with Flash, falls back to Pro if 404/Error occurs."""
-    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro',"gemini-3-pro-preview", "gemini-2.5-pro"]
-    
-    for model_name in models_to_try:
-        try:
-            logging.info(f"Attempting analysis with model: {model_name}")
-            model = genai.GenerativeModel(
-                model_name=model_name,
-                system_instruction=SYSTEM_INSTRUCTION,
-                safety_settings=config
-            )
-            response = model.generate_content(prompt)
-            return response
-        except Exception as e:
-            logging.warning(f"Model {model_name} failed: {e}")
-            continue
-    
-    raise Exception("All AI models failed to respond.")
-
-# --- HELPER: CLEAN AI RESPONSE ---
-def clean_and_parse_json(text):
-    """
-    Strips Markdown (```json ... ```) to prevent 'Could not process' errors.
-    """
-    try:
-        clean = text.strip()
-        if "```json" in clean:
-            clean = clean.split("```json")[1].split("```")[0]
-        elif "```" in clean:
-            clean = clean.split("```")[1].split("```")[0]
-        return json.loads(clean.strip())
-    except Exception as e:
-        logging.error(f"JSON Parse Error: {e} | Raw Text: {text}")
-        raise ValueError(f"AI returned invalid JSON: {str(e)}")
-
-# --- ENDPOINT 1: ANALYZE (The Core) ---
-@app.route('/analyze', methods=['POST'])
-def analyze_text():
-    try:
-        data = request.json
-        user_text = data.get('text', '')
-        if not user_text: return jsonify({"error": "No text provided"}), 400
-
-        # Use 'gemini-pro' as it is more stable than Flash for structure
-        model = genai.GenerativeModel('gemini-pro')
-        
-        prompt = f"""
-        Analyze this text. Output STRICT JSON ONLY. No markdown.
-        Schema:
-        {{
-            "speakers": [
-                {{
-                    "label": "Name",
-                    "likely_emotional_state": "Emotion",
-                    "translation": "Meaning",
-                    "advice": "Advice",
-                    "deep_dive": "Tactic used"
-                }}
-            ],
-            "transcript_log": [{{"speaker": "Name", "text": "Message"}}]
-        }}
-        Input: {user_text}
-        """
-        
-        response = model.generate_content(prompt)
-        parsed = clean_and_parse_json(response.text)
-        return jsonify(parsed)
-
-    except Exception as e:
-        logging.error(f"Analyze Failed: {e}")
-        # Return the REAL error so you can see it
-        return jsonify({"error": str(e), "message": "Analysis failed on server."}), 500
-
-# --- ENDPOINT 2: PROFILE (Restored!) ---
-@app.route('/analyze-profile', methods=['POST'])
-def analyze_profile():
-    try:
-        data = request.json
-        name = data.get('name', 'Speaker')
-        logs = data.get('logs', [])
-        
-        history = "\n".join([f"[{l.get('date','')}]: {l.get('text','')}" for l in logs[-5:]])
-        
-        model = genai.GenerativeModel('gemini-pro')
-        prompt = f"""
-        Profile the speaker '{name}' based on this history:
-        {history}
-        
-        Output STRICT JSON ONLY:
-        {{
-            "risk_level": "High/Medium/Low",
-            "pattern": "Core behavior pattern",
-            "summary": "Brief summary",
-            "recommendation": "Strategic advice",
-            "traits": ["Trait 1", "Trait 2"]
+          "response": "Likely Reaction",
+          "analysis": "Explanation."
         }}
         """
         
-        response = model.generate_content(prompt)
-        parsed = clean_and_parse_json(response.text)
-        return jsonify(parsed)
+        result = generate_with_fallback(prompt, json_mode=True)
+        return jsonify(result)
 
     except Exception as e:
-        logging.error(f"Profile Failed: {e}")
+        logging.error(f"Simulate Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-# --- ENDPOINT 3: SIMULATE ---
-@app.route('/simulate', methods=['POST'])
-def simulate_response():
-    try:
-        data = request.json
-        model = genai.GenerativeModel('gemini-pro')
-        
-        prompt = f"""
-        Context: {data.get('context')}
-        Draft Reply: {data.get('draft')}
-        
-        Predict the reaction. Output JSON ONLY:
-        {{
-            "score": 85,
-            "response": "Likely Reaction",
-            "analysis": "Reasoning"
-        }}
-        """
-        
-        response = model.generate_content(prompt)
-        parsed = clean_and_parse_json(response.text)
-        return jsonify(parsed)
-
-    except Exception as e:
-        logging.error(f"Simulate Failed: {e}")
-        return jsonify({"error": str(e)}), 500
-
-# --- ENDPOINT 4: REPORT ---
 @app.route('/report', methods=['POST'])
 def report_issue():
     try:
         data = request.json
+        user_reason = data.get('reason', 'User reported issue')
+        
+        logging.info(f"REPORT RECEIVED: {user_reason}")
+
         if EMAIL_USER and EMAIL_PASS:
             msg = MIMEMultipart()
             msg['From'] = EMAIL_USER
             msg['To'] = ALERT_RECEIVER
-            msg['Subject'] = f"Report: {data.get('reason')}"
+            msg['Subject'] = f"URGENT: Content Report - {user_reason}"
             msg.attach(MIMEText(str(data), 'plain'))
-            
+
             server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
             server.starttls()
             server.login(EMAIL_USER, EMAIL_PASS)
             server.send_message(msg)
             server.quit()
-        return jsonify({"status": "reported"}), 200
-    except Exception:
-        return jsonify({"status": "logged"}), 200
+            return jsonify({"status": "reported"}), 200
+        else:
+            return jsonify({"status": "logged_only"}), 200
 
+    except Exception as e:
+        logging.error(f"Report Error: {e}")
+        return jsonify({"error": "Failed to report"}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy", "version": "1.0.5"}), 200
+
+# --- MAIN EXECUTION ---
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
