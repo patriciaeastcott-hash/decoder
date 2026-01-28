@@ -9,22 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # Icons
+  shared_preferences: ^2.2.0
+  intl: ^0.18.1  # Added for date formatting in profiles
   cupertino_icons: ^1.0.8
-
-  # Networking
   http: ^1.2.0
-
-  # Local Storage
-  shared_preferences: ^2.2.2
-
-  # Opening Links (Privacy Policy)
   url_launcher: ^6.2.4
-
-  # In-App Purchases (Compliance)
   in_app_purchase: ^3.1.13
-
   flutter_dotenv: ^5.1.0 
 
 dev_dependencies:
