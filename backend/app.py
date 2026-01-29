@@ -223,7 +223,7 @@ def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
     # Priority list: Stable -> Legacy. 
     # Removed non-existent 'gemini-3' models to prevent immediate 404s.
     models_to_try = [
-        '	gemini-3-flash-preview'
+        '	gemini-1.5-flash'
     ]
     
     last_error = None
