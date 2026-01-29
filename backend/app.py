@@ -204,16 +204,13 @@ def clean_and_parse_json(text):
         
         return json.loads(clean.strip())
     except Exception as e:
-        logging.error(f"JSON Parsing Failed: {e} | Raw Text: {text[:100]}...")
-        # Fallback: attempt to find the first '{' and last '}'
-        try:
-            start = text.find('{')
-            end = text.rfind('}') + 1
-            if start != -1 and end != -1:
-                return json.loads(text[start:end])
-        except:
-            pass
-        raise ValueError(f"AI returned invalid JSON: {str(e)}")
+        logging.error(f"JSON Parsing Failed: {e}")
+        # Return a safe error JSON rather than crashing the app
+        return {
+            "error": "JSON_PARSE_ERROR", 
+            "message": "The AI analysis could not be formatted correctly.",
+            "speakers": [] 
+        }
 
 def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
     """
