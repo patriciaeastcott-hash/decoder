@@ -5,14 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart'; // REQUIRED: Add intl to pubspec.yaml
-import 'content_data.dart'; // Ensure you created this file
+import 'package:intl/intl.dart';
+import 'content_data.dart';
 
 // --- CONFIGURATION ---
 const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
 const String kTermsUrl = "https://digitalabcs.com.au/terms.html";
-// NOTE: For Android Emulator use 'http://10.0.2.2:8080'. For Real Device/Production use your Cloud Run URL.
-const String kApiBaseUrl = "https://decoder-backend-222632046587.australia-southeast1.run.app";
+const String kApiBaseUrl =
+    "https://decoder-backend-222632046587.australia-southeast1.run.app";
 
 // --- THEME ---
 const Color kColorNavy = Color(0xFF1E3A8A);
@@ -41,7 +41,7 @@ class LinguisticDecoderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Linguistic Decoder',
       theme: ThemeData(
-        fontFamily: 'Inter',
+        // FIXED: Removed 'fontFamily: Inter' to avoid Noto font errors
         useMaterial3: true,
         primaryColor: kColorNavy,
         scaffoldBackgroundColor: kColorBackground,
@@ -51,7 +51,8 @@ class LinguisticDecoderApp extends StatelessWidget {
             backgroundColor: kColorGreen,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ),
@@ -68,21 +69,24 @@ class QuickExitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 30,
-      left: 20,
-      child: FloatingActionButton.extended(
-        heroTag: "quick_exit",
-        backgroundColor: kColorError,
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const SafeModeScreen()),
-            (route) => false,
-          );
-        },
-        icon: const Icon(Icons.exit_to_app, color: Colors.white),
-        label: const Text("QUICK EXIT",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+    // FIXED: Wrapped in Align to avoid Positioned nesting issues
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: FloatingActionButton.extended(
+          backgroundColor: kColorError,
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const SafeModeScreen()),
+              (route) => false,
+            );
+          },
+          icon: const Icon(Icons.exit_to_app, color: Colors.white),
+          label: const Text("QUICK EXIT",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
       ),
     );
   }
@@ -194,7 +198,10 @@ class AgeVerificationScreen extends StatelessWidget {
             const Icon(Icons.verified_user, size: 80, color: Colors.white),
             const SizedBox(height: 24),
             const Text("Age Verification",
-                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const Text(
                 "This tool utilizes AI to decode communication. You must be 17+ to use this application.",
@@ -219,8 +226,10 @@ class AgeVerificationScreen extends StatelessWidget {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isAgeVerified', true);
                   if (context.mounted) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => const PaywallScreen()));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const PaywallScreen()));
                   }
                 },
                 child: const Text("Confirm Eligibility"),
@@ -234,7 +243,7 @@ class AgeVerificationScreen extends StatelessWidget {
 }
 
 // ============================================================================
-// 2. PAYWALL SCREEN (COMPLIANCE FIX)
+// 2. PAYWALL SCREEN
 // ============================================================================
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
@@ -243,20 +252,17 @@ class PaywallScreen extends StatefulWidget {
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
-  // NOTE: Implementing actual IAP is required for Store approval.
-  // This is a UI mockup.
   bool _loading = false;
 
   void _restorePurchase() async {
     setState(() => _loading = true);
-    await Future.delayed(const Duration(seconds: 2)); // Simulate network
-    // For Development testing only:
+    await Future.delayed(const Duration(seconds: 2));
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('hasPaidPremium', true);
-    
+
     if (mounted) {
-       setState(() => _loading = false);
-       Navigator.pushReplacement(
+      setState(() => _loading = false);
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
     }
   }
@@ -286,18 +292,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _loading 
-              ? const CircularProgressIndicator(color: Colors.white)
-              : ElevatedButton(
-                  onPressed: _restorePurchase, 
-                  // Renamed to "Start Trial" or "Restore" to comply with App Store policies
-                  // Do NOT use "Bypass" in production builds.
-                  child: const Text("Start Free Trial")
-                ),
-             TextButton(
-               onPressed: _restorePurchase,
-               child: const Text("Restore Purchase", style: TextStyle(color: Colors.white54)),
-             ),
+            _loading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : ElevatedButton(
+                    onPressed: _restorePurchase,
+                    child: const Text("Start Free Trial")),
+            TextButton(
+              onPressed: _restorePurchase,
+              child: const Text("Restore Purchase",
+                  style: TextStyle(color: Colors.white54)),
+            ),
             const Spacer(),
           ],
         ),
@@ -307,7 +311,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 }
 
 // ============================================================================
-// 3. DASHBOARD
+// 4. DASHBOARD SCREEN (Fixed Layout)
 // ============================================================================
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -318,68 +322,78 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: kColorNavy,
         automaticallyImplyLeading: false,
-        title: const Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Column(
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text("Linguistic Decoder",
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18)),
-                Text("by Digital ABCs",
-                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        fontSize: 16)),
+                Text("by",
+                    style: TextStyle(color: Colors.white70, fontSize: 10)),
               ],
             ),
-            SizedBox(width: 12),
-            Icon(Icons.psychology, color: Colors.white, size: 32),
+            const SizedBox(width: 8),
+            Image.asset(
+              'assets/logo.png',
+              width: 40,
+              height: 40,
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.psychology, color: Colors.white),
+            ),
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Stack(
-          children: [
-            GridView.count(
+      // FIXED: Use Stack to properly layer QuickExitButton over content
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: GridView.count(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               childAspectRatio: 1.1,
+              padding: const EdgeInsets.only(bottom: 100),
               children: [
                 _DashboardTile(
-                  title: "AI Decoder",
-                  icon: Icons.psychology,
-                  color: kColorGreen,
-                  onTap: () => _navigateToDecoder(context),
-                ),
+                    title: "AI Decoder",
+                    icon: Icons.psychology,
+                    color: kColorGreen,
+                    onTap: () => _navigateToDecoder(context)),
                 _DashboardTile(
-                  title: "Speaker Profiles",
-                  icon: Icons.people,
-                  color: kColorGold,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SpeakerProfilesScreen())),
-                ),
+                    title: "Speaker Profiles",
+                    icon: Icons.people,
+                    color: kColorGold,
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SpeakerProfilesScreen()))),
                 _DashboardTile(
-                  title: "Library",
-                  icon: Icons.menu_book,
-                  color: kColorPurple,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const LibraryScreen())),
-                ),
+                    title: "Library",
+                    icon: Icons.menu_book,
+                    color: kColorPurple,
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const LibraryScreen()))),
                 _DashboardTile(
-                  title: "Settings",
-                  icon: Icons.settings,
-                  color: Colors.grey,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SettingsScreen())),
-                ),
+                    title: "Settings",
+                    icon: Icons.settings,
+                    color: Colors.grey,
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SettingsScreen()))),
               ],
             ),
-            const QuickExitButton(),
-          ],
-        ),
+          ),
+          const QuickExitButton(),
+        ],
       ),
     );
   }
@@ -387,6 +401,7 @@ class DashboardScreen extends StatelessWidget {
   Future<void> _navigateToDecoder(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final String? pin = prefs.getString('parentalPin');
+
     if (pin != null && pin.isNotEmpty) {
       if (!context.mounted) return;
       final bool? verified = await showDialog<bool>(
@@ -395,6 +410,7 @@ class DashboardScreen extends StatelessWidget {
           builder: (ctx) => _PinDialog(correctPin: pin));
       if (verified != true) return;
     }
+
     if (!context.mounted) return;
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => const DecoderScreen()));
@@ -435,7 +451,8 @@ class _DashboardTile extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
       ),
@@ -464,8 +481,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
           const SnackBar(content: Text("Please enter text to analyze")));
       return;
     }
-    
-    // Dismiss keyboard
+
     FocusManager.instance.primaryFocus?.unfocus();
 
     setState(() {
@@ -476,7 +492,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
     try {
       final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
       debugPrint("Connecting to: $baseUrl/analyze");
-      
+
       final response = await http
           .post(
             Uri.parse("$baseUrl/analyze"),
@@ -487,15 +503,13 @@ class _DecoderScreenState extends State<DecoderScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        
-        // Handle error sent gracefully from backend
+
         if (data['error'] != null && data['error'] != "null") {
-           throw Exception(data['message'] ?? "Analysis Error");
+          throw Exception(data['message'] ?? "Analysis Error");
         }
 
         setState(() => _result = data);
-        
-        // Auto scroll to results
+
         Future.delayed(const Duration(milliseconds: 500), () {
           if (_scrollController.hasClients) {
             _scrollController.animateTo(
@@ -510,9 +524,11 @@ class _DecoderScreenState extends State<DecoderScreen> {
     } catch (e) {
       debugPrint("Analysis Error: $e");
       String msg = "Connection failed.";
-      if (e.toString().contains("SocketException")) msg = "Could not reach server. Check internet.";
-      if (e.toString().contains("TimeoutException")) msg = "Server timed out. Text may be too long.";
-      
+      if (e.toString().contains("SocketException"))
+        msg = "Could not reach server. Check internet.";
+      if (e.toString().contains("TimeoutException"))
+        msg = "Server timed out. Text may be too long.";
+
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: kColorError));
     } finally {
@@ -555,7 +571,8 @@ class _DecoderScreenState extends State<DecoderScreen> {
                     'analysis': analysisData
                   });
                   profiles[i] = p;
-                  await prefs.setString('speaker_profiles', jsonEncode(profiles));
+                  await prefs.setString(
+                      'speaker_profiles', jsonEncode(profiles));
 
                   if (mounted) {
                     Navigator.pop(ctx);
@@ -578,69 +595,76 @@ class _DecoderScreenState extends State<DecoderScreen> {
           title: const Text("Decoder", style: TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              children: [
-                TextField(
-                  controller: _inputController,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    hintText: "Paste conversation here (Emails, Texts, Transcripts)...",
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: kColorGreen),
-                    onPressed: _isLoading ? null : _analyze,
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Analyze"),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                if (_result != null) ...[
-                  _TranscriptVerificationCard(
-                    transcript: List<Map<String, dynamic>>.from(
-                        _result!['transcript_log'] ?? []),
-                    onUpdate: (updatedTranscript) {
-                      setState(() {
-                        _result!['transcript_log'] = updatedTranscript;
-                      });
-                    },
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      onPressed: () => _saveToProfile(_result!),
-                      icon: const Icon(Icons.save_alt, color: kColorNavy),
-                      label: const Text("Save to Profile",
-                          style: TextStyle(color: kColorNavy)),
+          Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    TextField(
+                      controller: _inputController,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        hintText:
+                            "Paste conversation here (Emails, Texts, Transcripts)...",
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
                     ),
-                  ),
-                  _AnalysisResults(data: _result!),
-                  _ResponseSimulator(contextText: _inputController.text),
-                ],
-                const SizedBox(height: 80),
-              ],
-            ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: kColorGreen),
+                        onPressed: _isLoading ? null : _analyze,
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Text("Analyze"),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (_result != null) ...[
+                      _TranscriptVerificationCard(
+                        transcript: List<Map<String, dynamic>>.from(
+                            _result!['transcript_log'] ?? []),
+                        onUpdate: (updatedTranscript) {
+                          setState(() {
+                            _result!['transcript_log'] = updatedTranscript;
+                          });
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () => _saveToProfile(_result!),
+                          icon: const Icon(Icons.save_alt, color: kColorNavy),
+                          label: const Text("Save to Profile",
+                              style: TextStyle(color: kColorNavy)),
+                        ),
+                      ),
+                      _AnalysisResults(data: _result!),
+                      _ResponseSimulator(contextText: _inputController.text),
+                    ],
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
+            ],
           ),
+          const QuickExitButton(),
         ],
       ),
-      floatingActionButton: const QuickExitButton(),
     );
   }
 }
 
+// IMPROVED: Transcript Verification Card with better UX
 class _TranscriptVerificationCard extends StatelessWidget {
   final List<Map<String, dynamic>> transcript;
   final Function(List<Map<String, dynamic>>) onUpdate;
@@ -650,92 +674,163 @@ class _TranscriptVerificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If empty, hide widget
     if (transcript.isEmpty) return const SizedBox.shrink();
 
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.only(bottom: 16),
+      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.list_alt, color: kColorNavy),
-                SizedBox(width: 8),
-                Text("Transcript Verification",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: kColorNavy,
-                        fontSize: 16)),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kColorNavy.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child:
+                      const Icon(Icons.list_alt, color: kColorNavy, size: 20),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text("Verify Speaker Assignment",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: kColorNavy,
+                          fontSize: 16)),
+                ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                  "Tap a name to correct the speaker if AI got it wrong.",
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue, size: 18),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "AI has assigned each message to a speaker. Tap any speaker name to correct if wrong.",
+                      style: TextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const Divider(),
+            const Divider(height: 24),
             ...transcript.asMap().entries.map((entry) {
               final index = entry.key;
               final t = entry.value;
-              return InkWell(
-                onTap: () async {
-                  final newName = await showDialog<String>(
-                    context: context,
-                    builder: (ctx) {
-                      final c = TextEditingController(text: t['speaker']);
-                      return AlertDialog(
-                        title: const Text("Edit Speaker"),
-                        content: TextField(
-                            controller: c,
-                            decoration: const InputDecoration(labelText: "Speaker Name")),
-                        actions: [
-                          TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text("Cancel")),
-                          TextButton(
-                              onPressed: () => Navigator.pop(ctx, c.text),
-                              child: const Text("Save")),
-                        ],
-                      );
-                    },
-                  );
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: InkWell(
+                  onTap: () async {
+                    final newName = await showDialog<String>(
+                      context: context,
+                      builder: (ctx) {
+                        final c = TextEditingController(text: t['speaker']);
+                        return AlertDialog(
+                          title: const Text("Edit Speaker Name"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Change the speaker name if this was assigned incorrectly:",
+                                style:
+                                    TextStyle(fontSize: 13, color: Colors.grey),
+                              ),
+                              const SizedBox(height: 12),
+                              TextField(
+                                controller: c,
+                                decoration: const InputDecoration(
+                                  labelText: "Speaker Name",
+                                  border: OutlineInputBorder(),
+                                ),
+                                autofocus: true,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text("Cancel")),
+                            ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx, c.text),
+                                child: const Text("Update")),
+                          ],
+                        );
+                      },
+                    );
 
-                  if (newName != null && newName.isNotEmpty) {
-                    final updated = List<Map<String, dynamic>>.from(transcript);
-                    updated[index]['speaker'] = newName;
-                    onUpdate(updated);
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 80,
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Text("${t['speaker']}:",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: kColorPurple,
-                                fontSize: 12),
-                            textAlign: TextAlign.right),
-                      ),
-                      Expanded(
-                        child: Text(t['text'].toString(),
-                            style: const TextStyle(fontSize: 13, color: Colors.black87)),
-                      ),
-                      const Icon(Icons.edit, size: 14, color: Colors.grey),
-                    ],
+                    if (newName != null && newName.isNotEmpty) {
+                      final updated =
+                          List<Map<String, dynamic>>.from(transcript);
+                      updated[index]['speaker'] = newName;
+                      onUpdate(updated);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          constraints: const BoxConstraints(minWidth: 100),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  "${t['speaker']}:",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: kColorPurple,
+                                      fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.edit,
+                                  size: 14, color: Colors.grey),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(t['text'].toString(),
+                              style: const TextStyle(
+                                  fontSize: 13, color: Colors.black87)),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             }),
+            const SizedBox(height: 8),
+            const Text(
+              "💡 Tip: Add names like 'John:' or 'Sarah:' to your text before analyzing for better accuracy.",
+              style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic),
+            ),
           ],
         ),
       ),
@@ -752,10 +847,9 @@ class _AnalysisResults extends StatelessWidget {
     final speakers = data['speakers'] as List? ?? [];
     return Column(
       children: speakers.map((s) {
-        // Safe access to map keys
         final String label = s['label'] ?? 'Speaker';
         final String? deepDive = s['deep_dive'];
-        
+
         return Card(
           color: Colors.white,
           margin: const EdgeInsets.only(bottom: 16),
@@ -765,7 +859,8 @@ class _AnalysisResults extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18)),
                 const Divider(),
                 if (deepDive != null && deepDive.isNotEmpty)
                   Container(
@@ -777,7 +872,8 @@ class _AnalysisResults extends StatelessWidget {
                         border: Border.all(color: Colors.red[100]!)),
                     child: Row(
                       children: [
-                        const Icon(Icons.warning_amber, color: kColorError, size: 20),
+                        const Icon(Icons.warning_amber,
+                            color: kColorError, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -799,12 +895,16 @@ class _AnalysisResults extends StatelessWidget {
                       ],
                     ),
                   ),
-                _InfoRow(label: "Emotion", value: s['likely_emotional_state'] ?? 'Unknown'),
+                _InfoRow(
+                    label: "Emotion",
+                    value: s['likely_emotional_state'] ?? 'Unknown'),
                 _InfoRow(label: "Translation", value: s['translation'] ?? ''),
                 const SizedBox(height: 8),
-                const Text("Advice:", style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text("Advice:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(s['advice'] ?? '',
-                    style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54)),
+                    style: const TextStyle(
+                        fontStyle: FontStyle.italic, color: Colors.black54)),
               ],
             ),
           ),
@@ -824,7 +924,9 @@ class _InfoRow extends StatelessWidget {
           text: TextSpan(
             style: const TextStyle(color: Colors.black87, fontSize: 14),
             children: [
-              TextSpan(text: "$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(
+                  text: "$label: ",
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               TextSpan(text: value),
             ],
           ),
@@ -856,18 +958,19 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
       final response = await http.post(
         Uri.parse("$baseUrl/simulate"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"context": widget.contextText, "draft": _draftCtrl.text}),
+        body: jsonEncode(
+            {"context": widget.contextText, "draft": _draftCtrl.text}),
       );
 
       if (response.statusCode == 200) {
         setState(() => _simResult = jsonDecode(response.body));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Simulation failed")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Simulation failed")));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text("Connection Error")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Connection Error")));
     } finally {
       setState(() => _simLoading = false);
     }
@@ -890,7 +993,8 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
                 Icon(Icons.science, color: kColorGold),
                 SizedBox(width: 8),
                 Text("Response Simulator",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ],
             ),
             const SizedBox(height: 8),
@@ -914,8 +1018,10 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
                 onPressed: _simLoading ? null : _simulate,
                 child: _simLoading
                     ? const SizedBox(
-                        height: 20, width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
                     : const Text("Test Response"),
               ),
             ),
@@ -1004,7 +1110,8 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
                 };
                 setState(() => _profiles.add(newProfile));
                 final prefs = await SharedPreferences.getInstance();
-                await prefs.setString('speaker_profiles', jsonEncode(_profiles));
+                await prefs.setString(
+                    'speaker_profiles', jsonEncode(_profiles));
                 if (mounted) Navigator.pop(ctx);
               }
             },
@@ -1019,41 +1126,53 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Speaker Patterns", style: TextStyle(color: Colors.white)),
+          title: const Text("Speaker Patterns",
+              style: TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
-      body: _profiles.isEmpty
-          ? const Center(
-              child: Text("No profiles yet. Create one to track patterns.",
-                  style: TextStyle(color: Colors.grey)))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _profiles.length,
-              itemBuilder: (context, index) {
-                final p = _profiles[index];
-                final logs = (p['logs'] as List?) ?? [];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                        backgroundColor: kColorGold.withOpacity(0.2),
-                        child: const Icon(Icons.person, color: kColorGold)),
-                    title: Text(p['name'],
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("${logs.length} Analysis Logs"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => SpeakerDetailScreen(profile: p))),
-                  ),
-                );
-              },
+      body: Stack(
+        children: [
+          _profiles.isEmpty
+              ? const Center(
+                  child: Text("No profiles yet. Create one to track patterns.",
+                      style: TextStyle(color: Colors.grey)))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _profiles.length,
+                  itemBuilder: (context, index) {
+                    final p = _profiles[index];
+                    final logs = (p['logs'] as List?) ?? [];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                            backgroundColor: kColorGold.withOpacity(0.2),
+                            child: const Icon(Icons.person, color: kColorGold)),
+                        title: Text(p['name'],
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("${logs.length} Analysis Logs"),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    SpeakerDetailScreen(profile: p))),
+                      ),
+                    );
+                  },
+                ),
+          Positioned(
+            bottom: 80,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: kColorGreen,
+              onPressed: _addProfile,
+              child: const Icon(Icons.add, color: Colors.white),
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: kColorGreen,
-        onPressed: _addProfile,
-        child: const Icon(Icons.add, color: Colors.white),
+          ),
+          const QuickExitButton(),
+        ],
       ),
     );
   }
@@ -1108,11 +1227,16 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
 
   Color _getRiskColor(String? level) {
     switch (level?.toUpperCase()) {
-      case 'CRITICAL': return Colors.red[900]!;
-      case 'HIGH': return kColorError;
-      case 'MEDIUM': return Colors.orange;
-      case 'LOW': return kColorGreen;
-      default: return Colors.grey;
+      case 'CRITICAL':
+        return Colors.red[900]!;
+      case 'HIGH':
+        return kColorError;
+      case 'MEDIUM':
+        return Colors.orange;
+      case 'LOW':
+        return kColorGreen;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -1126,119 +1250,150 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
               style: const TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Card(
-              elevation: 4,
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(children: [
-                      Icon(Icons.analytics, color: kColorNavy),
-                      SizedBox(width: 8),
-                      Text("Behavioral Profile",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18))
-                    ]),
-                    const SizedBox(height: 16),
-                    if (_insight != null) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: _getRiskColor(_insight!['risk_level']),
-                                borderRadius: BorderRadius.circular(4)),
-                            child: Text(
-                                "${_insight!['risk_level'] ?? 'UNK'} RISK",
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(_insight!['pattern'] ?? '',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kColorNavy)),
-                      const SizedBox(height: 6),
-                      Text(_insight!['summary'] ?? ''),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        children: (List<String>.from(_insight!['traits'] ?? []))
-                            .map((t) => Chip(
-                                label: Text(t, style: const TextStyle(fontSize: 10)),
-                                visualDensity: VisualDensity.compact))
-                            .toList(),
-                      ),
-                      const Divider(),
-                      const Text("Strategic Advice:", style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(_insight!['recommendation'] ?? '', style: const TextStyle(fontStyle: FontStyle.italic)),
-                    ] else
-                      Center(
-                        child: Column(
-                          children: [
-                            const Text(
-                                "Analyze past interactions to detect deep patterns.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(backgroundColor: kColorPurple),
-                              onPressed: _analyzing ? null : _analyzeHistory,
-                              child: _analyzing
-                                  ? const CircularProgressIndicator(color: Colors.white)
-                                  : const Text("Generate Full Profile"),
-                            )
-                          ],
-                        ),
-                      )
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Align(
-                alignment: Alignment.centerLeft,
-                child: Text("History Log",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kColorNavy))),
-            const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: logs.length,
-              itemBuilder: (context, index) {
-                final log = logs[index];
-                final date = DateTime.tryParse(log['date']) ?? DateTime.now();
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Card(
+                  elevation: 4,
+                  color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(children: [
+                          Icon(Icons.analytics, color: kColorNavy),
+                          SizedBox(width: 8),
+                          Text("Behavioral Profile",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18))
+                        ]),
+                        const SizedBox(height: 16),
+                        if (_insight != null) ...[
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(DateFormat('dd MMM yyyy').format(date),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                              Text(DateFormat('h:mm a').format(date),
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                            ]),
-                        const SizedBox(height: 4),
-                        Text(log['text'],
-                            maxLines: 2, overflow: TextOverflow.ellipsis),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                    color:
+                                        _getRiskColor(_insight!['risk_level']),
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Text(
+                                    "${_insight!['risk_level'] ?? 'UNK'} RISK",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(_insight!['pattern'] ?? '',
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: kColorNavy)),
+                          const SizedBox(height: 6),
+                          Text(_insight!['summary'] ?? ''),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            children:
+                                (List<String>.from(_insight!['traits'] ?? []))
+                                    .map((t) => Chip(
+                                        label: Text(t,
+                                            style:
+                                                const TextStyle(fontSize: 10)),
+                                        visualDensity: VisualDensity.compact))
+                                    .toList(),
+                          ),
+                          const Divider(),
+                          const Text("Strategic Advice:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(_insight!['recommendation'] ?? '',
+                              style:
+                                  const TextStyle(fontStyle: FontStyle.italic)),
+                        ] else
+                          Center(
+                            child: Column(
+                              children: [
+                                const Text(
+                                    "Analyze past interactions to detect deep patterns.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey)),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: kColorPurple),
+                                  onPressed:
+                                      _analyzing ? null : _analyzeHistory,
+                                  child: _analyzing
+                                      ? const CircularProgressIndicator(
+                                          color: Colors.white)
+                                      : const Text("Generate Full Profile"),
+                                )
+                              ],
+                            ),
+                          )
                       ],
                     ),
                   ),
-                );
-              },
-            )
-          ],
-        ),
+                ),
+                const SizedBox(height: 20),
+                const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("History Log",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: kColorNavy))),
+                const SizedBox(height: 10),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: logs.length,
+                  itemBuilder: (context, index) {
+                    final log = logs[index];
+                    final date =
+                        DateTime.tryParse(log['date']) ?? DateTime.now();
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(DateFormat('dd MMM yyyy').format(date),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey)),
+                                  Text(DateFormat('h:mm a').format(date),
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey)),
+                                ]),
+                            const SizedBox(height: 4),
+                            Text(log['text'],
+                                maxLines: 2, overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+          const QuickExitButton(),
+        ],
       ),
     );
   }
@@ -1257,29 +1412,35 @@ class LibraryScreen extends StatelessWidget {
           title: const Text("Library", style: TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: kOfflineArticles.length,
-        itemBuilder: (context, index) {
-          final article = kOfflineArticles[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              leading: CircleAvatar(
-                  backgroundColor: kColorPurple.withOpacity(0.1),
-                  child: const Icon(Icons.article, color: kColorPurple)),
-              title: Text(article.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(article.summary,
-                  maxLines: 2, overflow: TextOverflow.ellipsis),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ArticleDetailScreen(article: article))),
-            ),
-          );
-        },
+      body: Stack(
+        children: [
+          ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: kOfflineArticles.length,
+            itemBuilder: (context, index) {
+              final article = kOfflineArticles[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  leading: CircleAvatar(
+                      backgroundColor: kColorPurple.withOpacity(0.1),
+                      child: const Icon(Icons.article, color: kColorPurple)),
+                  title: Text(article.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(article.summary,
+                      maxLines: 2, overflow: TextOverflow.ellipsis),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              ArticleDetailScreen(article: article))),
+                ),
+              );
+            },
+          ),
+          const QuickExitButton(),
+        ],
       ),
     );
   }
@@ -1293,31 +1454,44 @@ class ArticleDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(article.title, style: const TextStyle(color: Colors.white)),
+          title:
+              Text(article.title, style: const TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(article.title,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: kColorNavy)),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                  color: kColorPurple.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: kColorPurple.withOpacity(0.3))),
-              child: Text(article.summary,
-                  style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.black87)),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(article.title,
+                    style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: kColorNavy)),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                      color: kColorPurple.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: kColorPurple.withOpacity(0.3))),
+                  child: Text(article.summary,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black87)),
+                ),
+                const SizedBox(height: 24),
+                Text(article.content,
+                    style: const TextStyle(fontSize: 16, height: 1.6)),
+                const SizedBox(height: 100),
+              ],
             ),
-            const SizedBox(height: 24),
-            Text(article.content,
-                style: const TextStyle(fontSize: 16, height: 1.6)),
-          ],
-        ),
+          ),
+          const QuickExitButton(),
+        ],
       ),
     );
   }
@@ -1336,80 +1510,87 @@ class SettingsScreen extends StatelessWidget {
           title: const Text("Settings"),
           backgroundColor: kColorNavy,
           foregroundColor: Colors.white),
-      body: ListView(
+      body: Stack(
         children: [
-          ListTile(
-            leading: const Icon(Icons.privacy_tip),
-            title: const Text("Privacy Policy"),
-            onTap: () => launchUrl(Uri.parse(kPrivacyUrl)),
-          ),
-          ListTile(
-            leading: const Icon(Icons.description),
-            title: const Text("Terms of Service"),
-            onTap: () => launchUrl(Uri.parse(kTermsUrl)),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.lock_outline),
-            title: const Text("Parental Controls"),
-            subtitle: const Text("Restrict access to Decoder"),
-            onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
-              final currentPin = prefs.getString('parentalPin');
+          ListView(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.privacy_tip),
+                title: const Text("Privacy Policy"),
+                onTap: () => launchUrl(Uri.parse(kPrivacyUrl)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.description),
+                title: const Text("Terms of Service"),
+                onTap: () => launchUrl(Uri.parse(kTermsUrl)),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.lock_outline),
+                title: const Text("Parental Controls"),
+                subtitle: const Text("Restrict access to Decoder"),
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  final currentPin = prefs.getString('parentalPin');
 
-              if (!context.mounted) return;
+                  if (!context.mounted) return;
 
-              if (currentPin != null) {
-                final bool? verified = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => _PinDialog(correctPin: currentPin));
-                if (verified == true) {
-                  await prefs.remove('parentalPin');
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Parental PIN removed")));
+                  if (currentPin != null) {
+                    final bool? verified = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => _PinDialog(correctPin: currentPin));
+                    if (verified == true) {
+                      await prefs.remove('parentalPin');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Parental PIN removed")));
+                      }
+                    }
+                  } else {
+                    final TextEditingController pinCtrl =
+                        TextEditingController();
+                    await showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                              title: const Text("Set Parental PIN"),
+                              content: TextField(
+                                  controller: pinCtrl,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 4,
+                                  decoration: const InputDecoration(
+                                      hintText: "Enter 4 digits")),
+                              actions: [
+                                TextButton(
+                                    onPressed: () async {
+                                      if (pinCtrl.text.length == 4) {
+                                        await prefs.setString(
+                                            'parentalPin', pinCtrl.text);
+                                        Navigator.pop(ctx);
+                                      }
+                                    },
+                                    child: const Text("Save"))
+                              ],
+                            ));
                   }
-                }
-              } else {
-                final TextEditingController pinCtrl = TextEditingController();
-                await showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                          title: const Text("Set Parental PIN"),
-                          content: TextField(
-                              controller: pinCtrl,
-                              keyboardType: TextInputType.number,
-                              maxLength: 4,
-                              decoration: const InputDecoration(
-                                  hintText: "Enter 4 digits")),
-                          actions: [
-                            TextButton(
-                                onPressed: () async {
-                                  if (pinCtrl.text.length == 4) {
-                                    await prefs.setString(
-                                        'parentalPin', pinCtrl.text);
-                                    Navigator.pop(ctx);
-                                  }
-                                },
-                                child: const Text("Save"))
-                          ],
-                        ));
-              }
-            },
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: kColorError),
+                title: const Text("Delete All My Data",
+                    style: TextStyle(color: kColorError)),
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SplashScreen()),
+                      (route) => false);
+                },
+              ),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.delete, color: kColorError),
-            title: const Text("Delete All My Data",
-                style: TextStyle(color: kColorError)),
-            onTap: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.clear();
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SplashScreen()),
-                  (route) => false);
-            },
-          ),
+          const QuickExitButton(),
         ],
       ),
     );
