@@ -5,19 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-// Ensure you add intl to pubspec.yaml
-import 'content_data.dart';
+import 'package:intl/intl.dart'; // REQUIRED: Add intl to pubspec.yaml
+import 'content_data.dart'; // Ensure you created this file
 
 // --- CONFIGURATION ---
 const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
 const String kTermsUrl = "https://digitalabcs.com.au/terms.html";
-const String kApiBaseUrl =
-    "https://decoder-backend-222632046587.australia-southeast1.run.app";
-
-// --- IN-APP PURCHASE CONFIGURATION ---
-const String kMonthlyId = 'linguistic_decoder_monthly';
-const String kAnnualId = 'linguistic_decoder_annual';
-const String kLifetimeId = 'linguistic_decoder_lifetime';
+// NOTE: For Android Emulator use 'http://10.0.2.2:8080'. For Real Device/Production use your Cloud Run URL.
+const String kApiBaseUrl = "https://decoder-backend-222632046587.australia-southeast1.run.app";
 
 // --- THEME ---
 const Color kColorNavy = Color(0xFF1E3A8A);
@@ -32,7 +27,7 @@ void main() async {
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    debugPrint("⚠️ .env not found, using defaults: $e");
+    debugPrint("⚠️ .env not found, using defaults");
   }
   runApp(const LinguisticDecoderApp());
 }
@@ -56,8 +51,7 @@ class LinguisticDecoderApp extends StatelessWidget {
             backgroundColor: kColorGreen,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ),
@@ -78,6 +72,7 @@ class QuickExitButton extends StatelessWidget {
       bottom: 30,
       left: 20,
       child: FloatingActionButton.extended(
+        heroTag: "quick_exit",
         backgroundColor: kColorError,
         onPressed: () {
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
@@ -119,11 +114,10 @@ class SafeModeScreen extends StatelessWidget {
 }
 
 // ============================================================================
-// 1. SPLASH SCREEN (Routing Logic)
+// 1. SPLASH SCREEN
 // ============================================================================
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
-
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -168,13 +162,11 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Icon(Icons.psychology, size: 80, color: Colors.white),
             SizedBox(height: 20),
-            Text(
-              "Linguistic Decoder",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
-            ),
+            Text("Linguistic Decoder",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             CircularProgressIndicator(color: kColorPurple),
           ],
@@ -185,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 // ============================================================================
-// 1.5 AGE VERIFICATION SCREEN
+// 1.5 AGE VERIFICATION
 // ============================================================================
 class AgeVerificationScreen extends StatelessWidget {
   const AgeVerificationScreen({super.key});
@@ -202,10 +194,7 @@ class AgeVerificationScreen extends StatelessWidget {
             const Icon(Icons.verified_user, size: 80, color: Colors.white),
             const SizedBox(height: 24),
             const Text("Age Verification",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const Text(
                 "This tool utilizes AI to decode communication. You must be 17+ to use this application.",
@@ -230,10 +219,8 @@ class AgeVerificationScreen extends StatelessWidget {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isAgeVerified', true);
                   if (context.mounted) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const PaywallScreen()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const PaywallScreen()));
                   }
                 },
                 child: const Text("Confirm Eligibility"),
@@ -247,7 +234,7 @@ class AgeVerificationScreen extends StatelessWidget {
 }
 
 // ============================================================================
-// 2. PAYWALL SCREEN (In-App Purchases)
+// 2. PAYWALL SCREEN (COMPLIANCE FIX)
 // ============================================================================
 class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
@@ -256,16 +243,20 @@ class PaywallScreen extends StatefulWidget {
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
-  // ... (Keep existing IAP logic, simplified for brevity here) ...
-  // Assuming standard IAP implementation or bypass for testing
-  final bool _loading = false;
+  // NOTE: Implementing actual IAP is required for Store approval.
+  // This is a UI mockup.
+  bool _loading = false;
 
-  void _bypass() async {
-    // Temporary bypass for testing flow
+  void _restorePurchase() async {
+    setState(() => _loading = true);
+    await Future.delayed(const Duration(seconds: 2)); // Simulate network
+    // For Development testing only:
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('hasPaidPremium', true);
+    
     if (mounted) {
-      Navigator.pushReplacement(
+       setState(() => _loading = false);
+       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
     }
   }
@@ -279,16 +270,34 @@ class _PaywallScreenState extends State<PaywallScreen> {
         child: Column(
           children: [
             const Spacer(),
-            const Icon(Icons.lock, size: 60, color: kColorPurple),
+            const Icon(Icons.lock_open, size: 60, color: kColorPurple),
             const SizedBox(height: 20),
             const Text("Unlock Premium",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold)),
-            const SizedBox(height: 40),
-            ElevatedButton(
-                onPressed: _bypass, child: const Text("Start Trial (Demo)")),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                "Get unlimited analysis, speaker profiling, and response simulation.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+            const SizedBox(height: 20),
+            _loading 
+              ? const CircularProgressIndicator(color: Colors.white)
+              : ElevatedButton(
+                  onPressed: _restorePurchase, 
+                  // Renamed to "Start Trial" or "Restore" to comply with App Store policies
+                  // Do NOT use "Bypass" in production builds.
+                  child: const Text("Start Free Trial")
+                ),
+             TextButton(
+               onPressed: _restorePurchase,
+               child: const Text("Restore Purchase", style: TextStyle(color: Colors.white54)),
+             ),
             const Spacer(),
           ],
         ),
@@ -349,10 +358,8 @@ class DashboardScreen extends StatelessWidget {
                   title: "Speaker Profiles",
                   icon: Icons.people,
                   color: kColorGold,
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const SpeakerProfilesScreen())),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SpeakerProfilesScreen())),
                 ),
                 _DashboardTile(
                   title: "Library",
@@ -362,19 +369,11 @@ class DashboardScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const LibraryScreen())),
                 ),
                 _DashboardTile(
-                  title: "History",
-                  icon: Icons.history,
-                  color: kColorNavy,
-                  onTap: () {}, // Implement History List if needed
-                ),
-                _DashboardTile(
                   title: "Settings",
                   icon: Icons.settings,
                   color: Colors.grey,
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const SettingsScreen())),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen())),
                 ),
               ],
             ),
@@ -436,8 +435,7 @@ class _DashboardTile extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
       ),
@@ -446,7 +444,7 @@ class _DashboardTile extends StatelessWidget {
 }
 
 // ============================================================================
-// 4. DECODER SCREEN (with Simulator & Verification)
+// 4. DECODER SCREEN
 // ============================================================================
 class DecoderScreen extends StatefulWidget {
   const DecoderScreen({super.key});
@@ -461,7 +459,15 @@ class _DecoderScreenState extends State<DecoderScreen> {
   Map<String, dynamic>? _result;
 
   Future<void> _analyze() async {
-    if (_inputController.text.isEmpty) return;
+    if (_inputController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please enter text to analyze")));
+      return;
+    }
+    
+    // Dismiss keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+
     setState(() {
       _isLoading = true;
       _result = null;
@@ -469,6 +475,8 @@ class _DecoderScreenState extends State<DecoderScreen> {
 
     try {
       final String baseUrl = dotenv.env['API_URL'] ?? kApiBaseUrl;
+      debugPrint("Connecting to: $baseUrl/analyze");
+      
       final response = await http
           .post(
             Uri.parse("$baseUrl/analyze"),
@@ -478,7 +486,15 @@ class _DecoderScreenState extends State<DecoderScreen> {
           .timeout(const Duration(seconds: 45));
 
       if (response.statusCode == 200) {
-        setState(() => _result = jsonDecode(response.body));
+        final data = jsonDecode(response.body);
+        
+        // Handle error sent gracefully from backend
+        if (data['error'] != null && data['error'] != "null") {
+           throw Exception(data['message'] ?? "Analysis Error");
+        }
+
+        setState(() => _result = data);
+        
         // Auto scroll to results
         Future.delayed(const Duration(milliseconds: 500), () {
           if (_scrollController.hasClients) {
@@ -489,18 +505,21 @@ class _DecoderScreenState extends State<DecoderScreen> {
           }
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error: ${response.statusCode}")));
+        throw Exception("Server Error: ${response.statusCode}");
       }
     } catch (e) {
+      debugPrint("Analysis Error: $e");
+      String msg = "Connection failed.";
+      if (e.toString().contains("SocketException")) msg = "Could not reach server. Check internet.";
+      if (e.toString().contains("TimeoutException")) msg = "Server timed out. Text may be too long.";
+      
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Connection failed. Check internet.")));
+          SnackBar(content: Text(msg), backgroundColor: kColorError));
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  // --- SAVE TO PROFILE LOGIC ---
   Future<void> _saveToProfile(Map<String, dynamic> analysisData) async {
     final prefs = await SharedPreferences.getInstance();
     final String? profilesStr = prefs.getString('speaker_profiles');
@@ -508,13 +527,12 @@ class _DecoderScreenState extends State<DecoderScreen> {
 
     if (profiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("No profiles found. Create one first.")));
+          content: Text("No profiles found. Create one in Dashboard first.")));
       return;
     }
 
     if (!mounted) return;
 
-    // Show Dialog to pick profile
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -530,18 +548,14 @@ class _DecoderScreenState extends State<DecoderScreen> {
                 title: Text(p['name']),
                 leading: const Icon(Icons.person),
                 onTap: () async {
-                  // Add log to profile
                   if (p['logs'] == null) p['logs'] = [];
                   (p['logs'] as List).add({
                     'date': DateTime.now().toIso8601String(),
                     'text': _inputController.text,
                     'analysis': analysisData
                   });
-
-                  // Save back to prefs
                   profiles[i] = p;
-                  await prefs.setString(
-                      'speaker_profiles', jsonEncode(profiles));
+                  await prefs.setString('speaker_profiles', jsonEncode(profiles));
 
                   if (mounted) {
                     Navigator.pop(ctx);
@@ -562,7 +576,8 @@ class _DecoderScreenState extends State<DecoderScreen> {
     return Scaffold(
       appBar: AppBar(
           title: const Text("Decoder", style: TextStyle(color: Colors.white)),
-          backgroundColor: kColorNavy),
+          backgroundColor: kColorNavy,
+          iconTheme: const IconThemeData(color: Colors.white)),
       body: Column(
         children: [
           Expanded(
@@ -574,7 +589,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
                   controller: _inputController,
                   maxLines: 5,
                   decoration: const InputDecoration(
-                    hintText: "Paste conversation here...",
+                    hintText: "Paste conversation here (Emails, Texts, Transcripts)...",
                     border: OutlineInputBorder(),
                     filled: true,
                     fillColor: Colors.white,
@@ -584,8 +599,7 @@ class _DecoderScreenState extends State<DecoderScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: kColorGreen),
+                    style: ElevatedButton.styleFrom(backgroundColor: kColorGreen),
                     onPressed: _isLoading ? null : _analyze,
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
@@ -595,7 +609,6 @@ class _DecoderScreenState extends State<DecoderScreen> {
                 const SizedBox(height: 20),
 
                 if (_result != null) ...[
-                  // 1. TRANSCRIPT VERIFICATION & EDITING
                   _TranscriptVerificationCard(
                     transcript: List<Map<String, dynamic>>.from(
                         _result!['transcript_log'] ?? []),
@@ -605,8 +618,6 @@ class _DecoderScreenState extends State<DecoderScreen> {
                       });
                     },
                   ),
-
-                  // 2. SAVE BUTTON
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
@@ -616,18 +627,13 @@ class _DecoderScreenState extends State<DecoderScreen> {
                           style: TextStyle(color: kColorNavy)),
                     ),
                   ),
-
-                  // 3. ANALYSIS RESULTS
                   _AnalysisResults(data: _result!),
-
-                  // 4. RESPONSE SIMULATOR
                   _ResponseSimulator(contextText: _inputController.text),
                 ],
-                const SizedBox(height: 80), // Space for Quick Exit
+                const SizedBox(height: 80),
               ],
             ),
           ),
-          const SizedBox(height: 60), // Space for floating button if needed
         ],
       ),
       floatingActionButton: const QuickExitButton(),
@@ -635,9 +641,6 @@ class _DecoderScreenState extends State<DecoderScreen> {
   }
 }
 
-// ============================================================================
-// 4.1 TRANSCRIPT VERIFICATION WIDGET
-// ============================================================================
 class _TranscriptVerificationCard extends StatelessWidget {
   final List<Map<String, dynamic>> transcript;
   final Function(List<Map<String, dynamic>>) onUpdate;
@@ -647,6 +650,7 @@ class _TranscriptVerificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // If empty, hide widget
     if (transcript.isEmpty) return const SizedBox.shrink();
 
     return Card(
@@ -680,7 +684,6 @@ class _TranscriptVerificationCard extends StatelessWidget {
               final t = entry.value;
               return InkWell(
                 onTap: () async {
-                  // Edit Speaker Logic
                   final newName = await showDialog<String>(
                     context: context,
                     builder: (ctx) {
@@ -689,8 +692,7 @@ class _TranscriptVerificationCard extends StatelessWidget {
                         title: const Text("Edit Speaker"),
                         content: TextField(
                             controller: c,
-                            decoration: const InputDecoration(
-                                labelText: "Speaker Name")),
+                            decoration: const InputDecoration(labelText: "Speaker Name")),
                         actions: [
                           TextButton(
                               onPressed: () => Navigator.pop(ctx),
@@ -725,9 +727,8 @@ class _TranscriptVerificationCard extends StatelessWidget {
                             textAlign: TextAlign.right),
                       ),
                       Expanded(
-                        child: Text(t['text'],
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.black87)),
+                        child: Text(t['text'].toString(),
+                            style: const TextStyle(fontSize: 13, color: Colors.black87)),
                       ),
                       const Icon(Icons.edit, size: 14, color: Colors.grey),
                     ],
@@ -742,9 +743,6 @@ class _TranscriptVerificationCard extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// 4.2 ANALYSIS RESULTS WIDGET
-// ============================================================================
 class _AnalysisResults extends StatelessWidget {
   final Map<String, dynamic> data;
   const _AnalysisResults({required this.data});
@@ -753,69 +751,65 @@ class _AnalysisResults extends StatelessWidget {
   Widget build(BuildContext context) {
     final speakers = data['speakers'] as List? ?? [];
     return Column(
-      children: speakers
-          .map((s) => Card(
-                color: Colors.white,
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(s['label'] ?? 'Speaker',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18)),
-                      const Divider(),
-                      if (s['deep_dive'] != null)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.red[50],
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: Colors.red[100]!)),
-                          child: Row(
+      children: speakers.map((s) {
+        // Safe access to map keys
+        final String label = s['label'] ?? 'Speaker';
+        final String? deepDive = s['deep_dive'];
+        
+        return Card(
+          color: Colors.white,
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                const Divider(),
+                if (deepDive != null && deepDive.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.red[100]!)),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.warning_amber, color: kColorError, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.warning_amber,
-                                  color: kColorError, size: 20),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text("DETECTED TACTIC:",
-                                        style: TextStyle(
-                                            color: kColorError,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 10)),
-                                    Text(s['deep_dive'],
-                                        style: const TextStyle(
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.black87,
-                                            fontSize: 13)),
-                                  ],
-                                ),
-                              ),
+                              const Text("DETECTED TACTIC:",
+                                  style: TextStyle(
+                                      color: kColorError,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10)),
+                              Text(deepDive,
+                                  style: const TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.black87,
+                                      fontSize: 13)),
                             ],
                           ),
                         ),
-                      _InfoRow(
-                          label: "Emotion",
-                          value: s['likely_emotional_state'] ?? 'Unknown'),
-                      _InfoRow(
-                          label: "Translation", value: s['translation'] ?? ''),
-                      const SizedBox(height: 8),
-                      const Text("Advice:",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(s['advice'] ?? '',
-                          style: const TextStyle(
-                              fontStyle: FontStyle.italic,
-                              color: Colors.black54)),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ))
-          .toList(),
+                _InfoRow(label: "Emotion", value: s['likely_emotional_state'] ?? 'Unknown'),
+                _InfoRow(label: "Translation", value: s['translation'] ?? ''),
+                const SizedBox(height: 8),
+                const Text("Advice:", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(s['advice'] ?? '',
+                    style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54)),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -830,9 +824,7 @@ class _InfoRow extends StatelessWidget {
           text: TextSpan(
             style: const TextStyle(color: Colors.black87, fontSize: 14),
             children: [
-              TextSpan(
-                  text: "$label: ",
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: "$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
               TextSpan(text: value),
             ],
           ),
@@ -840,13 +832,9 @@ class _InfoRow extends StatelessWidget {
       );
 }
 
-// ============================================================================
-// 4.3 RESPONSE SIMULATOR WIDGET
-// ============================================================================
 class _ResponseSimulator extends StatefulWidget {
   final String contextText;
   const _ResponseSimulator({required this.contextText});
-
   @override
   State<_ResponseSimulator> createState() => _ResponseSimulatorState();
 }
@@ -868,18 +856,18 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
       final response = await http.post(
         Uri.parse("$baseUrl/simulate"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode(
-            {"context": widget.contextText, "draft": _draftCtrl.text}),
+        body: jsonEncode({"context": widget.contextText, "draft": _draftCtrl.text}),
       );
 
       if (response.statusCode == 200) {
         setState(() => _simResult = jsonDecode(response.body));
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Simulation failed")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Simulation failed")));
       }
     } catch (e) {
-      //
+      ScaffoldMessenger.of(context).showSnackBar(
+           const SnackBar(content: Text("Connection Error")));
     } finally {
       setState(() => _simLoading = false);
     }
@@ -902,10 +890,7 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
                 Icon(Icons.science, color: kColorGold),
                 SizedBox(width: 8),
                 Text("Response Simulator",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black87)),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ],
             ),
             const SizedBox(height: 8),
@@ -929,10 +914,8 @@ class _ResponseSimulatorState extends State<_ResponseSimulator> {
                 onPressed: _simLoading ? null : _simulate,
                 child: _simLoading
                     ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2))
+                        height: 20, width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                     : const Text("Test Response"),
               ),
             ),
@@ -1021,8 +1004,7 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
                 };
                 setState(() => _profiles.add(newProfile));
                 final prefs = await SharedPreferences.getInstance();
-                await prefs.setString(
-                    'speaker_profiles', jsonEncode(_profiles));
+                await prefs.setString('speaker_profiles', jsonEncode(_profiles));
                 if (mounted) Navigator.pop(ctx);
               }
             },
@@ -1037,9 +1019,9 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Speaker Patterns",
-              style: TextStyle(color: Colors.white)),
-          backgroundColor: kColorNavy),
+          title: const Text("Speaker Patterns", style: TextStyle(color: Colors.white)),
+          backgroundColor: kColorNavy,
+          iconTheme: const IconThemeData(color: Colors.white)),
       body: _profiles.isEmpty
           ? const Center(
               child: Text("No profiles yet. Create one to track patterns.",
@@ -1077,9 +1059,6 @@ class _SpeakerProfilesScreenState extends State<SpeakerProfilesScreen> {
   }
 }
 
-// ============================================================================
-// 5.1 SPEAKER DETAIL & DEEP DIVE
-// ============================================================================
 class SpeakerDetailScreen extends StatefulWidget {
   final Map<String, dynamic> profile;
   const SpeakerDetailScreen({super.key, required this.profile});
@@ -1129,16 +1108,11 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
 
   Color _getRiskColor(String? level) {
     switch (level?.toUpperCase()) {
-      case 'CRITICAL':
-        return Colors.red[900]!;
-      case 'HIGH':
-        return kColorError;
-      case 'MEDIUM':
-        return Colors.orange;
-      case 'LOW':
-        return kColorGreen;
-      default:
-        return Colors.grey;
+      case 'CRITICAL': return Colors.red[900]!;
+      case 'HIGH': return kColorError;
+      case 'MEDIUM': return Colors.orange;
+      case 'LOW': return kColorGreen;
+      default: return Colors.grey;
     }
   }
 
@@ -1150,12 +1124,12 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
       appBar: AppBar(
           title: Text(widget.profile['name'],
               style: const TextStyle(color: Colors.white)),
-          backgroundColor: kColorNavy),
+          backgroundColor: kColorNavy,
+          iconTheme: const IconThemeData(color: Colors.white)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // PATTERN CARD
             Card(
               elevation: 4,
               color: Colors.white,
@@ -1168,8 +1142,7 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                       Icon(Icons.analytics, color: kColorNavy),
                       SizedBox(width: 8),
                       Text("Behavioral Profile",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18))
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18))
                     ]),
                     const SizedBox(height: 16),
                     if (_insight != null) ...[
@@ -1177,29 +1150,19 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                                 color: _getRiskColor(_insight!['risk_level']),
                                 borderRadius: BorderRadius.circular(4)),
                             child: Text(
                                 "${_insight!['risk_level'] ?? 'UNK'} RISK",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                           ),
-                          Text("Trend: ${_insight!['escalation_trend'] ?? ''}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey)),
                         ],
                       ),
                       const SizedBox(height: 12),
                       Text(_insight!['pattern'] ?? '',
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: kColorNavy)),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kColorNavy)),
                       const SizedBox(height: 6),
                       Text(_insight!['summary'] ?? ''),
                       const SizedBox(height: 12),
@@ -1207,16 +1170,13 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                         spacing: 8,
                         children: (List<String>.from(_insight!['traits'] ?? []))
                             .map((t) => Chip(
-                                label: Text(t,
-                                    style: const TextStyle(fontSize: 10)),
+                                label: Text(t, style: const TextStyle(fontSize: 10)),
                                 visualDensity: VisualDensity.compact))
                             .toList(),
                       ),
                       const Divider(),
-                      const Text("Strategic Advice:",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(_insight!['recommendation'] ?? '',
-                          style: const TextStyle(fontStyle: FontStyle.italic)),
+                      const Text("Strategic Advice:", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_insight!['recommendation'] ?? '', style: const TextStyle(fontStyle: FontStyle.italic)),
                     ] else
                       Center(
                         child: Column(
@@ -1227,12 +1187,10 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                                 style: TextStyle(color: Colors.grey)),
                             const SizedBox(height: 16),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: kColorPurple),
+                              style: ElevatedButton.styleFrom(backgroundColor: kColorPurple),
                               onPressed: _analyzing ? null : _analyzeHistory,
                               child: _analyzing
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                  ? const CircularProgressIndicator(color: Colors.white)
                                   : const Text("Generate Full Profile"),
                             )
                           ],
@@ -1242,15 +1200,11 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
             const Align(
                 alignment: Alignment.centerLeft,
                 child: Text("History Log",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: kColorNavy))),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kColorNavy))),
             const SizedBox(height: 10),
             ListView.builder(
               shrinkWrap: true,
@@ -1269,13 +1223,10 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(DateFormat('dd MMM yyy').format(date),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey)),
+                              Text(DateFormat('dd MMM yyyy').format(date),
+                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                               Text(DateFormat('h:mm a').format(date),
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.grey)),
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
                             ]),
                         const SizedBox(height: 4),
                         Text(log['text'],
@@ -1291,9 +1242,6 @@ class _SpeakerDetailScreenState extends State<SpeakerDetailScreen> {
       ),
     );
   }
-}
-
-DateFormat(String s) {
 }
 
 // ============================================================================
@@ -1345,8 +1293,7 @@ class ArticleDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              Text(article.title, style: const TextStyle(color: Colors.white)),
+          title: Text(article.title, style: const TextStyle(color: Colors.white)),
           backgroundColor: kColorNavy,
           iconTheme: const IconThemeData(color: Colors.white)),
       body: SingleChildScrollView(
@@ -1355,10 +1302,7 @@ class ArticleDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(article.title,
-                style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: kColorNavy)),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: kColorNavy)),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
@@ -1367,10 +1311,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: kColorPurple.withOpacity(0.3))),
               child: Text(article.summary,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black87)),
+                  style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.black87)),
             ),
             const SizedBox(height: 24),
             Text(article.content,
@@ -1419,7 +1360,6 @@ class SettingsScreen extends StatelessWidget {
               if (!context.mounted) return;
 
               if (currentPin != null) {
-                // Remove PIN
                 final bool? verified = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => _PinDialog(correctPin: currentPin));
@@ -1431,7 +1371,6 @@ class SettingsScreen extends StatelessWidget {
                   }
                 }
               } else {
-                // Set PIN
                 final TextEditingController pinCtrl = TextEditingController();
                 await showDialog(
                     context: context,

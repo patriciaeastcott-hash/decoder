@@ -6,7 +6,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -17,9 +16,8 @@ app = Flask(__name__)
 # Configure Logging
 logging.basicConfig(level=logging.INFO)
 
-# 1. CORS CONFIGURATION
-# Set to allow all for debugging, restrict in production if needed
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Allow CORS for app communication
+CORS(app)
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
@@ -32,6 +30,7 @@ if not API_KEY:
     logging.error("CRITICAL WARNING: GEMINI_API_KEY is missing from .env")
 else:
     genai.configure(api_key=API_KEY)
+
 
 # --- SYSTEM PROMPT (PRESERVED EXACTLY) ---
 SYSTEM_INSTRUCTION = """
@@ -117,74 +116,34 @@ For the "deep_dive" field, identify specific PSYCHOLOGICAL/LINGUISTIC TACTICS:
 
 MUST cite specific phrases demonstrating the tactic.
 
-OUTPUT FORMAT (STRICT JSON):
+CRITICAL OUTPUT REQUIREMENT:
+You must output VALID JSON only. No markdown formatting.
+
+Your JSON must match this structure exactly:
 {
-  "conversation_overview": {
-    "detected_speakers": 2,
-    "speaker_labels": ["Speaker A", "Speaker B"],
-    "overall_dynamic": "Brief description of interaction type (e.g., 'Conflict escalation with unbalanced power dynamics')",
-    "conflict_level": "Low / Medium / High",
-    "primary_issue": "Core disagreement or tension point"
-  },
-  
+  "transcript_log": [
+    {"speaker": "Exact Name or Label", "text": "The exact sentence spoken"}
+  ],
   "speakers": [
     {
-      "label": "Speaker A",
-      "likely_emotional_state": "Primary emotion + secondary emotions",
-      "communication_goals": ["goal1", "goal2", "goal3"],
-      "linguistic_patterns": ["observable pattern1", "pattern2"],
-      "rhetorical_strategies": ["strategy1", "strategy2"],
-      "unmet_needs": ["underlying need1", "need2"],
-      "sentiment_category": "Defensive / Aggressive / Conciliatory / Neutral / Anxious / etc.",
-      "translation": "Plain English: What Speaker A is really saying beneath the words",
-      "deep_dive": "4-6 sentences identifying the SPECIFIC psychological/linguistic tactic being employed, with direct quote examples.",
-      "potential_impact_on_others": "How this communication style likely affects the other speaker(s)",
-      "advice": "Actionable guidance: What this speaker should understand about their communication and concrete next steps",
-      "response_options": [
-        {
-          "style": "Diplomatic",
-          "text": "A drafted reply that acknowledges emotion, validates where possible, and seeks to reduce tension"
-        },
-        {
-          "style": "Assertive",
-          "text": "A drafted reply that is respectful but firm, establishing clear boundaries without aggression"
-        },
-        {
-          "style": "Collaborative",
-          "text": "A drafted reply that focuses on shared goals and practical solutions"
-        }
-      ]
+      "label": "Speaker Name",
+      "likely_emotional_state": "Emotion",
+      "translation": "What they really mean",
+      "deep_dive": "Specific tactic used (Gaslighting, DARVO, etc) with evidence.",
+      "advice": "Actionable advice for dealing with this person."
     }
   ],
-  
-  "interaction_dynamics": {
-    "power_balance": "Analysis of who holds conversational power and how",
-    "escalation_pattern": "Escalating / De-escalating / Stable / Cyclical",
-    "communication_barriers": ["barrier1", "barrier2", "barrier3"],
-    "productive_elements": ["any positive patterns", "collaborative moments"],
-    "cycle_risk": "If this pattern continues, what relational damage might occur"
-  },
-  
-  "path_forward": {
-    "immediate_steps": ["step1 for de-escalation", "step2", "step3"],
-    "if_unresolved": "Likely trajectory if communication patterns continue unchanged",
-    "optimal_outcome": "What successful resolution would look like and how to achieve it"
+  "conversation_overview": {
+    "detected_speakers": 2,
+    "primary_issue": "Summary of conflict"
   }
 }
 
-CRITICAL REQUIREMENTS:
-✓ Output ONLY valid JSON - no markdown, no preamble, no commentary
-✓ Always analyze from BOTH/ALL participant perspectives equally
-✓ Ground every insight in specific textual evidence
-✓ Maintain clinical objectivity while providing empathetic guidance
-✓ Identify concrete, actionable interventions
-✓ Never reproduce harmful communication patterns in your analysis language
-✓ The "deep_dive" field for each speaker MUST explain specific tactics with quoted examples
-✓ EACH speaker object MUST include ALL fields: label, likely_emotional_state, communication_goals, linguistic_patterns, rhetorical_strategies, unmet_needs, sentiment_category, translation, deep_dive, potential_impact_on_others, advice, response_options
-✓ Use proper JSON escaping for quotes (use single quotes in text or escape with backslash)
-
-EXAMPLE DEEP DIVE (DO THIS):
-"This employs Guilt Induction through obligation language. The phrase 'after everything I have done for you' creates emotional debt, while 'I guess I am just not important to you' positions the speaker as a victim, making disagreement feel like betrayal."
+RULES:
+1. Identify speakers by name if present in text.
+2. If no names, use "Speaker A", "Speaker B".
+3. 'transcript_log' MUST list every sentence segment with the assigned speaker so the user can verify accuracy.
+4. 'deep_dive' should identify psychological tactics (Double Bind, Projection, Stonewalling, etc.).
 """
 
 # --- ROBUST AI HANDLERS ---
@@ -192,36 +151,30 @@ EXAMPLE DEEP DIVE (DO THIS):
 def clean_and_parse_json(text):
     """
     Cleans AI response to ensure valid JSON.
-    Removes Markdown ticks, leading/trailing whitespace, and handles common AI errors.
     """
     try:
         clean = text.strip()
         # Remove Markdown formatting if present
-        if "```json" in clean:
-            clean = clean.split("```json")[1].split("```")[0]
-        elif "```" in clean:
-            clean = clean.split("```")[1].split("```")[0]
+        if clean.startswith("```json"):
+            clean = clean[7:]
+        if clean.startswith("```"):
+            clean = clean[3:]
+        if clean.endswith("```"):
+            clean = clean[:-3]
         
         return json.loads(clean.strip())
     except Exception as e:
-        logging.error(f"JSON Parsing Failed: {e}")
-        # Return a safe error JSON rather than crashing the app
+        logging.error(f"JSON Parsing Failed: {e}. Raw text: {text}")
         return {
             "error": "JSON_PARSE_ERROR", 
             "message": "The AI analysis could not be formatted correctly.",
+            "transcript_log": [],
             "speakers": [] 
         }
 
 def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
-    """
-    Tries multiple models in order of stability.
-    Solves the '404' and 'Model not found' errors.
-    """
-    # Priority list: Stable -> Legacy. 
-    # Removed non-existent 'gemini-3' models to prevent immediate 404s.
-    models_to_try = [
-        '	gemini-1.5-flash'
-    ]
+    # FIXED: Removed the \t tab character that was causing connection errors
+    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro']
     
     last_error = None
 
@@ -234,12 +187,12 @@ def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
                 system_instruction=system_instruction
             )
             
-            # Use safety settings to prevent blocking legitimate analysis
+            # Safety settings to prevent blocking analysis of heated arguments
             safety_settings = [
-                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
             ]
 
             response = model.generate_content(prompt, safety_settings=safety_settings)
@@ -253,9 +206,14 @@ def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
             last_error = e
             continue
     
-    # If all fail
-    raise RuntimeError(f"All AI models failed. Last error: {last_error}")
-
+    # Return a graceful error structure instead of crashing
+    return {
+        "error": "AI_SERVICE_UNAVAILABLE",
+        "message": "Analysis service is currently busy. Please try again in a moment.",
+        "transcript_log": [],
+        "speakers": []
+    }
+    
 # --- API ENDPOINTS ---
 
 @app.route('/analyze', methods=['POST'])
@@ -267,15 +225,14 @@ def analyze_text():
         if not user_text:
             return jsonify({"error": "No text provided"}), 400
 
-        prompt = f"Analyze this text strictly according to the JSON schema. Identify speakers by NAME if possible. Output ONLY valid JSON with no markdown formatting: {user_text}"
+        prompt = f"Analyze this text. Output ONLY valid JSON: {user_text}"
         
-        # Use the robust generator
         result = generate_with_fallback(prompt, system_instruction=SYSTEM_INSTRUCTION, json_mode=True)
         return jsonify(result)
 
     except Exception as e:
         logging.error(f"Analyze Error: {e}")
-        return jsonify({"error": str(e), "message": "Analysis failed. Please try again."}), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/analyze-profile', methods=['POST'])
 def analyze_profile():
@@ -284,11 +241,9 @@ def analyze_profile():
         speaker_name = data.get('name', 'Target')
         logs = data.get('logs', [])
         
-        # Merge history
         history = "\n".join([f"[{log.get('date', 'Unknown')}] {log.get('text', '')}" for log in logs[-15:]])
 
         prompt = f"""
-        You are a Forensic Behavioral Analyst.
         Target: "{speaker_name}"
         History: {history}
         
@@ -296,17 +251,14 @@ def analyze_profile():
         {{
           "risk_level": "Low/Medium/High/Critical",
           "pattern": "Name of dominant pattern",
-          "traits": ["Trait 1", "Trait 2", "Trait 3"],
-          "summary": "2-4 sentences explaining the dynamic.",
+          "traits": ["Trait 1", "Trait 2"],
+          "summary": "Short explanation.",
           "recommendation": "Strategic advice."
         }}
         """
-        
         result = generate_with_fallback(prompt, json_mode=True)
         return jsonify(result)
-
     except Exception as e:
-        logging.error(f"Profile Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/simulate', methods=['POST'])
@@ -320,54 +272,18 @@ def simulate_response():
         CONTEXT: {context}
         DRAFT REPLY: {draft}
         
-        Simulate how the other person will likely react.
-        OUTPUT JSON ONLY:
-        {{
-          "score": 85,
-          "response": "Likely Reaction",
-          "analysis": "Explanation."
-        }}
+        Simulate reaction. OUTPUT JSON ONLY:
+        {{ "score": 85, "response": "Likely Reaction", "analysis": "Why." }}
         """
-        
         result = generate_with_fallback(prompt, json_mode=True)
         return jsonify(result)
-
     except Exception as e:
-        logging.error(f"Simulate Error: {e}")
         return jsonify({"error": str(e)}), 500
-
-@app.route('/report', methods=['POST'])
-def report_issue():
-    try:
-        data = request.json
-        user_reason = data.get('reason', 'User reported issue')
-        
-        logging.info(f"REPORT RECEIVED: {user_reason}")
-
-        if EMAIL_USER and EMAIL_PASS:
-            msg = MIMEMultipart()
-            msg['From'] = EMAIL_USER
-            msg['To'] = ALERT_RECEIVER
-            msg['Subject'] = f"URGENT: Content Report - {user_reason}"
-            msg.attach(MIMEText(str(data), 'plain'))
-
-            server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
-            server.quit()
-            return jsonify({"status": "reported"}), 200
-        else:
-            return jsonify({"status": "logged_only"}), 200
-
-    except Exception as e:
-        logging.error(f"Report Error: {e}")
-        return jsonify({"error": "Failed to report"}), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "version": "1.0.5"}), 200
+    return jsonify({"status": "healthy", "version": "1.1.0"}), 200
 
-# --- MAIN EXECUTION ---
 if __name__ == '__main__':
+    # Using 0.0.0.0 allows connections from external devices/emulators
     app.run(debug=True, host='0.0.0.0', port=8080)
