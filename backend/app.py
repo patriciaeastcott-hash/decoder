@@ -174,7 +174,7 @@ def clean_and_parse_json(text):
 
 def generate_with_fallback(prompt, system_instruction=None, json_mode=True):
     # FIXED: Removed the \t tab character that was causing connection errors
-    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro']
+    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-pro-exp', 'gemini-1.5-base', 'gemini-2.0-base', 'gemini-1.0', 'gemini-1.5-large', 'gemini-2.0-large-exp', 'gemini-2.0-large', 'gemini-2.0-flash', 'gemini-2.0-pro']
     
     last_error = None
 

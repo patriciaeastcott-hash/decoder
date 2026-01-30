@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'content_data.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // --- CONFIGURATION ---
 const String kPrivacyUrl = "https://digitalabcs.com.au/privacy.html";
@@ -41,7 +42,7 @@ class LinguisticDecoderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Linguistic Decoder',
       theme: ThemeData(
-        // FIXED: Removed 'fontFamily: Inter' to avoid Noto font errors
+        textTheme: GoogleFonts.interTextTheme(),
         useMaterial3: true,
         primaryColor: kColorNavy,
         scaffoldBackgroundColor: kColorBackground,
