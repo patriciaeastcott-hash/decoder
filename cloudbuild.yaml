@@ -1,0 +1,34 @@
+# Cloud Build configuration for Text Decoder API
+# Deploys to Cloud Run
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/text-decoder-api:$COMMIT_SHA', '.']
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/text-decoder-api:$COMMIT_SHA']
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'dec'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/text-decoder-api:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+images:
+  - 'gcr.io/$PROJECT_ID/text-decoder-api:$COMMIT_SHA'
+
+# Use Cloud Logging instead of GCS bucket for logs
+# This resolves the service_account + logs_bucket requirement
+options:
+  logging: CLOUD_LOGGING_ONLY
