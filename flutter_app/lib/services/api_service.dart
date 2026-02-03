@@ -10,10 +10,10 @@ import 'package:logger/logger.dart';
 import '../models/models.dart';
 
 class ApiService {
-  // Configure your Cloud Run URL here
+  // Cloud Run API URL
   static const String _baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://text-decoder-api-xxxxx.run.app', // Replace with actual URL
+    defaultValue: 'https://dec-222632046587.us-central1.run.app',
   );
 
   static const Duration _timeout = Duration(seconds: 60);
