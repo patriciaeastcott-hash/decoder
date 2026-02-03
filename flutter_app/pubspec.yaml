@@ -1,0 +1,98 @@
+name: text_decoder
+description: Decode conversations, understand communication patterns, and build better relationships.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Design
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  lottie: ^2.7.0
+  shimmer: ^3.0.0
+
+  # State Management
+  provider: ^6.1.1
+  flutter_riverpod: ^2.4.9
+
+  # Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.1
+  flutter_secure_storage: ^9.0.0
+
+  # Authentication
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^5.0.0
+
+  # Cloud Sync
+  googleapis: ^12.0.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+
+  # Networking
+  http: ^1.1.2
+  dio: ^5.4.0
+  connectivity_plus: ^5.0.2
+
+  # File Handling
+  file_picker: ^6.1.1
+  archive: ^3.4.9
+  share_plus: ^7.2.1
+
+  # Encryption
+  encrypt: ^5.0.3
+  crypto: ^3.0.3
+
+  # Utilities
+  intl: ^0.18.1
+  uuid: ^4.2.2
+  logger: ^2.0.2+1
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+  freezed_annotation: ^2.4.1
+
+  # Accessibility
+  semantics_debugger: ^1.0.0
+
+  # URL Launcher
+  url_launcher: ^6.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.7
+  hive_generator: ^2.0.1
+  json_serializable: ^6.7.1
+  freezed: ^2.4.6
+  mockito: ^5.4.4
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700

@@ -1,0 +1,2074 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-03",
+  "total_behaviors": 162,
+  "categories": [
+    {
+      "id": "communication_styles",
+      "category": "Communication Styles",
+      "description": "Fundamental patterns in how people express themselves and interact with others",
+      "icon": "chat_bubble",
+      "subcategories": [
+        {
+          "id": "assertive_communication",
+          "name": "Assertive Communication",
+          "description": "Direct, honest expression while respecting others",
+          "behaviors": [
+            {
+              "id": "clear_boundary_setting",
+              "name": "Clear Boundary Setting",
+              "definition": "Directly stating personal limits and expectations without aggression or apology",
+              "examples": [
+                "I'm not comfortable discussing this topic right now",
+                "I need some time alone to process this",
+                "That doesn't work for me, but here's what could"
+              ],
+              "healthy_indicators": [
+                "Maintains self-respect while respecting others",
+                "Reduces resentment and misunderstandings",
+                "Creates predictable, safe interactions"
+              ],
+              "unhealthy_indicators": [
+                "None when done authentically",
+                "Can become rigid if boundaries are never flexible"
+              ],
+              "frequency_note": "Healthy when consistent but adaptable"
+            },
+            {
+              "id": "i_statements",
+              "name": "I-Statement Usage",
+              "definition": "Expressing feelings and needs from personal perspective rather than blaming",
+              "examples": [
+                "I feel hurt when plans change last minute",
+                "I need more clarity about expectations",
+                "I'm struggling to understand your perspective"
+              ],
+              "healthy_indicators": [
+                "Takes ownership of emotions",
+                "Reduces defensiveness in listener",
+                "Promotes productive dialogue"
+              ],
+              "unhealthy_indicators": [
+                "Can feel formulaic if overused",
+                "May avoid necessary direct feedback"
+              ],
+              "frequency_note": "Ideal for emotional conversations"
+            },
+            {
+              "id": "direct_requests",
+              "name": "Direct Requests",
+              "definition": "Clearly asking for what you need without hints or manipulation",
+              "examples": [
+                "Could you please help me with this?",
+                "I'd like us to spend more time together",
+                "I need you to listen without offering solutions right now"
+              ],
+              "healthy_indicators": [
+                "Reduces guessing and assumptions",
+                "Respects others' ability to say no",
+                "Builds trust through transparency"
+              ],
+              "unhealthy_indicators": [
+                "None inherently",
+                "Timing and tone matter"
+              ],
+              "frequency_note": "Should be primary communication method"
+            }
+          ]
+        },
+        {
+          "id": "passive_communication",
+          "name": "Passive Communication",
+          "description": "Avoiding direct expression, often prioritizing others' needs over own",
+          "behaviors": [
+            {
+              "id": "indirect_hinting",
+              "name": "Indirect Hinting",
+              "definition": "Suggesting needs or feelings without stating them directly",
+              "examples": [
+                "It would be nice if someone helped around here",
+                "I guess I'll just do it myself then",
+                "Some people think we should leave soon..."
+              ],
+              "healthy_indicators": [
+                "Can soften difficult messages in certain cultures",
+                "May preserve harmony in specific contexts"
+              ],
+              "unhealthy_indicators": [
+                "Creates confusion and misunderstandings",
+                "Breeds resentment when hints aren't received",
+                "Puts burden on others to mind-read"
+              ],
+              "frequency_note": "Occasional use normal; frequent use problematic"
+            },
+            {
+              "id": "over_apologizing",
+              "name": "Over-Apologizing",
+              "definition": "Excessive apologizing for things that don't warrant apology",
+              "examples": [
+                "Sorry to bother you, but...",
+                "I'm sorry, this might be a stupid question",
+                "Sorry for existing in this space"
+              ],
+              "healthy_indicators": [
+                "Shows conscientiousness in moderation"
+              ],
+              "unhealthy_indicators": [
+                "Signals low self-worth",
+                "Can make others uncomfortable",
+                "Diminishes impact of genuine apologies"
+              ],
+              "frequency_note": "Frequent use indicates self-esteem work needed"
+            },
+            {
+              "id": "conflict_avoidance",
+              "name": "Conflict Avoidance",
+              "definition": "Actively steering away from disagreements or difficult topics",
+              "examples": [
+                "Let's just not talk about it",
+                "It's fine, really (when it's not)",
+                "Changing subject when tension arises"
+              ],
+              "healthy_indicators": [
+                "Can de-escalate volatile situations",
+                "Appropriate when safety is concern"
+              ],
+              "unhealthy_indicators": [
+                "Issues never get resolved",
+                "Resentment builds over time",
+                "Partner may feel dismissed or unheard"
+              ],
+              "frequency_note": "Chronic avoidance damages relationships"
+            },
+            {
+              "id": "people_pleasing",
+              "name": "People Pleasing",
+              "definition": "Prioritizing others' approval and happiness over personal needs",
+              "examples": [
+                "Whatever you want is fine with me",
+                "Agreeing to plans you don't want",
+                "Never expressing preferences"
+              ],
+              "healthy_indicators": [
+                "Shows care for others in moderation"
+              ],
+              "unhealthy_indicators": [
+                "Loss of personal identity",
+                "Burnout and resentment",
+                "Attracts those who exploit this tendency"
+              ],
+              "frequency_note": "Pattern indicates codependency risk"
+            }
+          ]
+        },
+        {
+          "id": "aggressive_communication",
+          "name": "Aggressive Communication",
+          "description": "Expressing needs in ways that violate others' rights or dignity",
+          "behaviors": [
+            {
+              "id": "verbal_attacks",
+              "name": "Verbal Attacks",
+              "definition": "Using words to hurt, demean, or intimidate",
+              "examples": [
+                "You're so stupid/useless/pathetic",
+                "No one else would put up with you",
+                "You always/never... (extreme generalizations)"
+              ],
+              "healthy_indicators": [
+                "None - this is inherently harmful"
+              ],
+              "unhealthy_indicators": [
+                "Damages self-esteem of recipient",
+                "Destroys trust and safety",
+                "Indicates poor emotional regulation"
+              ],
+              "frequency_note": "Any occurrence is concerning; pattern is abusive"
+            },
+            {
+              "id": "intimidation",
+              "name": "Intimidation Tactics",
+              "definition": "Using fear, size, volume, or implied threats to control",
+              "examples": [
+                "Raising voice to overpower",
+                "Standing over someone menacingly",
+                "Punching walls or throwing objects",
+                "You don't want to see me really angry"
+              ],
+              "healthy_indicators": [
+                "None - this is inherently harmful"
+              ],
+              "unhealthy_indicators": [
+                "Creates trauma response in others",
+                "Indicates potential for escalation",
+                "Destroys sense of safety"
+              ],
+              "frequency_note": "Any occurrence is a red flag"
+            },
+            {
+              "id": "dismissiveness",
+              "name": "Dismissiveness",
+              "definition": "Treating others' thoughts, feelings, or contributions as worthless",
+              "examples": [
+                "That's ridiculous",
+                "You're overreacting",
+                "Eye rolling, scoffing",
+                "Whatever (dismissively)"
+              ],
+              "healthy_indicators": [
+                "None in interpersonal context"
+              ],
+              "unhealthy_indicators": [
+                "Partner feels unvalued",
+                "Shuts down communication",
+                "Signals contempt (relationship killer)"
+              ],
+              "frequency_note": "Pattern indicates contempt - highly destructive"
+            }
+          ]
+        },
+        {
+          "id": "passive_aggressive_communication",
+          "name": "Passive-Aggressive Communication",
+          "description": "Indirect expression of negative feelings through subtle actions",
+          "behaviors": [
+            {
+              "id": "silent_treatment",
+              "name": "Silent Treatment",
+              "definition": "Withdrawing communication as punishment or manipulation",
+              "examples": [
+                "Refusing to speak for extended periods",
+                "One-word answers with cold tone",
+                "Pretending person doesn't exist"
+              ],
+              "healthy_indicators": [
+                "Brief space to cool down is healthy",
+                "Communicating need for space is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Punitive intent causes emotional harm",
+                "No resolution possible during silence",
+                "Creates anxiety and walking on eggshells"
+              ],
+              "frequency_note": "Extended/punitive silence is emotional abuse"
+            },
+            {
+              "id": "sarcasm_as_weapon",
+              "name": "Weaponized Sarcasm",
+              "definition": "Using sarcasm to express hostility while maintaining deniability",
+              "examples": [
+                "Oh, you actually remembered? Shocking.",
+                "Sure, because you're SO perfect",
+                "Wow, what a surprise (when not surprised)"
+              ],
+              "healthy_indicators": [
+                "Playful sarcasm between consenting parties is fine"
+              ],
+              "unhealthy_indicators": [
+                "Creates confusion about true feelings",
+                "Allows hostility without accountability",
+                "Recipient can't address issue directly"
+              ],
+              "frequency_note": "Pattern indicates buried resentment"
+            },
+            {
+              "id": "backhanded_compliments",
+              "name": "Backhanded Compliments",
+              "definition": "Compliments that contain embedded insults or criticism",
+              "examples": [
+                "You look good for your age",
+                "You're smarter than you look",
+                "That's actually not bad, coming from you"
+              ],
+              "healthy_indicators": [
+                "None - always undermining"
+              ],
+              "unhealthy_indicators": [
+                "Confuses and destabilizes recipient",
+                "Shows passive hostility",
+                "Damages self-esteem subtly"
+              ],
+              "frequency_note": "Pattern indicates covert contempt"
+            },
+            {
+              "id": "deliberate_inefficiency",
+              "name": "Deliberate Inefficiency",
+              "definition": "Purposely doing tasks poorly to avoid future requests",
+              "examples": [
+                "Doing chores so badly partner redoes them",
+                "Taking excessive time on simple requests",
+                "Forgetting repeatedly despite reminders"
+              ],
+              "healthy_indicators": [
+                "None when intentional"
+              ],
+              "unhealthy_indicators": [
+                "Avoids direct communication",
+                "Creates unfair burden on others",
+                "Breeds resentment on both sides"
+              ],
+              "frequency_note": "Pattern indicates resistance to discuss issues"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "manipulation_tactics",
+      "category": "Manipulation Tactics",
+      "description": "Behaviors used to control, deceive, or unfairly influence others",
+      "icon": "psychology",
+      "subcategories": [
+        {
+          "id": "gaslighting",
+          "name": "Gaslighting",
+          "description": "Making someone question their own reality, memory, or perceptions",
+          "behaviors": [
+            {
+              "id": "reality_denial",
+              "name": "Reality Denial",
+              "definition": "Flatly denying events that occurred or statements that were made",
+              "examples": [
+                "That never happened",
+                "I never said that",
+                "You're making things up"
+              ],
+              "healthy_indicators": [
+                "None - inherently manipulative"
+              ],
+              "unhealthy_indicators": [
+                "Causes victim to doubt their memory",
+                "Creates dependency on manipulator for 'truth'",
+                "Psychological abuse that causes lasting damage"
+              ],
+              "frequency_note": "Any pattern is serious psychological abuse"
+            },
+            {
+              "id": "perception_invalidation",
+              "name": "Perception Invalidation",
+              "definition": "Telling someone their interpretation of events is wrong or crazy",
+              "examples": [
+                "You're being paranoid",
+                "You're too sensitive",
+                "You're imagining things"
+              ],
+              "healthy_indicators": [
+                "None when used to dismiss legitimate concerns"
+              ],
+              "unhealthy_indicators": [
+                "Victim loses trust in own judgment",
+                "Creates confusion and self-doubt",
+                "Often escalates over time"
+              ],
+              "frequency_note": "Pattern erodes victim's sense of self"
+            },
+            {
+              "id": "historical_revisionism",
+              "name": "Historical Revisionism",
+              "definition": "Changing the narrative of past events to suit current needs",
+              "examples": [
+                "That's not how it happened at all",
+                "You're remembering it wrong",
+                "Everyone agrees with my version"
+              ],
+              "healthy_indicators": [
+                "None when intentional"
+              ],
+              "unhealthy_indicators": [
+                "Confuses shared history",
+                "Victim can't trust own memories",
+                "Creates alternate reality controlled by manipulator"
+              ],
+              "frequency_note": "Systematic rewriting of history is abuse"
+            }
+          ]
+        },
+        {
+          "id": "darvo",
+          "name": "DARVO",
+          "description": "Deny, Attack, Reverse Victim and Offender - common abuser tactic",
+          "behaviors": [
+            {
+              "id": "deny_behavior",
+              "name": "Deny the Behavior",
+              "definition": "First step: flatly denying the problematic behavior occurred",
+              "examples": [
+                "I didn't do that",
+                "That's a lie",
+                "You're making accusations"
+              ],
+              "healthy_indicators": [
+                "Genuine denial of false accusations is valid"
+              ],
+              "unhealthy_indicators": [
+                "Denial despite clear evidence",
+                "Pattern of denial across multiple issues",
+                "Denial followed by attack"
+              ],
+              "frequency_note": "Part of DARVO pattern is highly concerning"
+            },
+            {
+              "id": "attack_accuser",
+              "name": "Attack the Accuser",
+              "definition": "Second step: attacking the person who raised the concern",
+              "examples": [
+                "You're crazy/unstable",
+                "You're always looking for problems",
+                "You're trying to destroy me"
+              ],
+              "healthy_indicators": [
+                "None when deflecting legitimate concerns"
+              ],
+              "unhealthy_indicators": [
+                "Shifts focus from behavior to accuser",
+                "Intimidates future truth-telling",
+                "Often includes character assassination"
+              ],
+              "frequency_note": "Attacking accusers is manipulation red flag"
+            },
+            {
+              "id": "reverse_victim_offender",
+              "name": "Reverse Victim and Offender",
+              "definition": "Third step: claiming to be the real victim while victim is aggressor",
+              "examples": [
+                "You're abusing ME by bringing this up",
+                "I'm the one being attacked here",
+                "Look what you made me do"
+              ],
+              "healthy_indicators": [
+                "None - classic manipulation"
+              ],
+              "unhealthy_indicators": [
+                "Real victim ends up comforting offender",
+                "Accountability completely avoided",
+                "Victim feels guilty for raising concerns"
+              ],
+              "frequency_note": "Classic abuser pattern - serious red flag"
+            }
+          ]
+        },
+        {
+          "id": "emotional_manipulation",
+          "name": "Emotional Manipulation",
+          "description": "Using emotions to control or influence others unfairly",
+          "behaviors": [
+            {
+              "id": "guilt_tripping",
+              "name": "Guilt Tripping",
+              "definition": "Inducing guilt to manipulate behavior or decisions",
+              "examples": [
+                "After everything I've done for you",
+                "I guess I'm just not important to you",
+                "Fine, I'll just suffer alone"
+              ],
+              "healthy_indicators": [
+                "Expressing hurt genuinely is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Manipulates through obligation",
+                "Creates unhealthy guilt cycles",
+                "Recipient acts from guilt, not genuine desire"
+              ],
+              "frequency_note": "Chronic guilt-tripping is emotionally abusive"
+            },
+            {
+              "id": "love_bombing",
+              "name": "Love Bombing",
+              "definition": "Overwhelming someone with affection to gain control or forgiveness",
+              "examples": [
+                "Excessive gifts after conflict",
+                "Intense attention early in relationship",
+                "Grand gestures that feel disproportionate"
+              ],
+              "healthy_indicators": [
+                "Genuine enthusiasm exists",
+                "Healthy when matched by consistent behavior"
+              ],
+              "unhealthy_indicators": [
+                "Creates sense of debt or obligation",
+                "Often precedes or follows abuse",
+                "Intensity not sustainable or matched by respect"
+              ],
+              "frequency_note": "Cycles of love bombing and devaluation are abuse"
+            },
+            {
+              "id": "emotional_blackmail",
+              "name": "Emotional Blackmail",
+              "definition": "Using fear, obligation, or guilt to control behavior",
+              "examples": [
+                "If you leave, I'll hurt myself",
+                "You owe me after what I sacrificed",
+                "A good partner would do this for me"
+              ],
+              "healthy_indicators": [
+                "None - inherently manipulative"
+              ],
+              "unhealthy_indicators": [
+                "Removes free choice from victim",
+                "Creates hostage-like dynamic",
+                "Often escalates over time"
+              ],
+              "frequency_note": "Any occurrence is serious manipulation"
+            },
+            {
+              "id": "playing_victim",
+              "name": "Playing Victim",
+              "definition": "Consistently portraying oneself as victim to avoid accountability",
+              "examples": [
+                "Everyone is always against me",
+                "I can never do anything right",
+                "You're just like everyone else who hurt me"
+              ],
+              "healthy_indicators": [
+                "Genuine victimization exists and is valid"
+              ],
+              "unhealthy_indicators": [
+                "Pattern across all relationships",
+                "Used to avoid any responsibility",
+                "Others always cast as persecutors"
+              ],
+              "frequency_note": "Chronic victim stance indicates manipulation"
+            },
+            {
+              "id": "triangulation",
+              "name": "Triangulation",
+              "definition": "Bringing third parties into conflicts to manipulate dynamics",
+              "examples": [
+                "My friend agrees you're being unreasonable",
+                "My ex never had this problem",
+                "Everyone thinks I'm right about this"
+              ],
+              "healthy_indicators": [
+                "Seeking outside perspective can be healthy"
+              ],
+              "unhealthy_indicators": [
+                "Creates insecurity and jealousy",
+                "Avoids direct communication",
+                "Uses others as weapons"
+              ],
+              "frequency_note": "Pattern indicates manipulation and insecurity"
+            }
+          ]
+        },
+        {
+          "id": "control_tactics",
+          "name": "Control Tactics",
+          "description": "Behaviors aimed at controlling another person",
+          "behaviors": [
+            {
+              "id": "isolation",
+              "name": "Isolation",
+              "definition": "Separating someone from their support network",
+              "examples": [
+                "Your friends are a bad influence",
+                "Your family doesn't understand us",
+                "I should be enough for you"
+              ],
+              "healthy_indicators": [
+                "None - inherently controlling"
+              ],
+              "unhealthy_indicators": [
+                "Creates dependency on controller",
+                "Removes support and reality checks",
+                "Classic abuse escalation tactic"
+              ],
+              "frequency_note": "Any isolation attempts are serious red flag"
+            },
+            {
+              "id": "financial_control",
+              "name": "Financial Control",
+              "definition": "Using money to control or limit partner's freedom",
+              "examples": [
+                "I'll handle all the money",
+                "Why do you need your own account?",
+                "You have to ask before spending anything"
+              ],
+              "healthy_indicators": [
+                "Joint financial planning is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Limits partner's independence",
+                "Creates power imbalance",
+                "Makes leaving relationship difficult"
+              ],
+              "frequency_note": "Financial abuse is serious domestic abuse"
+            },
+            {
+              "id": "monitoring_surveillance",
+              "name": "Monitoring/Surveillance",
+              "definition": "Excessive tracking of partner's movements, communications, activities",
+              "examples": [
+                "Checking phone without permission",
+                "Demanding constant location updates",
+                "Reading private messages/emails"
+              ],
+              "healthy_indicators": [
+                "Mutual, consensual transparency is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Violates privacy and autonomy",
+                "Creates prison-like environment",
+                "Indicates distrust and control needs"
+              ],
+              "frequency_note": "Non-consensual monitoring is abuse"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "defense_mechanisms",
+      "category": "Defense Mechanisms",
+      "description": "Psychological strategies used to cope with anxiety, stress, or threats to ego",
+      "icon": "shield",
+      "subcategories": [
+        {
+          "id": "primitive_defenses",
+          "name": "Primitive Defenses",
+          "description": "Less mature defenses typically formed in early development",
+          "behaviors": [
+            {
+              "id": "denial",
+              "name": "Denial",
+              "definition": "Refusing to accept reality or facts to avoid anxiety",
+              "examples": [
+                "This isn't happening",
+                "Everything is fine (when clearly not)",
+                "Ignoring obvious problems"
+              ],
+              "healthy_indicators": [
+                "Brief denial can buffer initial shock"
+              ],
+              "unhealthy_indicators": [
+                "Prevents addressing real issues",
+                "Can enable harmful situations to continue",
+                "Others may feel unheard"
+              ],
+              "frequency_note": "Prolonged denial prevents growth and resolution"
+            },
+            {
+              "id": "projection",
+              "name": "Projection",
+              "definition": "Attributing one's own unacceptable thoughts or feelings to others",
+              "examples": [
+                "You're the one who's angry (when they're angry)",
+                "You're being dishonest (when they're lying)",
+                "You don't care about me (when they're withdrawn)"
+              ],
+              "healthy_indicators": [
+                "None when chronic"
+              ],
+              "unhealthy_indicators": [
+                "Avoids self-awareness",
+                "Creates confusion in others",
+                "Can feel like accusation"
+              ],
+              "frequency_note": "Pattern indicates poor self-awareness"
+            },
+            {
+              "id": "splitting",
+              "name": "Splitting (Black and White Thinking)",
+              "definition": "Viewing things as all good or all bad with no middle ground",
+              "examples": [
+                "You're either with me or against me",
+                "You're perfect → You're terrible",
+                "This is the best/worst thing ever"
+              ],
+              "healthy_indicators": [
+                "None - indicates developmental challenge"
+              ],
+              "unhealthy_indicators": [
+                "Creates unstable relationships",
+                "Small issues become catastrophic",
+                "Others feel they can't make mistakes"
+              ],
+              "frequency_note": "Common in personality disorders; therapy helpful"
+            }
+          ]
+        },
+        {
+          "id": "neurotic_defenses",
+          "name": "Neurotic Defenses",
+          "description": "More sophisticated but still problematic defense mechanisms",
+          "behaviors": [
+            {
+              "id": "rationalization",
+              "name": "Rationalization",
+              "definition": "Creating logical explanations for behaviors driven by emotions",
+              "examples": [
+                "I had to yell because you weren't listening",
+                "I deserve this because I worked hard",
+                "It's actually better this way"
+              ],
+              "healthy_indicators": [
+                "Can help process difficult decisions"
+              ],
+              "unhealthy_indicators": [
+                "Avoids emotional truth",
+                "Justifies harmful behavior",
+                "Prevents genuine accountability"
+              ],
+              "frequency_note": "Excessive rationalization indicates avoidance"
+            },
+            {
+              "id": "intellectualization",
+              "name": "Intellectualization",
+              "definition": "Using abstract thinking to distance from emotional content",
+              "examples": [
+                "Statistically, this outcome was probable",
+                "Discussing grief in clinical terms",
+                "Analyzing rather than feeling"
+              ],
+              "healthy_indicators": [
+                "Can provide helpful distance initially"
+              ],
+              "unhealthy_indicators": [
+                "Emotions never get processed",
+                "Partners may feel emotionally abandoned",
+                "Can seem cold or uncaring"
+              ],
+              "frequency_note": "Balance with emotional processing needed"
+            },
+            {
+              "id": "displacement",
+              "name": "Displacement",
+              "definition": "Redirecting emotions from true source to safer target",
+              "examples": [
+                "Bad day at work → snap at partner",
+                "Angry at parent → yell at child",
+                "Frustrated with self → criticize others"
+              ],
+              "healthy_indicators": [
+                "None - always misdirected"
+              ],
+              "unhealthy_indicators": [
+                "Innocent parties get hurt",
+                "Real issue never addressed",
+                "Creates confusion about what's really wrong"
+              ],
+              "frequency_note": "Pattern damages relationships unfairly"
+            },
+            {
+              "id": "regression",
+              "name": "Regression",
+              "definition": "Reverting to less mature behaviors under stress",
+              "examples": [
+                "Adult tantrum when frustrated",
+                "Baby talk to avoid conflict",
+                "Helplessness when capable"
+              ],
+              "healthy_indicators": [
+                "Brief regression for comfort is normal"
+              ],
+              "unhealthy_indicators": [
+                "Avoids adult problem-solving",
+                "Creates imbalanced dynamics",
+                "Can feel manipulative"
+              ],
+              "frequency_note": "Chronic regression indicates coping issues"
+            }
+          ]
+        },
+        {
+          "id": "mature_defenses",
+          "name": "Mature Defenses",
+          "description": "Healthy coping mechanisms that can be adaptive",
+          "behaviors": [
+            {
+              "id": "sublimation",
+              "name": "Sublimation",
+              "definition": "Channeling negative emotions into constructive activities",
+              "examples": [
+                "Using anger to fuel intense workout",
+                "Writing about pain creatively",
+                "Channeling anxiety into productivity"
+              ],
+              "healthy_indicators": [
+                "Transforms negative to positive",
+                "Creates something valuable",
+                "Doesn't harm others"
+              ],
+              "unhealthy_indicators": [
+                "Can become avoidance if emotions never directly addressed",
+                "May lead to burnout"
+              ],
+              "frequency_note": "Generally healthy when balanced with processing"
+            },
+            {
+              "id": "humor",
+              "name": "Humor as Coping",
+              "definition": "Using humor to manage difficult emotions or situations",
+              "examples": [
+                "Making light of a stressful situation",
+                "Self-deprecating humor about struggles",
+                "Finding absurdity in difficulty"
+              ],
+              "healthy_indicators": [
+                "Relieves tension",
+                "Creates connection",
+                "Builds resilience"
+              ],
+              "unhealthy_indicators": [
+                "Can minimize genuine issues",
+                "May prevent serious conversations",
+                "Can feel dismissive to others"
+              ],
+              "frequency_note": "Healthy when not avoiding all seriousness"
+            },
+            {
+              "id": "anticipation",
+              "name": "Anticipation",
+              "definition": "Preparing emotionally and practically for future challenges",
+              "examples": [
+                "Planning for difficult conversation",
+                "Processing potential outcomes in advance",
+                "Building coping strategies proactively"
+              ],
+              "healthy_indicators": [
+                "Reduces anxiety through preparation",
+                "Leads to better outcomes",
+                "Shows self-awareness"
+              ],
+              "unhealthy_indicators": [
+                "Can become excessive worry",
+                "May prevent living in present"
+              ],
+              "frequency_note": "Healthy when balanced with present awareness"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "attachment_behaviors",
+      "category": "Attachment Behaviors",
+      "description": "Patterns related to how we form and maintain emotional bonds",
+      "icon": "favorite",
+      "subcategories": [
+        {
+          "id": "secure_attachment",
+          "name": "Secure Attachment Behaviors",
+          "description": "Patterns indicating healthy attachment and relating",
+          "behaviors": [
+            {
+              "id": "comfortable_intimacy",
+              "name": "Comfortable with Intimacy",
+              "definition": "Able to be close without anxiety or avoidance",
+              "examples": [
+                "Sharing vulnerable feelings naturally",
+                "Physical affection feels comfortable",
+                "Emotional closeness not threatening"
+              ],
+              "healthy_indicators": [
+                "Deep connections possible",
+                "Relationships feel safe",
+                "Balance of closeness and independence"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Indicates healthy attachment foundation"
+            },
+            {
+              "id": "effective_communication",
+              "name": "Effective Emotional Communication",
+              "definition": "Expressing needs and hearing partner's needs clearly",
+              "examples": [
+                "Discussing difficult topics calmly",
+                "Asking for clarification when unsure",
+                "Validating before responding"
+              ],
+              "healthy_indicators": [
+                "Issues get resolved",
+                "Both parties feel heard",
+                "Builds trust over time"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Foundational to healthy relationships"
+            },
+            {
+              "id": "healthy_interdependence",
+              "name": "Healthy Interdependence",
+              "definition": "Balanced reliance on self and others",
+              "examples": [
+                "Asking for help when needed",
+                "Maintaining individual identity in relationship",
+                "Supporting without losing self"
+              ],
+              "healthy_indicators": [
+                "Neither overly dependent nor avoidant",
+                "Mutual support without enmeshment",
+                "Individual growth within relationship"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Goal for relationship health"
+            }
+          ]
+        },
+        {
+          "id": "anxious_attachment",
+          "name": "Anxious Attachment Behaviors",
+          "description": "Patterns indicating fear of abandonment and need for reassurance",
+          "behaviors": [
+            {
+              "id": "reassurance_seeking",
+              "name": "Excessive Reassurance Seeking",
+              "definition": "Repeatedly seeking validation that relationship is secure",
+              "examples": [
+                "Do you still love me? (frequently)",
+                "Are we okay? (after minor issues)",
+                "Checking in constantly for validation"
+              ],
+              "healthy_indicators": [
+                "Occasional reassurance seeking is normal"
+              ],
+              "unhealthy_indicators": [
+                "Never satisfied by reassurance",
+                "Exhausts partner",
+                "Reveals deep insecurity"
+              ],
+              "frequency_note": "Chronic seeking indicates attachment work needed"
+            },
+            {
+              "id": "protest_behaviors",
+              "name": "Protest Behaviors",
+              "definition": "Actions designed to get partner's attention when feeling insecure",
+              "examples": [
+                "Threatening to leave (not meaning it)",
+                "Acting distant to get attention",
+                "Creating drama to engage partner"
+              ],
+              "healthy_indicators": [
+                "None - indirect and manipulative"
+              ],
+              "unhealthy_indicators": [
+                "Creates instability",
+                "Partner can't trust communications",
+                "Issues don't get addressed directly"
+              ],
+              "frequency_note": "Pattern indicates significant attachment anxiety"
+            },
+            {
+              "id": "hypervigilance",
+              "name": "Relationship Hypervigilance",
+              "definition": "Constantly scanning for signs of rejection or abandonment",
+              "examples": [
+                "Analyzing every text for hidden meaning",
+                "Noticing every mood change in partner",
+                "Interpreting neutral as negative"
+              ],
+              "healthy_indicators": [
+                "Attentiveness can be positive in moderation"
+              ],
+              "unhealthy_indicators": [
+                "Creates anxiety for both parties",
+                "Exhausting mental burden",
+                "Often sees threats that aren't there"
+              ],
+              "frequency_note": "Chronic hypervigilance damages wellbeing"
+            },
+            {
+              "id": "enmeshment",
+              "name": "Enmeshment/Fusion",
+              "definition": "Losing boundaries between self and partner",
+              "examples": [
+                "Can't make decisions alone",
+                "Identity fully tied to relationship",
+                "Partner's emotions become your emotions"
+              ],
+              "healthy_indicators": [
+                "Some blending in close relationships is normal"
+              ],
+              "unhealthy_indicators": [
+                "Loss of individual identity",
+                "Unhealthy dependency",
+                "Relationship becomes all-consuming"
+              ],
+              "frequency_note": "Indicates codependency; therapy helpful"
+            }
+          ]
+        },
+        {
+          "id": "avoidant_attachment",
+          "name": "Avoidant Attachment Behaviors",
+          "description": "Patterns indicating discomfort with closeness and emotional suppression",
+          "behaviors": [
+            {
+              "id": "emotional_distancing",
+              "name": "Emotional Distancing",
+              "definition": "Creating emotional space when closeness increases",
+              "examples": [
+                "Pulling away after intimacy",
+                "Becoming busy when relationship deepens",
+                "Keeping conversations surface-level"
+              ],
+              "healthy_indicators": [
+                "Some space for processing is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Partner feels rejected",
+                "Intimacy can't develop",
+                "Creates anxious-avoidant dynamic"
+              ],
+              "frequency_note": "Pattern prevents deep connection"
+            },
+            {
+              "id": "self_reliance_extreme",
+              "name": "Extreme Self-Reliance",
+              "definition": "Refusing to depend on others even when appropriate",
+              "examples": [
+                "Never asking for help",
+                "Pride in not needing anyone",
+                "Discomfort receiving care"
+              ],
+              "healthy_indicators": [
+                "Independence is valuable"
+              ],
+              "unhealthy_indicators": [
+                "Prevents true partnership",
+                "Partner feels unneeded",
+                "Misses benefits of support"
+              ],
+              "frequency_note": "Extreme independence indicates attachment avoidance"
+            },
+            {
+              "id": "deactivating_strategies",
+              "name": "Deactivating Strategies",
+              "definition": "Mental techniques to suppress attachment needs",
+              "examples": [
+                "Focusing on partner's flaws",
+                "Romanticizing freedom/past relationships",
+                "Convincing self you don't need closeness"
+              ],
+              "healthy_indicators": [
+                "None - suppresses genuine needs"
+              ],
+              "unhealthy_indicators": [
+                "Prevents authentic connection",
+                "Doesn't address underlying fears",
+                "Partner feels constantly evaluated"
+              ],
+              "frequency_note": "Pattern indicates avoidant attachment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "emotional_regulation",
+      "category": "Emotional Regulation",
+      "description": "Patterns in how emotions are experienced, expressed, and managed",
+      "icon": "psychology_alt",
+      "subcategories": [
+        {
+          "id": "healthy_regulation",
+          "name": "Healthy Regulation",
+          "description": "Adaptive ways of managing emotions",
+          "behaviors": [
+            {
+              "id": "emotional_awareness",
+              "name": "Emotional Awareness",
+              "definition": "Ability to identify and name emotional states",
+              "examples": [
+                "I'm feeling anxious about this",
+                "I notice I'm getting defensive",
+                "This brings up sadness for me"
+              ],
+              "healthy_indicators": [
+                "Foundation for regulation",
+                "Enables clear communication",
+                "Prevents emotional buildup"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Key emotional intelligence skill"
+            },
+            {
+              "id": "self_soothing",
+              "name": "Self-Soothing",
+              "definition": "Ability to calm oneself during distress",
+              "examples": [
+                "Taking deep breaths when upset",
+                "Using grounding techniques",
+                "Engaging in calming activities"
+              ],
+              "healthy_indicators": [
+                "Reduces reliance on others for regulation",
+                "Enables clearer responses",
+                "Models healthy coping"
+              ],
+              "unhealthy_indicators": [
+                "Can become avoidance if overused"
+              ],
+              "frequency_note": "Essential life skill"
+            },
+            {
+              "id": "repair_attempts",
+              "name": "Repair Attempts",
+              "definition": "Efforts to de-escalate conflict and reconnect",
+              "examples": [
+                "Can we pause and start over?",
+                "I don't want to fight",
+                "Using humor to break tension"
+              ],
+              "healthy_indicators": [
+                "Prevents escalation",
+                "Shows commitment to relationship",
+                "Builds resilience in couples"
+              ],
+              "unhealthy_indicators": [
+                "Can become avoidance of necessary conflict"
+              ],
+              "frequency_note": "Crucial relationship skill"
+            }
+          ]
+        },
+        {
+          "id": "dysregulation",
+          "name": "Emotional Dysregulation",
+          "description": "Difficulty managing emotional responses",
+          "behaviors": [
+            {
+              "id": "emotional_flooding",
+              "name": "Emotional Flooding",
+              "definition": "Overwhelming emotional response that impairs functioning",
+              "examples": [
+                "Unable to think clearly when upset",
+                "Physical symptoms of distress",
+                "Shutting down completely"
+              ],
+              "healthy_indicators": [
+                "Indicates deep feeling (can be processed)"
+              ],
+              "unhealthy_indicators": [
+                "Productive conversation impossible",
+                "May lead to regrettable actions",
+                "Requires recovery time"
+              ],
+              "frequency_note": "Frequent flooding indicates regulation work needed"
+            },
+            {
+              "id": "emotional_reactivity",
+              "name": "High Emotional Reactivity",
+              "definition": "Intense, quick emotional responses disproportionate to trigger",
+              "examples": [
+                "Small issue triggers big reaction",
+                "Rapid escalation in conflicts",
+                "Emotional rollercoaster"
+              ],
+              "healthy_indicators": [
+                "Shows emotional depth"
+              ],
+              "unhealthy_indicators": [
+                "Others walk on eggshells",
+                "Exhausting for everyone",
+                "Issues get lost in reactions"
+              ],
+              "frequency_note": "Pattern indicates regulation challenges"
+            },
+            {
+              "id": "emotional_suppression",
+              "name": "Emotional Suppression",
+              "definition": "Chronically pushing down or ignoring emotions",
+              "examples": [
+                "I'm fine (when not)",
+                "Rarely showing any emotion",
+                "Dismissing feelings as weakness"
+              ],
+              "healthy_indicators": [
+                "Short-term suppression sometimes necessary"
+              ],
+              "unhealthy_indicators": [
+                "Emotions leak out in other ways",
+                "Physical health impacts",
+                "Partner feels emotionally alone"
+              ],
+              "frequency_note": "Chronic suppression causes problems"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conflict_behaviors",
+      "category": "Conflict Behaviors",
+      "description": "Patterns in how disagreements and tensions are handled",
+      "icon": "gavel",
+      "subcategories": [
+        {
+          "id": "constructive_conflict",
+          "name": "Constructive Conflict",
+          "description": "Healthy ways of navigating disagreement",
+          "behaviors": [
+            {
+              "id": "active_listening",
+              "name": "Active Listening",
+              "definition": "Fully attending to and seeking to understand partner's perspective",
+              "examples": [
+                "Reflecting back what was heard",
+                "Asking clarifying questions",
+                "Putting aside own response to truly hear"
+              ],
+              "healthy_indicators": [
+                "Partner feels heard and valued",
+                "Reduces misunderstandings",
+                "Models respect"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Foundation of healthy communication"
+            },
+            {
+              "id": "taking_responsibility",
+              "name": "Taking Responsibility",
+              "definition": "Owning one's part in conflicts without defensiveness",
+              "examples": [
+                "You're right, I shouldn't have done that",
+                "I can see how my actions contributed",
+                "I'm sorry for my part in this"
+              ],
+              "healthy_indicators": [
+                "Builds trust",
+                "Enables resolution",
+                "Models accountability"
+              ],
+              "unhealthy_indicators": [
+                "Over-responsibility can indicate people-pleasing"
+              ],
+              "frequency_note": "Essential for healthy relationships"
+            },
+            {
+              "id": "compromise_seeking",
+              "name": "Compromise Seeking",
+              "definition": "Working toward solutions that address both parties' needs",
+              "examples": [
+                "What would work for both of us?",
+                "Can we find a middle ground?",
+                "I'll do X if you can do Y"
+              ],
+              "healthy_indicators": [
+                "Both parties feel considered",
+                "Creates win-win outcomes",
+                "Builds partnership"
+              ],
+              "unhealthy_indicators": [
+                "Some issues shouldn't be compromised"
+              ],
+              "frequency_note": "Key relationship skill"
+            },
+            {
+              "id": "taking_breaks",
+              "name": "Taking Constructive Breaks",
+              "definition": "Pausing heated discussions to regulate before continuing",
+              "examples": [
+                "I need 20 minutes to calm down",
+                "Let's continue this after we've both cooled off",
+                "Setting a time to reconvene"
+              ],
+              "healthy_indicators": [
+                "Prevents escalation",
+                "Allows for clearer thinking",
+                "Shows self-awareness"
+              ],
+              "unhealthy_indicators": [
+                "Can become avoidance if break never ends"
+              ],
+              "frequency_note": "Healthy when breaks include return"
+            }
+          ]
+        },
+        {
+          "id": "destructive_conflict",
+          "name": "Destructive Conflict",
+          "description": "Patterns that damage relationships during disagreement",
+          "behaviors": [
+            {
+              "id": "criticism_pattern",
+              "name": "Criticism (vs. Complaint)",
+              "definition": "Attacking partner's character rather than specific behavior",
+              "examples": [
+                "You're so lazy (vs. I wish you'd help more)",
+                "You never think about anyone but yourself",
+                "What's wrong with you?"
+              ],
+              "healthy_indicators": [
+                "None - criticism attacks person"
+              ],
+              "unhealthy_indicators": [
+                "Partner feels attacked",
+                "Creates defensiveness",
+                "One of Gottman's Four Horsemen"
+              ],
+              "frequency_note": "Pattern predicts relationship failure"
+            },
+            {
+              "id": "contempt",
+              "name": "Contempt",
+              "definition": "Treating partner with disrespect, disgust, or superiority",
+              "examples": [
+                "Eye-rolling, sneering",
+                "Mockery and ridicule",
+                "Name-calling with disgust"
+              ],
+              "healthy_indicators": [
+                "None - most destructive behavior"
+              ],
+              "unhealthy_indicators": [
+                "Greatest predictor of divorce",
+                "Destroys admiration and respect",
+                "Cannot coexist with love"
+              ],
+              "frequency_note": "Any contempt is serious warning sign"
+            },
+            {
+              "id": "defensiveness",
+              "name": "Defensiveness",
+              "definition": "Protecting self by deflecting, making excuses, or counter-attacking",
+              "examples": [
+                "It's not my fault",
+                "Yeah, but you did...",
+                "I only did that because you..."
+              ],
+              "healthy_indicators": [
+                "Some self-protection is natural"
+              ],
+              "unhealthy_indicators": [
+                "No accountability taken",
+                "Partner's concerns dismissed",
+                "Escalates conflict"
+              ],
+              "frequency_note": "Chronic defensiveness prevents resolution"
+            },
+            {
+              "id": "stonewalling",
+              "name": "Stonewalling",
+              "definition": "Withdrawing from interaction, shutting down",
+              "examples": [
+                "Walking away mid-conversation",
+                "Refusing to engage",
+                "Blank stare, no response"
+              ],
+              "healthy_indicators": [
+                "Taking a communicated break is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Partner feels abandoned",
+                "Nothing gets resolved",
+                "Usually result of flooding"
+              ],
+              "frequency_note": "Pattern indicates overwhelm; breaks help"
+            },
+            {
+              "id": "kitchen_sinking",
+              "name": "Kitchen Sinking",
+              "definition": "Bringing up multiple past issues during current conflict",
+              "examples": [
+                "And another thing, last month you...",
+                "This is just like when you...",
+                "Piling on grievances"
+              ],
+              "healthy_indicators": [
+                "None - derails current issue"
+              ],
+              "unhealthy_indicators": [
+                "Current issue never resolved",
+                "Partner feels ambushed",
+                "Indicates unresolved resentment"
+              ],
+              "frequency_note": "Pattern indicates issues being stockpiled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trust_behaviors",
+      "category": "Trust Behaviors",
+      "description": "Patterns related to building, maintaining, or damaging trust",
+      "icon": "handshake",
+      "subcategories": [
+        {
+          "id": "trust_building",
+          "name": "Trust-Building Behaviors",
+          "description": "Actions that create and strengthen trust",
+          "behaviors": [
+            {
+              "id": "consistency",
+              "name": "Consistency",
+              "definition": "Behavior matches words over time",
+              "examples": [
+                "Following through on promises",
+                "Predictable responses",
+                "Actions align with stated values"
+              ],
+              "healthy_indicators": [
+                "Partner can rely on you",
+                "Creates security",
+                "Foundation of trust"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Essential for trust development"
+            },
+            {
+              "id": "transparency",
+              "name": "Transparency",
+              "definition": "Open sharing of relevant information",
+              "examples": [
+                "Sharing feelings proactively",
+                "Being honest about whereabouts",
+                "Disclosing important information"
+              ],
+              "healthy_indicators": [
+                "Builds intimacy",
+                "Prevents misunderstandings",
+                "Shows respect"
+              ],
+              "unhealthy_indicators": [
+                "Over-sharing can violate boundaries"
+              ],
+              "frequency_note": "Appropriate transparency builds trust"
+            },
+            {
+              "id": "vulnerability",
+              "name": "Vulnerability",
+              "definition": "Sharing deeper feelings, fears, and authentic self",
+              "examples": [
+                "Admitting fears or insecurities",
+                "Sharing difficult experiences",
+                "Expressing needs openly"
+              ],
+              "healthy_indicators": [
+                "Creates deep connection",
+                "Invites reciprocal openness",
+                "Shows trust in partner"
+              ],
+              "unhealthy_indicators": [
+                "Premature vulnerability can be overwhelming"
+              ],
+              "frequency_note": "Builds intimacy when mutual and paced"
+            }
+          ]
+        },
+        {
+          "id": "trust_damaging",
+          "name": "Trust-Damaging Behaviors",
+          "description": "Actions that erode or destroy trust",
+          "behaviors": [
+            {
+              "id": "dishonesty",
+              "name": "Dishonesty",
+              "definition": "Lying, omitting important information, or deceiving",
+              "examples": [
+                "Direct lies",
+                "Lies of omission",
+                "Creating false impressions"
+              ],
+              "healthy_indicators": [
+                "None - damages trust directly"
+              ],
+              "unhealthy_indicators": [
+                "Once discovered, hard to rebuild",
+                "Partner questions everything",
+                "Foundation of relationship shaken"
+              ],
+              "frequency_note": "Any significant dishonesty is damaging"
+            },
+            {
+              "id": "broken_promises",
+              "name": "Broken Promises",
+              "definition": "Failing to follow through on commitments",
+              "examples": [
+                "Not showing up when promised",
+                "Breaking agreements repeatedly",
+                "Commitments made then forgotten"
+              ],
+              "healthy_indicators": [
+                "Occasional unavoidable changes happen"
+              ],
+              "unhealthy_indicators": [
+                "Words become meaningless",
+                "Partner stops trusting commitments",
+                "Creates insecurity"
+              ],
+              "frequency_note": "Pattern indicates unreliability"
+            },
+            {
+              "id": "betrayal",
+              "name": "Betrayal",
+              "definition": "Major violations of trust and relationship agreements",
+              "examples": [
+                "Infidelity",
+                "Sharing private information",
+                "Siding against partner publicly"
+              ],
+              "healthy_indicators": [
+                "None - severely damaging"
+              ],
+              "unhealthy_indicators": [
+                "Trust may never fully recover",
+                "Traumatic impact",
+                "Relationship may not survive"
+              ],
+              "frequency_note": "Single major betrayal can end relationship"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cognitive_patterns",
+      "category": "Cognitive Patterns",
+      "description": "Thinking patterns that affect communication and relationships",
+      "icon": "lightbulb",
+      "subcategories": [
+        {
+          "id": "cognitive_distortions",
+          "name": "Cognitive Distortions",
+          "description": "Biased thinking patterns that affect perception",
+          "behaviors": [
+            {
+              "id": "mind_reading",
+              "name": "Mind Reading",
+              "definition": "Assuming you know what others think without checking",
+              "examples": [
+                "You're obviously angry at me",
+                "I know you think I'm stupid",
+                "You're just saying that"
+              ],
+              "healthy_indicators": [
+                "Intuition can be valuable"
+              ],
+              "unhealthy_indicators": [
+                "Often wrong, creates conflict",
+                "Doesn't allow partner to speak for self",
+                "Based on projection or fear"
+              ],
+              "frequency_note": "Check assumptions before acting on them"
+            },
+            {
+              "id": "catastrophizing",
+              "name": "Catastrophizing",
+              "definition": "Expecting the worst possible outcome",
+              "examples": [
+                "If we fight, we'll definitely break up",
+                "One mistake means everything is ruined",
+                "This will be a disaster"
+              ],
+              "healthy_indicators": [
+                "Planning for challenges is healthy"
+              ],
+              "unhealthy_indicators": [
+                "Creates unnecessary anxiety",
+                "Can become self-fulfilling",
+                "Exhausting for partner"
+              ],
+              "frequency_note": "Pattern indicates anxiety management needed"
+            },
+            {
+              "id": "personalization",
+              "name": "Personalization",
+              "definition": "Assuming everything relates to or is caused by you",
+              "examples": [
+                "They're in a bad mood because of me",
+                "That comment was definitely about me",
+                "It's all my fault"
+              ],
+              "healthy_indicators": [
+                "Self-reflection is valuable"
+              ],
+              "unhealthy_indicators": [
+                "Takes responsibility for others' feelings",
+                "Creates unnecessary guilt",
+                "Misses other explanations"
+              ],
+              "frequency_note": "Pattern indicates self-esteem work needed"
+            },
+            {
+              "id": "all_or_nothing",
+              "name": "All-or-Nothing Thinking",
+              "definition": "Seeing things in extremes with no middle ground",
+              "examples": [
+                "You always do this / You never help",
+                "Everything is ruined",
+                "If it's not perfect, it's failure"
+              ],
+              "healthy_indicators": [
+                "None - ignores complexity"
+              ],
+              "unhealthy_indicators": [
+                "Creates unfair generalizations",
+                "Ignores positive evidence",
+                "Makes partner feel hopeless"
+              ],
+              "frequency_note": "Words like 'always' and 'never' signal this"
+            },
+            {
+              "id": "emotional_reasoning",
+              "name": "Emotional Reasoning",
+              "definition": "Assuming feelings reflect reality",
+              "examples": [
+                "I feel unloved, so I must be unlovable",
+                "I feel anxious, so something must be wrong",
+                "I feel guilty, so I must have done something bad"
+              ],
+              "healthy_indicators": [
+                "Emotions contain information"
+              ],
+              "unhealthy_indicators": [
+                "Feelings aren't always facts",
+                "Can lead to wrong conclusions",
+                "Doesn't account for distorted perceptions"
+              ],
+              "frequency_note": "Separate feelings from facts"
+            }
+          ]
+        },
+        {
+          "id": "healthy_thinking",
+          "name": "Healthy Thinking Patterns",
+          "description": "Adaptive cognitive approaches",
+          "behaviors": [
+            {
+              "id": "perspective_taking",
+              "name": "Perspective Taking",
+              "definition": "Ability to see situations from others' viewpoint",
+              "examples": [
+                "I can see why you'd feel that way",
+                "From your perspective, that makes sense",
+                "Considering what they might be going through"
+              ],
+              "healthy_indicators": [
+                "Builds empathy",
+                "Reduces conflict",
+                "Creates connection"
+              ],
+              "unhealthy_indicators": [
+                "Over-empathizing can lose own perspective"
+              ],
+              "frequency_note": "Foundation of emotional intelligence"
+            },
+            {
+              "id": "nuanced_thinking",
+              "name": "Nuanced Thinking",
+              "definition": "Seeing complexity and shades of gray",
+              "examples": [
+                "This is complicated, both things can be true",
+                "I understand the good intentions even if the impact was bad",
+                "There's more to this than one explanation"
+              ],
+              "healthy_indicators": [
+                "More accurate understanding",
+                "Less reactive responses",
+                "Allows for growth and change"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Sign of cognitive maturity"
+            },
+            {
+              "id": "growth_mindset",
+              "name": "Growth Mindset",
+              "definition": "Believing people and relationships can change and improve",
+              "examples": [
+                "We can work on this together",
+                "Mistakes are learning opportunities",
+                "I'm still developing in this area"
+              ],
+              "healthy_indicators": [
+                "Enables resilience",
+                "Supports improvement",
+                "Creates hope"
+              ],
+              "unhealthy_indicators": [
+                "Can enable staying in bad situations too long"
+              ],
+              "frequency_note": "Generally healthy approach to relationships"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boundary_behaviors",
+      "category": "Boundary Behaviors",
+      "description": "Patterns related to personal limits and respecting others' limits",
+      "icon": "fence",
+      "subcategories": [
+        {
+          "id": "healthy_boundaries",
+          "name": "Healthy Boundary Behaviors",
+          "description": "Appropriate setting and respecting of limits",
+          "behaviors": [
+            {
+              "id": "clear_communication_boundaries",
+              "name": "Clear Boundary Communication",
+              "definition": "Expressing limits directly and respectfully",
+              "examples": [
+                "I'm not available to talk after 10pm",
+                "That topic is off-limits for me",
+                "I need advance notice for plans"
+              ],
+              "healthy_indicators": [
+                "Creates predictability",
+                "Prevents resentment",
+                "Models self-respect"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Essential relationship skill"
+            },
+            {
+              "id": "respecting_others_boundaries",
+              "name": "Respecting Others' Boundaries",
+              "definition": "Honoring limits set by others without pushback",
+              "examples": [
+                "Accepting 'no' gracefully",
+                "Not pressuring when limit is set",
+                "Remembering and honoring stated boundaries"
+              ],
+              "healthy_indicators": [
+                "Shows respect",
+                "Builds trust",
+                "Creates safety"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Non-negotiable for healthy relationships"
+            },
+            {
+              "id": "boundary_flexibility",
+              "name": "Appropriate Boundary Flexibility",
+              "definition": "Adjusting boundaries based on context while maintaining core limits",
+              "examples": [
+                "Making exceptions for emergencies",
+                "Negotiating boundaries together",
+                "Evolving boundaries as relationship grows"
+              ],
+              "healthy_indicators": [
+                "Shows adaptability",
+                "Prevents rigidity",
+                "Allows for growth"
+              ],
+              "unhealthy_indicators": [
+                "Flexibility shouldn't mean abandoning important limits"
+              ],
+              "frequency_note": "Balance firmness with adaptability"
+            }
+          ]
+        },
+        {
+          "id": "boundary_violations",
+          "name": "Boundary Violations",
+          "description": "Inappropriate crossing of personal limits",
+          "behaviors": [
+            {
+              "id": "boundary_pushing",
+              "name": "Boundary Pushing",
+              "definition": "Testing or pressuring against stated limits",
+              "examples": [
+                "Are you sure? Just this once?",
+                "Repeatedly asking after being told no",
+                "Finding loopholes in stated boundaries"
+              ],
+              "healthy_indicators": [
+                "None - disrespects stated limits"
+              ],
+              "unhealthy_indicators": [
+                "Shows disrespect",
+                "Creates pressure",
+                "Erodes trust"
+              ],
+              "frequency_note": "Pattern indicates entitlement"
+            },
+            {
+              "id": "boundary_dismissal",
+              "name": "Boundary Dismissal",
+              "definition": "Treating others' limits as unimportant or invalid",
+              "examples": [
+                "You're being ridiculous",
+                "That's not a real boundary",
+                "Acting as if boundary wasn't stated"
+              ],
+              "healthy_indicators": [
+                "None - invalidating"
+              ],
+              "unhealthy_indicators": [
+                "Partner feels unheard",
+                "Limits aren't respected",
+                "Shows contempt for needs"
+              ],
+              "frequency_note": "Serious disrespect; pattern is harmful"
+            },
+            {
+              "id": "porous_boundaries",
+              "name": "Porous/Weak Boundaries",
+              "definition": "Difficulty maintaining own limits",
+              "examples": [
+                "Saying yes when wanting to say no",
+                "Allowing repeated violations",
+                "Taking on others' emotions as own"
+              ],
+              "healthy_indicators": [
+                "Flexibility can be positive"
+              ],
+              "unhealthy_indicators": [
+                "Leads to resentment",
+                "Attracts boundary violators",
+                "Loss of self"
+              ],
+              "frequency_note": "Pattern indicates codependency"
+            },
+            {
+              "id": "rigid_boundaries",
+              "name": "Rigid/Excessive Boundaries",
+              "definition": "Inflexible limits that prevent intimacy",
+              "examples": [
+                "Never compromising on anything",
+                "Walls instead of boundaries",
+                "Keeping everyone at distance"
+              ],
+              "healthy_indicators": [
+                "Self-protection is valid"
+              ],
+              "unhealthy_indicators": [
+                "Prevents genuine connection",
+                "Partner can't get close",
+                "Often fear-based"
+              ],
+              "frequency_note": "Balance protection with openness"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "positive_behaviors",
+      "category": "Positive Relationship Behaviors",
+      "description": "Behaviors that strengthen and nourish relationships",
+      "icon": "favorite_border",
+      "subcategories": [
+        {
+          "id": "appreciation_affection",
+          "name": "Appreciation & Affection",
+          "description": "Expressing love and gratitude",
+          "behaviors": [
+            {
+              "id": "expressing_appreciation",
+              "name": "Expressing Appreciation",
+              "definition": "Regularly acknowledging partner's positive qualities and actions",
+              "examples": [
+                "Thank you for doing that",
+                "I really appreciate how you...",
+                "I'm grateful for you"
+              ],
+              "healthy_indicators": [
+                "Partner feels valued",
+                "Creates positive cycle",
+                "Builds emotional bank account"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Aim for 5:1 positive to negative ratio"
+            },
+            {
+              "id": "physical_affection",
+              "name": "Appropriate Physical Affection",
+              "definition": "Consensual physical expressions of care and connection",
+              "examples": [
+                "Hugs, hand-holding",
+                "Comfort touches during stress",
+                "Physical presence during difficult times"
+              ],
+              "healthy_indicators": [
+                "Releases bonding hormones",
+                "Creates safety",
+                "Maintains connection"
+              ],
+              "unhealthy_indicators": [
+                "Must be consensual and wanted"
+              ],
+              "frequency_note": "Frequency varies by couple preference"
+            },
+            {
+              "id": "verbal_affirmation",
+              "name": "Verbal Affirmation",
+              "definition": "Expressing love, admiration, and positive regard verbally",
+              "examples": [
+                "I love you",
+                "I'm proud of you",
+                "You mean so much to me"
+              ],
+              "healthy_indicators": [
+                "Partner feels loved",
+                "Creates emotional security",
+                "Reinforces bond"
+              ],
+              "unhealthy_indicators": [
+                "Empty words without matching actions"
+              ],
+              "frequency_note": "Regular affirmation strengthens relationships"
+            }
+          ]
+        },
+        {
+          "id": "support_behaviors",
+          "name": "Support Behaviors",
+          "description": "Being there for partner",
+          "behaviors": [
+            {
+              "id": "emotional_support",
+              "name": "Emotional Support",
+              "definition": "Providing comfort, validation, and presence during difficulties",
+              "examples": [
+                "I'm here for you",
+                "That sounds really hard",
+                "Being present without fixing"
+              ],
+              "healthy_indicators": [
+                "Partner feels understood",
+                "Builds trust",
+                "Creates safe haven"
+              ],
+              "unhealthy_indicators": [
+                "Can become enabling if overused"
+              ],
+              "frequency_note": "Essential during partner's difficulties"
+            },
+            {
+              "id": "practical_support",
+              "name": "Practical Support",
+              "definition": "Helping with tangible tasks and responsibilities",
+              "examples": [
+                "Helping with chores during busy times",
+                "Taking on extra responsibilities when partner is struggling",
+                "Problem-solving together"
+              ],
+              "healthy_indicators": [
+                "Shows care through action",
+                "Reduces partner's burden",
+                "Demonstrates partnership"
+              ],
+              "unhealthy_indicators": [
+                "Can create dependency if imbalanced"
+              ],
+              "frequency_note": "Balance support with encouraging autonomy"
+            },
+            {
+              "id": "celebrating_successes",
+              "name": "Celebrating Successes",
+              "definition": "Enthusiastically sharing in partner's wins and achievements",
+              "examples": [
+                "That's amazing! Tell me more!",
+                "I'm so proud of you",
+                "Let's celebrate this"
+              ],
+              "healthy_indicators": [
+                "Partner feels supported in success",
+                "Builds intimacy",
+                "Creates shared joy"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Active enthusiasm predicts relationship success"
+            }
+          ]
+        },
+        {
+          "id": "maintenance_behaviors",
+          "name": "Relationship Maintenance",
+          "description": "Ongoing efforts to nurture the relationship",
+          "behaviors": [
+            {
+              "id": "quality_time",
+              "name": "Quality Time",
+              "definition": "Dedicated, focused time together",
+              "examples": [
+                "Date nights",
+                "Phones away during dinner",
+                "Shared activities and interests"
+              ],
+              "healthy_indicators": [
+                "Maintains connection",
+                "Creates shared experiences",
+                "Prioritizes relationship"
+              ],
+              "unhealthy_indicators": [
+                "Forced togetherness without individual time"
+              ],
+              "frequency_note": "Regular quality time essential for connection"
+            },
+            {
+              "id": "curiosity_about_partner",
+              "name": "Ongoing Curiosity",
+              "definition": "Continued interest in partner's inner world",
+              "examples": [
+                "Asking about their day meaningfully",
+                "Remembering details they've shared",
+                "Wanting to know their thoughts and dreams"
+              ],
+              "healthy_indicators": [
+                "Partner feels valued",
+                "Maintains intimacy",
+                "Allows for growth"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Curiosity keeps love alive"
+            },
+            {
+              "id": "shared_meaning",
+              "name": "Creating Shared Meaning",
+              "definition": "Building rituals, traditions, and shared purpose",
+              "examples": [
+                "Weekly rituals together",
+                "Shared goals and dreams",
+                "Creating traditions unique to the relationship"
+              ],
+              "healthy_indicators": [
+                "Creates deeper bond",
+                "Provides stability",
+                "Builds legacy together"
+              ],
+              "unhealthy_indicators": [
+                "None inherently"
+              ],
+              "frequency_note": "Shared meaning deepens long-term commitment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "sources": [
+      "Gottman Institute research",
+      "Attachment Theory (Bowlby, Ainsworth)",
+      "Cognitive Behavioral Therapy frameworks",
+      "Dialectical Behavior Therapy concepts",
+      "Nonviolent Communication (Rosenberg)",
+      "Transactional Analysis",
+      "Defense mechanism research (Freud, Vaillant)",
+      "Domestic violence research and resources"
+    ],
+    "disclaimer": "This library is for educational purposes. It is not a substitute for professional mental health support. If you are in an abusive situation, please reach out to appropriate support services.",
+    "australian_resources": {
+      "1800RESPECT": "1800 737 732",
+      "Lifeline": "13 11 14",
+      "Beyond Blue": "1300 22 4636"
+    }
+  }
+}
