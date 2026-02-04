@@ -1,4 +1,5 @@
 /// Health score card widget for displaying overall health scores
+library;
 
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,6 @@
 /// Local storage service using Hive
 /// All user data is stored locally on device
+library;
 
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -319,7 +320,7 @@ class StorageService {
 
     // Decrypt
     final parts = encryptedData.split(':');
-    if (parts.length != 2) throw FormatException('Invalid encrypted data format');
+    if (parts.length != 2) throw const FormatException('Invalid encrypted data format');
 
     final iv = encrypt.IV.fromBase64(parts[0]);
     final encrypted = encrypt.Encrypted.fromBase64(parts[1]);

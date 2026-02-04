@@ -1,5 +1,6 @@
 /// API service for communicating with the backend
 /// Handles all Gemini API proxy calls
+library;
 
 import 'dart:convert';
 import 'dart:io';

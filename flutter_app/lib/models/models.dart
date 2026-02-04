@@ -1,4 +1,5 @@
 /// Models barrel file - export all models from single import
+library;
 
 export 'message.dart';
 export 'speaker.dart';

@@ -1,4 +1,5 @@
 /// Speaker model for conversation participants
+library;
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
@@ -38,6 +39,9 @@ class Speaker extends Equatable {
   @HiveField(9)
   final Map<String, dynamic>? metadata;
 
+  @HiveField(10)
+  final bool isVerified;
+
   const Speaker({
     required this.id,
     required this.name,
@@ -49,6 +53,7 @@ class Speaker extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.metadata,
+    this.isVerified = false,
   });
 
   Color get color => Color(colorValue);
@@ -66,6 +71,7 @@ class Speaker extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     Map<String, dynamic>? metadata,
+    bool? isVerified,
   }) {
     return Speaker(
       id: id ?? this.id,
@@ -78,6 +84,7 @@ class Speaker extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       metadata: metadata ?? this.metadata,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 
@@ -97,6 +104,7 @@ class Speaker extends Equatable {
           ? DateTime.parse(json['updated_at'] as String)
           : DateTime.now(),
       metadata: json['metadata'] as Map<String, dynamic>?,
+      isVerified: json['is_verified'] as bool? ?? false,
     );
   }
 
@@ -112,6 +120,7 @@ class Speaker extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'metadata': metadata,
+      'is_verified': isVerified,
     };
   }
 
@@ -162,6 +171,7 @@ class Speaker extends Equatable {
         avatarUrl,
         createdAt,
         updatedAt,
+        isVerified,
       ];
 
   @override
@@ -178,7 +188,7 @@ extension SpeakerAccessibility on Speaker {
   }
 
   String get accessibilityHint {
-    return 'Tap to view ${effectiveName}\'s profile and communication patterns';
+    return 'Tap to view $effectiveName\'s profile and communication patterns';
   }
 }
 

@@ -1,4 +1,5 @@
 /// Services barrel file - export all services from single import
+library;
 
 export 'storage_service.dart';
 export 'api_service.dart';

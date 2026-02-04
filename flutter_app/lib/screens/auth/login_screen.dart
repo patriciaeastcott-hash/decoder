@@ -1,4 +1,5 @@
 /// Login screen with Google, Apple, and Email authentication
+library;
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        AccessibleHeading(
+                        const AccessibleHeading(
                           text: 'Text Decoder',
                           level: 1,
                           textAlign: TextAlign.center,

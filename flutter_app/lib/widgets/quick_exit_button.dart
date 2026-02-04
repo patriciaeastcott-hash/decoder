@@ -1,4 +1,5 @@
 /// Quick exit button widget for safety features
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

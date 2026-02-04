@@ -1,4 +1,5 @@
 /// App state provider for global application state
+library;
 
 import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
@@ -158,6 +159,9 @@ class AppStateProvider extends ChangeNotifier {
     // The actual exit logic will be handled in the UI layer
     // using SystemNavigator.pop() or similar
   }
+
+  /// Alias for triggerQuickExit (for compatibility with UI code)
+  void quickExit() => triggerQuickExit();
 
   void resetQuickExit() {
     _quickExitTriggered = false;

@@ -1,4 +1,5 @@
 /// Conversation provider for managing conversations and analyses
+library;
 
 import 'package:flutter/material.dart';
 import '../models/models.dart';

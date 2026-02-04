@@ -1,4 +1,5 @@
 /// Behavior detail screen - view detailed information about a behavior from the library
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +152,7 @@ class BehaviorDetailScreen extends StatelessWidget {
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            Text(behavior.potentialImpact),
+                            Text(behavior.potentialImpact.join('\n')),
                           ],
                         ],
                       ),

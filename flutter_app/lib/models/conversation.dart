@@ -1,4 +1,5 @@
 /// Conversation model containing messages and analysis
+library;
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
@@ -189,6 +190,16 @@ class Conversation extends Equatable {
         speakersVerified,
         sourceType,
       ];
+
+  /// Accessibility label for screen readers
+  String get accessibilityLabel {
+    return '$title, ${messages.length} messages, $speakerCount speakers, status: ${status.displayName}';
+  }
+
+  /// Accessibility hint for screen readers
+  String get accessibilityHint {
+    return 'Tap to view conversation details and analysis';
+  }
 
   @override
   String toString() {

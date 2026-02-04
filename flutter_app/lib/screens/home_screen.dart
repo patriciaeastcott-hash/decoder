@@ -1,10 +1,12 @@
 /// Main home screen with bottom navigation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/models.dart';
 import '../providers/providers.dart';
 import '../utils/accessibility_utils.dart';
 

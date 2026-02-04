@@ -1,9 +1,9 @@
 /// Message bubble widget for displaying conversation messages
+library;
 
 import 'package:flutter/material.dart';
 
 import '../models/models.dart';
-import '../utils/accessibility_utils.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -25,9 +25,7 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final speakerColor = speaker?.color != null
-        ? Color(int.parse(speaker!.color!.replaceFirst('#', '0xFF')))
-        : Theme.of(context).primaryColor;
+    final speakerColor = speaker?.color ?? Theme.of(context).primaryColor;
 
     final isUser = speaker?.isUser ?? false;
 

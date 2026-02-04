@@ -1,5 +1,6 @@
 /// Accessibility service for WCAG 2.1 AAA compliance
 /// Provides utilities and helpers for accessibility features
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';

@@ -1,5 +1,6 @@
 /// App theme configuration with Digital ABCs branding
 /// WCAG 2.1 AAA compliant with rounded corners and soft shadows
+library;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -120,7 +121,7 @@ class AppTheme {
           color: navy,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: highContrast ? 0 : 0, // Using shadows instead
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
@@ -244,7 +245,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(borderRadiusSmall),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: navy,
         unselectedLabelColor: grey,
         indicatorColor: navy,
@@ -290,7 +291,7 @@ class AppTheme {
         ),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surfaceLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
@@ -301,9 +302,9 @@ class AppTheme {
           color: navy,
         ),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: surfaceLight,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(borderRadiusLarge),
           ),
@@ -403,7 +404,7 @@ class AppTheme {
           color: white,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
@@ -524,7 +525,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(borderRadiusSmall),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: darkLightBlue,
         unselectedLabelColor: white.withOpacity(0.6),
         indicatorColor: darkLightBlue,
@@ -570,7 +571,7 @@ class AppTheme {
         ),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surfaceDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
@@ -581,9 +582,9 @@ class AppTheme {
           color: white,
         ),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: surfaceDark,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(borderRadiusLarge),
           ),

@@ -1,4 +1,5 @@
 /// Accessibility utilities for WCAG 2.1 AAA compliance
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';

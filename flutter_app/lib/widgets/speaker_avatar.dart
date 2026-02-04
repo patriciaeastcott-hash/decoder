@@ -1,4 +1,5 @@
 /// Speaker avatar widget for displaying speaker icons
+library;
 
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,7 @@ class SpeakerAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = speaker.color != null
-        ? Color(int.parse(speaker.color!.replaceFirst('#', '0xFF')))
-        : Theme.of(context).primaryColor;
+    final color = speaker.color;
 
     return Semantics(
       label: speaker.effectiveName,
@@ -192,9 +191,7 @@ class SpeakerChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = speaker.color != null
-        ? Color(int.parse(speaker.color!.replaceFirst('#', '0xFF')))
-        : Theme.of(context).primaryColor;
+    final color = speaker.color;
 
     return ActionChip(
       avatar: CircleAvatar(

@@ -7,6 +7,7 @@
 /// - Australian Privacy Act
 /// - International AI Standards
 /// - WCAG 2.1 AAA Accessibility
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +25,6 @@ import 'services/storage_service.dart';
 import 'services/accessibility_service.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
-import 'utils/accessibility_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
