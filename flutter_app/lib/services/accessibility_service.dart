@@ -1,9 +1,18 @@
 /// Accessibility service for WCAG 2.1 AAA compliance
 /// Provides utilities and helpers for accessibility features
+///
+/// Cross-platform notes:
+/// - Haptic feedback: mobile only (iOS/Android)
+/// - Keyboard navigation: desktop/web (Tab, Arrow keys, Enter)
+/// - Mouse hover effects: desktop/web
+/// - Screen readers: all platforms (VoiceOver, TalkBack, Narrator, Orca, JAWS)
+/// - Touch targets: 48dp minimum on all platforms (WCAG)
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+
+import '../utils/platform_utils.dart';
 
 class AccessibilityService {
   /// WCAG 2.1 AAA minimum contrast ratio for normal text: 7:1
@@ -170,8 +179,12 @@ class AccessibilityService {
     return months[month - 1];
   }
 
-  /// Create haptic feedback for important actions
+  /// Create haptic feedback for important actions.
+  /// Only triggers on mobile platforms (iOS/Android) — silently ignored elsewhere.
   void provideHapticFeedback(HapticFeedbackType type) {
+    // Haptic feedback is only available on mobile devices
+    if (!PlatformUtils.supportsHapticFeedback) return;
+
     switch (type) {
       case HapticFeedbackType.light:
         HapticFeedback.lightImpact();
@@ -195,6 +208,20 @@ class AccessibilityService {
         HapticFeedback.vibrate();
         break;
     }
+  }
+
+  /// Whether the current platform primarily uses pointer (mouse/trackpad) input
+  bool get isPointerPlatform => PlatformUtils.isPointerPrimary;
+
+  /// Whether the current platform primarily uses touch input
+  bool get isTouchPlatform => PlatformUtils.isTouchPrimary;
+
+  /// Get the appropriate interactive hint based on platform input method
+  String getInteractionHint({
+    required String touchHint,
+    required String pointerHint,
+  }) {
+    return isPointerPlatform ? pointerHint : touchHint;
   }
 }
 
@@ -327,8 +354,10 @@ class FocusHelper {
   }
 }
 
-/// Skip link widget for keyboard navigation
-class SkipLink extends StatelessWidget {
+/// Skip link widget for keyboard navigation.
+/// Only visible on desktop/web where keyboard navigation is primary.
+/// Hidden from mobile users who don't use Tab navigation.
+class SkipLink extends StatefulWidget {
   final String label;
   final VoidCallback onActivate;
 
@@ -339,30 +368,44 @@ class SkipLink extends StatelessWidget {
   });
 
   @override
+  State<SkipLink> createState() => _SkipLinkState();
+}
+
+class _SkipLinkState extends State<SkipLink> {
+  bool _hasFocus = false;
+
+  @override
   Widget build(BuildContext context) {
+    // Only show skip links on platforms with keyboard navigation
+    if (!PlatformUtils.isPointerPrimary) {
+      return const SizedBox.shrink();
+    }
+
     return Semantics(
-      label: label,
+      label: widget.label,
       button: true,
       focusable: true,
       child: Focus(
         onFocusChange: (hasFocus) {
-          if (hasFocus) {
-            // Show skip link when focused
-          }
+          setState(() => _hasFocus = hasFocus);
         },
-        child: InkWell(
-          onTap: onActivate,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 150),
+          opacity: _hasFocus ? 1.0 : 0.0,
+          child: InkWell(
+            onTap: widget.onActivate,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                widget.label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),

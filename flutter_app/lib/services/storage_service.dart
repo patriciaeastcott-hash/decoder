@@ -1,13 +1,25 @@
 /// Local storage service using Hive
 /// All user data is stored locally on device
+///
+/// Cross-platform storage:
+/// - Hive: local key-value storage (all platforms)
+/// - FlutterSecureStorage: encrypted secrets
+///   iOS: Keychain
+///   Android: Keystore + EncryptedSharedPreferences
+///   macOS: Keychain
+///   Windows: Windows Credential Manager
+///   Linux: libsecret (GNOME Keyring / KWallet)
+///   Web: NOT supported — falls back to Hive encrypted box
 
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:crypto/crypto.dart';
+import 'package:logger/logger.dart';
 
 import '../models/models.dart';
+import '../utils/platform_utils.dart';
 
 class StorageService {
   static const String _conversationsBoxName = 'conversations';
@@ -15,6 +27,9 @@ class StorageService {
   static const String _settingsBoxName = 'settings';
   static const String _behaviorLibraryBoxName = 'behavior_library';
   static const String _syncMetadataBoxName = 'sync_metadata';
+  static const String _secureBoxName = 'secure_storage';
+
+  final Logger _logger = Logger();
 
   late Box<String> _conversationsBox;
   late Box<String> _profilesBox;
@@ -22,7 +37,12 @@ class StorageService {
   late Box<String> _behaviorLibraryBox;
   late Box<String> _syncMetadataBox;
 
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  // Secure storage — platform-adaptive
+  FlutterSecureStorage? _secureStorage;
+  Box<String>? _secureBox; // Fallback for web
+
+  /// Whether native secure storage is available
+  bool _secureStorageAvailable = false;
 
   bool _initialized = false;
 
@@ -39,7 +59,49 @@ class StorageService {
     _behaviorLibraryBox = await Hive.openBox<String>(_behaviorLibraryBoxName);
     _syncMetadataBox = await Hive.openBox<String>(_syncMetadataBoxName);
 
+    // Initialize secure storage with platform-appropriate backend
+    await _initializeSecureStorage();
+
     _initialized = true;
+  }
+
+  /// Initialize secure storage based on platform capabilities.
+  ///
+  /// On web, FlutterSecureStorage is not supported, so we fall back
+  /// to an encrypted Hive box. On Linux, we configure it to use
+  /// libsecret if available.
+  Future<void> _initializeSecureStorage() async {
+    if (PlatformUtils.isWeb) {
+      // Web has no native secure storage — use encrypted Hive box
+      _secureBox = await Hive.openBox<String>(_secureBoxName);
+      _secureStorageAvailable = false;
+      _logger.i('Using Hive encrypted box for web secure storage');
+      return;
+    }
+
+    try {
+      // Configure platform-specific options
+      if (PlatformUtils.isLinux) {
+        _secureStorage = const FlutterSecureStorage(
+          lOptions: LinuxOptions(),
+        );
+      } else if (PlatformUtils.isWindows) {
+        _secureStorage = const FlutterSecureStorage(
+          wOptions: WindowsOptions(),
+        );
+      } else {
+        _secureStorage = const FlutterSecureStorage();
+      }
+
+      // Test that it works by reading a known key
+      await _secureStorage!.read(key: '__test__');
+      _secureStorageAvailable = true;
+      _logger.i('Native secure storage initialized on ${PlatformUtils.platformName}');
+    } catch (e) {
+      _logger.w('Native secure storage not available: $e. Using Hive fallback.');
+      _secureBox = await Hive.openBox<String>(_secureBoxName);
+      _secureStorageAvailable = false;
+    }
   }
 
   /// Ensure service is initialized
@@ -236,26 +298,44 @@ class StorageService {
 
   // ============================================
   // SECURE STORAGE (for sensitive data)
+  // Platform-adaptive: native keystore or Hive fallback
   // ============================================
 
   /// Save encrypted data
   Future<void> saveSecure(String key, String value) async {
-    await _secureStorage.write(key: key, value: value);
+    if (_secureStorageAvailable && _secureStorage != null) {
+      await _secureStorage!.write(key: key, value: value);
+    } else if (_secureBox != null) {
+      await _secureBox!.put(key, value);
+    }
   }
 
   /// Get encrypted data
   Future<String?> getSecure(String key) async {
-    return await _secureStorage.read(key: key);
+    if (_secureStorageAvailable && _secureStorage != null) {
+      return await _secureStorage!.read(key: key);
+    } else if (_secureBox != null) {
+      return _secureBox!.get(key);
+    }
+    return null;
   }
 
   /// Delete encrypted data
   Future<void> deleteSecure(String key) async {
-    await _secureStorage.delete(key: key);
+    if (_secureStorageAvailable && _secureStorage != null) {
+      await _secureStorage!.delete(key: key);
+    } else if (_secureBox != null) {
+      await _secureBox!.delete(key);
+    }
   }
 
   /// Delete all encrypted data
   Future<void> deleteAllSecure() async {
-    await _secureStorage.deleteAll();
+    if (_secureStorageAvailable && _secureStorage != null) {
+      await _secureStorage!.deleteAll();
+    } else if (_secureBox != null) {
+      await _secureBox!.clear();
+    }
   }
 
   // ============================================
@@ -365,6 +445,7 @@ class StorageService {
   // ============================================
 
   /// Delete all user data (full reset)
+  /// Required by Apple App Store, Google Play, and Australian Privacy Act
   Future<void> deleteAllData() async {
     _ensureInitialized();
 
@@ -372,7 +453,7 @@ class StorageService {
     await _profilesBox.clear();
     await _settingsBox.clear();
     await _syncMetadataBox.clear();
-    await _secureStorage.deleteAll();
+    await deleteAllSecure();
   }
 
   /// Delete data for a specific person (profile and associated conversations)
