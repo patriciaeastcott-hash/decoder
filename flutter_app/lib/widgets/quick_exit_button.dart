@@ -159,13 +159,13 @@ class _MultiTapDetector extends StatefulWidget {
   final Widget child;
   final int requiredTaps;
   final VoidCallback onMultiTap;
-  final Duration timeout;
+
+  static const Duration timeout = Duration(seconds: 1);
 
   const _MultiTapDetector({
     required this.child,
     required this.requiredTaps,
     required this.onMultiTap,
-    this.timeout = const Duration(milliseconds: 500),
   });
 
   @override
@@ -180,7 +180,7 @@ class _MultiTapDetectorState extends State<_MultiTapDetector> {
     final now = DateTime.now();
 
     if (_lastTapTime != null &&
-        now.difference(_lastTapTime!) > widget.timeout) {
+        now.difference(_lastTapTime!) > _MultiTapDetector.timeout) {
       _tapCount = 0;
     }
 
