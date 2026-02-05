@@ -36,7 +36,6 @@ import 'services/storage_service.dart';
 import 'services/accessibility_service.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
-import 'utils/accessibility_utils.dart';
 import 'utils/platform_utils.dart';
 
 final _logger = Logger();
@@ -186,7 +185,8 @@ class TextDecoderApp extends StatelessWidget {
               _QuickExitIntent: CallbackAction<_QuickExitIntent>(
                 onInvoke: (_) {
                   final appState = context.read<AppStateProvider>();
-                  if (appState.settings?.quickExitEnabled ?? false) {
+                  final settingsProvider = context.read<SettingsProvider>();
+                  if (settingsProvider.quickExitEnabled) {
                     appState.triggerQuickExit();
                   }
                   return null;

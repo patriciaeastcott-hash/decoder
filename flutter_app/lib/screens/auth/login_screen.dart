@@ -98,12 +98,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.red.withOpacity(0.05),
+                          color: AppTheme.red.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(
                             AppTheme.borderRadiusSmall,
                           ),
                           border: Border.all(
-                            color: AppTheme.red.withOpacity(0.3),
+                            color: AppTheme.red.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.lightBlue.withOpacity(0.1),
+                          color: AppTheme.lightBlue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(
                             AppTheme.borderRadiusSmall,
                           ),

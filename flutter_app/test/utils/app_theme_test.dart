@@ -8,31 +8,31 @@ void main() {
   group('AppTheme', () {
     group('Brand Colors', () {
       test('navy has correct value', () {
-        expect(AppTheme.navy.value, equals(const Color(0xFF1E3A8A).value));
+        expect(AppTheme.navy, equals(const Color(0xFF1E3A8A)));
       });
 
       test('purple has correct value', () {
-        expect(AppTheme.purple.value, equals(const Color(0xFF7C3AED).value));
+        expect(AppTheme.purple, equals(const Color(0xFF7C3AED)));
       });
 
       test('lightBlue has correct value', () {
-        expect(AppTheme.lightBlue.value, equals(const Color(0xFF60A5FA).value));
+        expect(AppTheme.lightBlue, equals(const Color(0xFF60A5FA)));
       });
 
       test('green (CTA) has correct value', () {
-        expect(AppTheme.green.value, equals(const Color(0xFF10B981).value));
+        expect(AppTheme.green, equals(const Color(0xFF10B981)));
       });
 
       test('red (errors only) has correct value', () {
-        expect(AppTheme.red.value, equals(const Color(0xFFDC2626).value));
+        expect(AppTheme.red, equals(const Color(0xFFDC2626)));
       });
 
       test('primaryColor is navy', () {
-        expect(AppTheme.primaryColor.value, equals(AppTheme.navy.value));
+        expect(AppTheme.primaryColor, equals(AppTheme.navy));
       });
 
       test('accentColor is green', () {
-        expect(AppTheme.accentColor.value, equals(AppTheme.green.value));
+        expect(AppTheme.accentColor, equals(AppTheme.green));
       });
     });
 
@@ -98,17 +98,17 @@ void main() {
     group('Helper Methods', () {
       test('getHealthScoreColor returns green for high scores', () {
         final color = AppTheme.getHealthScoreColor(85);
-        expect(color.value, equals(AppTheme.green.value));
+        expect(color, equals(AppTheme.green));
       });
 
       test('getHealthScoreColor returns red for very low scores', () {
         final color = AppTheme.getHealthScoreColor(15);
-        expect(color.value, equals(AppTheme.red.value));
+        expect(color, equals(AppTheme.red));
       });
 
       test('getHealthScoreColor returns warning for mid scores', () {
         final color = AppTheme.getHealthScoreColor(45);
-        expect(color.value, equals(AppTheme.warningColor.value));
+        expect(color, equals(AppTheme.warningColor));
       });
 
       test('cardDecoration returns BoxDecoration', () {

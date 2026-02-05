@@ -112,6 +112,37 @@ class AnalysisResult extends Equatable {
     };
   }
 
+  AnalysisResult copyWith({
+    String? id,
+    String? conversationId,
+    String? summary,
+    PowerDynamics? powerDynamics,
+    List<SpeakerAnalysis>? speakerAnalyses,
+    RelationshipDynamics? relationshipDynamics,
+    ManipulationCheck? manipulationCheck,
+    List<ActionableInsight>? actionableInsights,
+    int? conversationHealthScore,
+    List<String>? followUpQuestions,
+    DateTime? analyzedAt,
+    Map<String, dynamic>? rawResponse,
+  }) {
+    return AnalysisResult(
+      id: id ?? this.id,
+      conversationId: conversationId ?? this.conversationId,
+      summary: summary ?? this.summary,
+      powerDynamics: powerDynamics ?? this.powerDynamics,
+      speakerAnalyses: speakerAnalyses ?? this.speakerAnalyses,
+      relationshipDynamics: relationshipDynamics ?? this.relationshipDynamics,
+      manipulationCheck: manipulationCheck ?? this.manipulationCheck,
+      actionableInsights: actionableInsights ?? this.actionableInsights,
+      conversationHealthScore:
+          conversationHealthScore ?? this.conversationHealthScore,
+      followUpQuestions: followUpQuestions ?? this.followUpQuestions,
+      analyzedAt: analyzedAt ?? this.analyzedAt,
+      rawResponse: rawResponse ?? this.rawResponse,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

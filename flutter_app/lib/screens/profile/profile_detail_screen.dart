@@ -114,7 +114,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
                     _TipsTab(profile: profile),
                   ],
                 )
-              : _NoAnalysisView(profile: profile),
+              : _NoAnalysisView(profile: profile, onAnalyze: () => _refreshAnalysis(profile)),
         );
       },
     );
@@ -122,7 +122,14 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
 
   Future<void> _refreshAnalysis(Profile profile) async {
     final provider = context.read<ProfileProvider>();
-    await provider.analyzeProfile(profile.id);
+    final convProvider = context.read<ConversationProvider>();
+    final conversations = convProvider.conversations
+        .where((c) => profile.conversationIds.contains(c.id))
+        .toList();
+    await provider.analyzeProfile(
+      profile: profile,
+      conversations: conversations,
+    );
   }
 
   void _handleMenuAction(String action, Profile profile) {
@@ -277,8 +284,9 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
 
 class _NoAnalysisView extends StatelessWidget {
   final Profile profile;
+  final VoidCallback? onAnalyze;
 
-  const _NoAnalysisView({required this.profile});
+  const _NoAnalysisView({required this.profile, this.onAnalyze});
 
   @override
   Widget build(BuildContext context) {
@@ -319,7 +327,7 @@ class _NoAnalysisView extends StatelessWidget {
                 builder: (context, provider, _) => ElevatedButton.icon(
                   onPressed: provider.isAnalyzing
                       ? null
-                      : () => provider.analyzeProfile(profile.id),
+                      : onAnalyze,
                   icon: provider.isAnalyzing
                       ? const SizedBox(
                           width: 20,
@@ -984,7 +992,7 @@ class _FlagsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: color.withOpacity(0.05),
+      color: color.withValues(alpha: 0.05),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -1105,7 +1113,7 @@ class _StrengthTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
+        color: Colors.amber.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.amber.shade200),
       ),
@@ -1151,7 +1159,7 @@ class _GrowthTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.05),
+        color: Colors.blue.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.blue.shade200),
       ),

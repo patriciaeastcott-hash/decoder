@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 
 import '../models/models.dart';
-import '../utils/accessibility_utils.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -25,15 +24,15 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final speakerColor = speaker?.color != null
-        ? Color(int.parse(speaker!.color!.replaceFirst('#', '0xFF')))
+    final speakerColor = speaker != null
+        ? speaker!.color
         : Theme.of(context).primaryColor;
 
     final isUser = speaker?.isUser ?? false;
 
     return Semantics(
       label:
-          '${speaker?.effectiveName ?? "Unknown"} said: ${message.content}',
+          '${speaker?.effectiveName ?? "Unknown"} said: ${message.text}',
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: Row(
@@ -57,7 +56,7 @@ class MessageBubble extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isUser
                         ? speakerColor
-                        : speakerColor.withOpacity(0.1),
+                        : speakerColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -86,7 +85,7 @@ class MessageBubble extends StatelessWidget {
                           ),
                         ),
                       Text(
-                        message.content,
+                        message.text,
                         style: TextStyle(
                           color: isUser ? Colors.white : Colors.black87,
                         ),
@@ -99,7 +98,7 @@ class MessageBubble extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 10,
                               color: isUser
-                                  ? Colors.white.withOpacity(0.7)
+                                  ? Colors.white.withValues(alpha: 0.7)
                                   : Colors.grey,
                             ),
                           ),
@@ -181,9 +180,9 @@ class CompactMessageBubble extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: bubbleColor.withOpacity(0.1),
+        color: bubbleColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: bubbleColor.withOpacity(0.3)),
+        border: Border.all(color: bubbleColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

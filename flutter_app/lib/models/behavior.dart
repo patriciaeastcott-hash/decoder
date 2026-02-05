@@ -129,6 +129,12 @@ class BehaviorCategory extends Equatable {
     return subcategories.fold(0, (sum, sub) => sum + sub.behaviors.length);
   }
 
+  /// Alias for category field, used by UI screens
+  String get name => category;
+
+  /// Alias for behaviorCount, used by UI screens
+  int get totalBehaviors => behaviorCount;
+
   @override
   List<Object?> get props => [id, category, description, icon, subcategories];
 }
@@ -224,6 +230,30 @@ class Behavior extends Equatable {
       'frequency_note': frequencyNote,
     };
   }
+
+  /// Whether this behavior is generally healthy
+  bool get isHealthy => nature == BehaviorNature.healthy;
+
+  /// Category name (empty if not known from context)
+  String get category => '';
+
+  /// Subcategory name (empty if not known from context)
+  String get subcategory => '';
+
+  /// Severity level (empty string - derived from context)
+  String get severity => '';
+
+  /// Common contexts where this behavior appears (derived from examples)
+  List<String> get commonContexts => const [];
+
+  /// Potential impact description (derived from indicators)
+  String get potentialImpact => frequencyNote;
+
+  /// IDs of related behaviors
+  List<String> get relatedBehaviors => const [];
+
+  /// Communication tips for dealing with this behavior
+  List<String> get communicationTips => const [];
 
   /// Determine if this is a generally healthy or unhealthy behavior
   BehaviorNature get nature {

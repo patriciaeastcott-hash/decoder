@@ -34,8 +34,8 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # Authentication (Firebase - mobile/web, email fallback for desktop)
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.4
   google_sign_in: ^6.2.1
   sign_in_with_apple: ^5.0.0
 
