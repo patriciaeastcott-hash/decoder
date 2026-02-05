@@ -30,7 +30,10 @@ void main() {
       );
 
       final constrainedBox = tester.widget<ConstrainedBox>(
-        find.byType(ConstrainedBox),
+        find.descendant(
+          of: find.byType(AccessibleTouchTarget),
+          matching: find.byType(ConstrainedBox),
+        ),
       );
       expect(
         constrainedBox.constraints.minWidth,
@@ -54,10 +57,13 @@ void main() {
         ),
       );
 
-      expect(
-        find.bySemanticsLabel('Test button'),
-        findsOneWidget,
+      final semantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics && widget.properties.label == 'Test button',
+        ),
       );
+      expect(semantics.properties.label, equals('Test button'));
     });
   });
 

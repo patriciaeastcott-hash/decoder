@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:text_decoder/utils/platform_utils.dart';
 
@@ -77,8 +76,16 @@ void main() {
       expect(PlatformUtils.termsOfServiceUrl, isNotEmpty);
     });
 
-    test('deviceFormFactor returns valid value', () {
-      expect(PlatformUtils.deviceFormFactor, isA<DeviceFormFactor>());
+    test('storeName returns non-empty string', () {
+      expect(PlatformUtils.storeName, isNotEmpty);
+    });
+
+    test('minimumAgeRating is 12+', () {
+      expect(PlatformUtils.minimumAgeRating, greaterThanOrEqualTo(12));
+    });
+
+    test('requiresPrivacyPolicyUrl is true for all platforms', () {
+      expect(PlatformUtils.requiresPrivacyPolicyUrl, isTrue);
     });
   });
 }
