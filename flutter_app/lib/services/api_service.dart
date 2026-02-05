@@ -1,8 +1,10 @@
 /// API service for communicating with the backend
 /// Handles all Gemini API proxy calls
+///
+/// Cross-platform: does NOT import dart:io (crashes on web).
+/// Network errors are caught as http.ClientException or generic exceptions.
 
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:logger/logger.dart';
@@ -99,10 +101,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => SpeakerIdentificationResult.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Speaker identification error: $e');
       return ApiResponse.error('Failed to identify speakers: $e');
@@ -146,10 +146,8 @@ class ApiService {
         final result = AnalysisResult.fromJson(data);
         return result;
       });
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Conversation analysis error: $e');
       return ApiResponse.error('Failed to analyze conversation: $e');
@@ -191,10 +189,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => ResponseImpactResult.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Response impact analysis error: $e');
       return ApiResponse.error('Failed to analyze response impact: $e');
@@ -236,10 +232,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => ProfileAnalysis.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Profile analysis error: $e');
       return ApiResponse.error('Failed to analyze profile: $e');
@@ -280,10 +274,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => SelfProfileAnalysis.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Self-profile analysis error: $e');
       return ApiResponse.error('Failed to analyze self-profile: $e');
@@ -311,10 +303,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => BehaviorLibrary.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Using cached behavior library.');
     } on http.ClientException catch (e) {
-      return ApiResponse.error('Connection failed: $e');
+      return ApiResponse.error('Network error. Using cached behavior library: $e');
     } catch (e) {
       _logger.e('Fetch behavior library error: $e');
       return ApiResponse.error('Failed to fetch behavior library: $e');
@@ -347,8 +337,8 @@ class ApiService {
           .timeout(_timeout);
 
       return _handleResponse(response, (data) => SyncResult.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
+    } on http.ClientException catch (e) {
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Sync upload error: $e');
       return ApiResponse.error('Failed to sync data: $e');
@@ -374,8 +364,8 @@ class ApiService {
 
       return _handleResponse(
           response, (data) => SyncDownloadResult.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
+    } on http.ClientException catch (e) {
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Sync download error: $e');
       return ApiResponse.error('Failed to download sync data: $e');
@@ -405,8 +395,8 @@ class ApiService {
           .timeout(_timeout);
 
       return _handleResponse(response, (data) => DeleteResult.fromJson(data));
-    } on SocketException {
-      return ApiResponse.error('Network error. Please check your connection.');
+    } on http.ClientException catch (e) {
+      return ApiResponse.error('Network error. Please check your connection: $e');
     } catch (e) {
       _logger.e('Delete user data error: $e');
       return ApiResponse.error('Failed to delete user data: $e');
