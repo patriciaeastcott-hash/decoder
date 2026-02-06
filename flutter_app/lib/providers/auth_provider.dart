@@ -25,13 +25,22 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isAuthenticated => _user != null;
 
+  /// Whether Firebase auth is available on this platform
+  bool get isFirebaseAvailable => _authService.isFirebaseAvailable;
+
   String? get userId => _user?.uid;
   String? get userEmail => _user?.email;
   String? get userDisplayName => _user?.displayName;
   String? get userPhotoUrl => _user?.photoURL;
 
   AuthProvider() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _authService.initialize();
     _initAuthListener();
+    notifyListeners();
   }
 
   void _initAuthListener() {

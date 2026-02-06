@@ -72,7 +72,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!appState.isOnboardingComplete) {
       nextScreen = const OnboardingScreen();
-    } else if (!authProvider.isAuthenticated) {
+    } else if (!authProvider.isAuthenticated && authProvider.isFirebaseAvailable) {
+      // Only show login if Firebase is available — otherwise skip to home
+      // (allows development/testing on web without Firebase config)
       nextScreen = const LoginScreen();
     } else {
       nextScreen = const HomeScreen();

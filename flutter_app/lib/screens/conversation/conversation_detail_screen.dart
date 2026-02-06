@@ -27,7 +27,10 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadConversation();
+    // Defer to post-frame to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadConversation();
+    });
   }
 
   Future<void> _loadConversation() async {
