@@ -110,24 +110,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: AppTheme.red),
+                            const Icon(Icons.error_outline, color: AppTheme.red),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 auth.error!,
                                 style: const TextStyle(color: AppTheme.red),
-                        const SizedBox(height: 24),
-                        const AccessibleHeading(
-                          text: 'Text Decoder',
-                          level: 1,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Sign in to sync your data',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.grey,
                               ),
                             ),
                             IconButton(
