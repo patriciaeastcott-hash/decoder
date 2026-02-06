@@ -128,11 +128,14 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
     await provider.analyzeProfile(
+      profile: profile,
+      conversations: conversations,
+    );
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
 
     // Get conversations linked to this profile
-    final conversations = conversationProvider.conversations
+    final   conversations = conversationProvider.conversations
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
 
@@ -374,9 +377,9 @@ class _NoAnalysisView extends StatelessWidget {
                   );
                 },
               ),
+              ),
           ],
         ),
-      ),
     );
   }
 }

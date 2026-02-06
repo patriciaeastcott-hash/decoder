@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          AccessibleHeading(
+                          const AccessibleHeading(
                             text: 'Text Decoder',
                             level: 1,
                             textAlign: TextAlign.center,
