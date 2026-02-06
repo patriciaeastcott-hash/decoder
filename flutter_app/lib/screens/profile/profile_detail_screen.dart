@@ -129,18 +129,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
         .toList();
     await provider.analyzeProfile(
       profile: profile,
-      conversations: conv `ersations,
-    );
-    final profileProvider = context.read<ProfileProvider>();
-    final conversationProvider = context.read<ConversationProvider>();
-
-    // Get conversations linked to this profile
-    final   conversations = conversationProvider.conversations
-        .where((c) => profile.conversationIds.contains(c.id))
-        .toList();
-
-    await profileProvider.analyzeProfile(
-      profile: profile,
       conversations: conversations,
     );
   }
@@ -336,21 +324,6 @@ class _NoAnalysisView extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             if (profile.hasEnoughDataForAnalysis)
-              Consumer<ProfileProvider>(
-                builder: (context, provider, _) => ElevatedButton.icon(
-                  onPressed: provider.isAnalyzing
-                      ? null
-                      : onAnalyze,
-                  icon: provider.isAnalyzing
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.psychology),
-                  label: Text(
-                      provider.isAnalyzing ? 'Analyzing...' : 'Run Analysis'),
-                ),
               Consumer2<ProfileProvider, ConversationProvider>(
                 builder: (context, profileProvider, conversationProvider, _) {
                   final conversations = conversationProvider.conversations
@@ -377,9 +350,9 @@ class _NoAnalysisView extends StatelessWidget {
                   );
                 },
               ),
-              ),
           ],
         ),
+      ),
     );
   }
 }
