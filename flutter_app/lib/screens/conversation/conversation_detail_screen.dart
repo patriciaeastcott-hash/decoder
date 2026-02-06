@@ -31,7 +31,17 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
   }
 
   Future<void> _loadConversation() async {
-    await context.read<ConversationProvider>().getConversation(widget.conversationId);
+    final provider = context.read<ConversationProvider>();
+    final conversation = await provider.getConversation(widget.conversationId);
+
+    // Auto-start speaker identification for fresh drafts
+    if (conversation != null &&
+        conversation.status == ConversationStatus.draft &&
+        conversation.messages.isEmpty &&
+        conversation.rawText.isNotEmpty &&
+        !provider.isIdentifyingSpeakers) {
+      _identifySpeakers(conversation);
+    }
   }
 
   @override
