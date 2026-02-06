@@ -10,6 +10,7 @@
 ///   Windows: Windows Credential Manager
 ///   Linux: libsecret (GNOME Keyring / KWallet)
 ///   Web: NOT supported — falls back to Hive encrypted box
+library;
 
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -399,7 +400,7 @@ class StorageService {
 
     // Decrypt
     final parts = encryptedData.split(':');
-    if (parts.length != 2) throw FormatException('Invalid encrypted data format');
+    if (parts.length != 2) throw const FormatException('Invalid encrypted data format');
 
     final iv = encrypt.IV.fromBase64(parts[0]);
     final encrypted = encrypt.Encrypted.fromBase64(parts[1]);

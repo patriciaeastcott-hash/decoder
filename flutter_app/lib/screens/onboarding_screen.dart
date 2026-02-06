@@ -1,4 +1,5 @@
 /// Onboarding screen for new users
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,31 +20,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   final List<_OnboardingPage> _pages = [
-    _OnboardingPage(
+    const _OnboardingPage(
       icon: Icons.psychology_outlined,
       title: 'Decode Conversations',
       description:
           'Paste any conversation and get AI-powered insights into communication patterns, behaviors, and relationship dynamics.',
     ),
-    _OnboardingPage(
+    const _OnboardingPage(
       icon: Icons.people_outline,
       title: 'Build Speaker Profiles',
       description:
           'Over time, build psychological profiles for people in your life. Understand their communication styles and how to connect better.',
     ),
-    _OnboardingPage(
+    const _OnboardingPage(
       icon: Icons.lightbulb_outline,
       title: 'Test Your Responses',
       description:
           'Before sending a message, see how it might impact the conversation. Get suggestions for more effective communication.',
     ),
-    _OnboardingPage(
+    const _OnboardingPage(
       icon: Icons.self_improvement,
       title: 'Know Yourself',
       description:
           'Get an unbiased analysis of your own communication patterns. Discover strengths and areas for growth.',
     ),
-    _OnboardingPage(
+    const _OnboardingPage(
       icon: Icons.lock_outline,
       title: 'Your Privacy Matters',
       description:

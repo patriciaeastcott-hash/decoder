@@ -1,4 +1,5 @@
 /// Profile provider for managing speaker profiles and analysis
+library;
 
 import 'package:flutter/material.dart';
 import '../models/models.dart';
@@ -340,7 +341,7 @@ class ProfileProvider extends ChangeNotifier {
           attachmentStyle: 'See detailed analysis',
           emotionalRegulation: 'See detailed analysis',
           overallHealthScore: 50,
-          topBehaviors: [],
+          topBehaviors: const [],
           lastUpdated: DateTime.now(),
         );
 

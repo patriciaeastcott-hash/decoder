@@ -1,4 +1,5 @@
 /// Reusable widgets barrel file
+library;
 
 export 'message_bubble.dart';
 export 'health_score_card.dart';

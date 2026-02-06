@@ -1,4 +1,5 @@
 /// Auth provider for managing authentication state
+library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';

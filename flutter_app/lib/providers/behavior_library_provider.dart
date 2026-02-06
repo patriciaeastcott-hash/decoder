@@ -1,4 +1,5 @@
 /// Behavior library provider for offline behavior/trait library
+library;
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -107,6 +108,21 @@ class BehaviorLibraryProvider extends ChangeNotifier {
 
   /// Search behaviors by keyword (alias for search)
   List<Behavior> searchBehaviors(String query) => search(query);
+
+  /// Alias for search (for compatibility with UI code)
+  List<Behavior> searchBehaviors(String query) => search(query);
+
+  /// Get behaviors by category
+  List<Behavior> getBehaviorsByCategory(String categoryId) {
+    final category = getCategoryById(categoryId);
+    if (category == null) return [];
+
+    final behaviors = <Behavior>[];
+    for (final subcategory in category.subcategories) {
+      behaviors.addAll(subcategory.behaviors);
+    }
+    return behaviors;
+  }
 
   void clearError() {
     _error = null;

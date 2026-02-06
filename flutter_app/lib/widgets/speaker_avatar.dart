@@ -1,4 +1,5 @@
 /// Speaker avatar widget for displaying speaker icons
+library;
 
 import 'package:flutter/material.dart';
 

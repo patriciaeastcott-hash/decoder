@@ -1,4 +1,5 @@
 /// Self profile screen - unbiased analysis of the user's own communication patterns
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -97,6 +98,15 @@ class _SelfProfileScreenState extends State<SelfProfileScreen>
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
     await provider.analyzeProfile(
+    final profileProvider = context.read<ProfileProvider>();
+    final conversationProvider = context.read<ConversationProvider>();
+
+    // Get conversations linked to this profile
+    final conversations = conversationProvider.conversations
+        .where((c) => profile.conversationIds.contains(c.id))
+        .toList();
+
+    await profileProvider.analyzeProfile(
       profile: profile,
       conversations: conversations,
     );
@@ -282,6 +292,33 @@ class _NoAnalysisView extends StatelessWidget {
                         : 'Analyze My Communication',
                   ),
                 ),
+              Consumer2<ProfileProvider, ConversationProvider>(
+                builder: (context, profileProvider, conversationProvider, _) {
+                  final conversations = conversationProvider.conversations
+                      .where((c) => profile.conversationIds.contains(c.id))
+                      .toList();
+
+                  return ElevatedButton.icon(
+                    onPressed: profileProvider.isAnalyzing
+                        ? null
+                        : () => profileProvider.analyzeProfile(
+                              profile: profile,
+                              conversations: conversations,
+                            ),
+                    icon: profileProvider.isAnalyzing
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.psychology),
+                    label: Text(
+                      profileProvider.isAnalyzing
+                          ? 'Analyzing...'
+                          : 'Analyze My Communication',
+                    ),
+                  );
+                },
               ),
           ],
         ),
@@ -929,7 +966,7 @@ class _SelfGrowthTab extends StatelessWidget {
               padding: const EdgeInsets.all(32),
               child: Column(
                 children: [
-                  Icon(Icons.celebration, size: 64, color: Colors.amber),
+                  const Icon(Icons.celebration, size: 64, color: Colors.amber),
                   const SizedBox(height: 16),
                   Text(
                     'Great job!',
