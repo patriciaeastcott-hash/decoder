@@ -27,6 +27,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logger/logger.dart';
 
+import 'firebase_options.dart';
+
 import 'providers/app_state_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/conversation_provider.dart';
@@ -50,7 +52,9 @@ void main() async {
   // Initialize Firebase only on supported platforms
   if (PlatformUtils.supportsFirebase) {
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       _logger.i('Firebase initialized on ${PlatformUtils.platformName}');
     } catch (e) {
       _logger.w('Firebase initialization failed: $e');

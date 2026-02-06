@@ -12,6 +12,7 @@
 library;
 
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -124,6 +125,17 @@ class AuthService {
     }
 
     try {
+      // On web, use Firebase's signInWithPopup — no google_sign_in config needed
+      if (kIsWeb) {
+        final googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+        final userCredential = await _auth!.signInWithPopup(googleProvider);
+        _logger.i('Google sign in (web popup) successful: ${userCredential.user?.email}');
+        return AuthResult.success(userCredential.user!);
+      }
+
+      // On mobile/desktop, use the google_sign_in package
       final GoogleSignInAccount? googleUser = await _googleSignIn!.signIn();
 
       if (googleUser == null) {
