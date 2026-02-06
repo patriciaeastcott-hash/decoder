@@ -95,54 +95,87 @@ class _ConversationDetailScreenState extends State<ConversationDetailScreen> {
                     ? _buildEmptyState(conversation)
                     : _buildMessagesList(conversation),
               ),
+
+              // Action buttons (inline instead of bottomNavigationBar for web compatibility)
+              _buildBottomActions(conversation, provider),
             ],
           ),
-          bottomNavigationBar: _buildBottomActions(conversation, provider),
         );
       },
     );
   }
 
   Widget _buildEmptyState(Conversation conversation) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            Text(
-              'No messages identified yet',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap "Identify Speakers" to analyze the conversation',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            // Show raw text preview
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(8),
+    return Consumer<ConversationProvider>(
+      builder: (context, provider, _) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 24),
+              Icon(
+                provider.isIdentifyingSpeakers
+                    ? Icons.person_search
+                    : Icons.chat_bubble_outline,
+                size: 64,
+                color: provider.isIdentifyingSpeakers
+                    ? Theme.of(context).primaryColor
+                    : Colors.grey,
               ),
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: SingleChildScrollView(
-                child: Text(
-                  conversation.rawText,
-                  style: Theme.of(context).textTheme.bodySmall,
+              const SizedBox(height: 16),
+              Text(
+                provider.isIdentifyingSpeakers
+                    ? 'Identifying speakers...'
+                    : 'Ready to analyze',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                provider.isIdentifyingSpeakers
+                    ? 'Analyzing your conversation to identify who said what'
+                    : 'Tap the button below to identify speakers in this conversation',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              if (provider.isIdentifyingSpeakers) ...[
+                const SizedBox(height: 24),
+                const CircularProgressIndicator(),
+              ],
+              if (!provider.isIdentifyingSpeakers &&
+                  conversation.status == ConversationStatus.draft) ...[
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => _identifySpeakers(conversation),
+                  icon: const Icon(Icons.person_search),
+                  label: const Text('Identify Speakers'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(240, 48),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 24),
+              // Show raw text preview
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: Text(
+                    conversation.rawText,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
