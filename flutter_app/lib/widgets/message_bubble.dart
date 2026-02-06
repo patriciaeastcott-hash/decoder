@@ -25,9 +25,6 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final speakerColor = speaker != null
-        ? speaker!.color
-        : Theme.of(context).primaryColor;
     final speakerColor = speaker?.color ?? Theme.of(context).primaryColor;
 
     final isUser = speaker?.isUser ?? false;

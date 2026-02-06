@@ -133,10 +133,6 @@ class BehaviorCategory extends Equatable {
   /// Alias for category field, used by UI screens
   String get name => category;
 
-  /// Alias for behaviorCount, used by UI screens
-  /// Alias for category (for compatibility with UI code)
-  String get name => category;
-
   /// Alias for behaviorCount (for compatibility with UI code)
   int get totalBehaviors => behaviorCount;
 
@@ -279,31 +275,6 @@ class Behavior extends Equatable {
       'severity': severity,
     };
   }
-
-  /// Whether this behavior is generally healthy
-  bool get isHealthy => nature == BehaviorNature.healthy;
-
-  /// Category name (empty if not known from context)
-  String get category => '';
-
-  /// Subcategory name (empty if not known from context)
-  String get subcategory => '';
-
-  /// Severity level (empty string - derived from context)
-  String get severity => '';
-
-  /// Common contexts where this behavior appears (derived from examples)
-  List<String> get commonContexts => const [];
-
-  /// Potential impact description (derived from indicators)
-  String get potentialImpact => frequencyNote;
-
-  /// IDs of related behaviors
-  List<String> get relatedBehaviors => const [];
-
-  /// Communication tips for dealing with this behavior
-  List<String> get communicationTips => const [];
-
   /// Determine if this is a generally healthy or unhealthy behavior
   BehaviorNature get nature {
     if (unhealthyIndicators.isEmpty ||
