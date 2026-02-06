@@ -125,7 +125,6 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
 
-    // Get conversations linked to this profile
     final conversations = conversationProvider.conversations
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
@@ -200,7 +199,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
               const Text('How long should this profile data be retained?'),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
-                initialValue: selectedMonths,
+                value: selectedMonths,
                 decoration: const InputDecoration(
                   labelText: 'Retention Period',
                 ),

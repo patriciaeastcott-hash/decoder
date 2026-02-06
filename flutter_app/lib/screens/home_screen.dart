@@ -22,6 +22,10 @@ import '../utils/accessibility_utils.dart';
 import '../utils/platform_utils.dart';
 import '../utils/responsive_layout.dart';
 import '../utils/app_theme.dart';
+import 'conversation/conversation_detail_screen.dart';
+import 'profile/profile_detail_screen.dart';
+import 'profile/self_profile_screen.dart';
+import 'library/behavior_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -201,7 +205,14 @@ class _ConversationsTab extends StatelessWidget {
                   semanticLabel: conversation.accessibilityLabel,
                   semanticHint: conversation.accessibilityHint,
                   onTap: () {
-                    // Navigate to conversation detail
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConversationDetailScreen(
+                          conversationId: conversation.id,
+                        ),
+                      ),
+                    );
                   },
                   child: Card(
                     child: Padding(
@@ -275,7 +286,9 @@ class _ProfilesTab extends StatelessWidget {
               subtitle: 'Profiles are created from analyzed conversations',
               actionLabel: 'Go to Conversations',
               onAction: () {
-                // Navigate to conversations
+                // Switch to conversations tab
+                final homeState = context.findAncestorStateOfType<_HomeScreenState>();
+                homeState?.setState(() => homeState._currentIndex = 0);
               },
             );
           }
@@ -305,7 +318,23 @@ class _ProfilesTab extends StatelessWidget {
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // Navigate to profile detail
+                      if (profile.isUserProfile) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelfProfileScreen(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileDetailScreen(
+                              profileId: profile.id,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 );
@@ -363,13 +392,45 @@ class _LibraryTab extends StatelessWidget {
                     title: Text(category.category),
                     subtitle: Text('${category.behaviorCount} behaviors'),
                     children: category.subcategories.map((sub) {
-                      return ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72, right: 16),
-                        title: Text(sub.name),
-                        subtitle: Text('${sub.behaviors.length} behaviors'),
-                        onTap: () {
-                          // Navigate to subcategory
-                        },
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 72, right: 16, top: 8, bottom: 4),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                sub.name,
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          ...sub.behaviors.map((behavior) {
+                            return ListTile(
+                              contentPadding: const EdgeInsets.only(left: 72, right: 16),
+                              leading: Icon(
+                                behavior.isHealthy ? Icons.check_circle : Icons.warning,
+                                color: behavior.isHealthy ? Colors.green : Colors.orange,
+                                size: 20,
+                              ),
+                              title: Text(behavior.name),
+                              trailing: const Icon(Icons.chevron_right, size: 18),
+                              dense: true,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BehaviorDetailScreen(
+                                      behaviorId: behavior.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }),
+                        ],
                       );
                     }).toList(),
                   ),
@@ -856,6 +917,16 @@ class _AddConversationSheetState extends State<_AddConversationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Conversation added')),
         );
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConversationDetailScreen(
+                conversationId: conversation.id,
+              ),
+            ),
+          );
+        }
       }
     }
   }
