@@ -89,6 +89,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/behavior_library.json
     - assets/images/
     - assets/icons/
     - assets/animations/
