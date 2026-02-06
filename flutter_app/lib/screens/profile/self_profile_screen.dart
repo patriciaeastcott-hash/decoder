@@ -92,16 +92,9 @@ class _SelfProfileScreenState extends State<SelfProfileScreen>
   }
 
   Future<void> _refreshAnalysis(Profile profile) async {
-    final provider = context.read<ProfileProvider>();
-    final convProvider = context.read<ConversationProvider>();
-    final conversations = convProvider.conversations
-        .where((c) => profile.conversationIds.contains(c.id))
-        .toList();
-    await provider.analyzeProfile(
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
 
-    // Get conversations linked to this profile
     final conversations = conversationProvider.conversations
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
@@ -276,9 +269,7 @@ class _NoAnalysisView extends StatelessWidget {
             if (profile.hasEnoughDataForAnalysis)
               Consumer<ProfileProvider>(
                 builder: (context, provider, _) => ElevatedButton.icon(
-                  onPressed: provider.isAnalyzing
-                      ? null
-                      : onAnalyze,
+                  onPressed: provider.isAnalyzing ? null : onAnalyze,
                   icon: provider.isAnalyzing
                       ? const SizedBox(
                           width: 20,
@@ -292,33 +283,6 @@ class _NoAnalysisView extends StatelessWidget {
                         : 'Analyze My Communication',
                   ),
                 ),
-              Consumer2<ProfileProvider, ConversationProvider>(
-                builder: (context, profileProvider, conversationProvider, _) {
-                  final conversations = conversationProvider.conversations
-                      .where((c) => profile.conversationIds.contains(c.id))
-                      .toList();
-
-                  return ElevatedButton.icon(
-                    onPressed: profileProvider.isAnalyzing
-                        ? null
-                        : () => profileProvider.analyzeProfile(
-                              profile: profile,
-                              conversations: conversations,
-                            ),
-                    icon: profileProvider.isAnalyzing
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.psychology),
-                    label: Text(
-                      profileProvider.isAnalyzing
-                          ? 'Analyzing...'
-                          : 'Analyze My Communication',
-                    ),
-                  );
-                },
               ),
           ],
         ),
