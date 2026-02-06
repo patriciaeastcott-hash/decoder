@@ -122,12 +122,15 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
   }
 
   Future<void> _refreshAnalysis(Profile profile) async {
-    final provider = context.read<ProfileProvider>();
-    final convProvider = context.read<ConversationProvider>();
-    final conversations = convProvider.conversations
+    final profileProvider = context.read<ProfileProvider>();
+    final conversationProvider = context.read<ConversationProvider>();
+
+    // Get conversations linked to this profile
+    final conversations = conversationProvider.conversations
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
-    await provider.analyzeProfile(
+
+    await profileProvider.analyzeProfile(
       profile: profile,
       conversations: conversations,
     );

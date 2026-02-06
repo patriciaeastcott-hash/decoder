@@ -152,7 +152,12 @@ class BehaviorDetailScreen extends StatelessWidget {
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            Text(behavior.potentialImpact.join('\n')),
+                            ...behavior.potentialImpact.map((impact) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Text(impact),
+                              );
+                            }),
                           ],
                         ],
                       ),

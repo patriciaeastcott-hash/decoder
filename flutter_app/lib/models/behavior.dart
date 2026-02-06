@@ -275,7 +275,6 @@ class Behavior extends Equatable {
       'severity': severity,
     };
   }
-
   /// Determine if this is a generally healthy or unhealthy behavior
   BehaviorNature get nature {
     if (unhealthyIndicators.isEmpty ||
