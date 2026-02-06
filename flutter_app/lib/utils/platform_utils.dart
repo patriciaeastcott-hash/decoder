@@ -4,6 +4,7 @@
 /// iOS, Android, Web, Windows, macOS, Linux
 ///
 /// Uses kIsWeb for web detection to avoid dart:io crashes on web.
+library;
 
 import 'package:flutter/foundation.dart' show kIsWeb, TargetPlatform, defaultTargetPlatform;
 

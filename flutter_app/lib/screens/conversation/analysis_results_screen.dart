@@ -1,4 +1,5 @@
 /// Analysis results screen - display psychological insights from conversation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,4 +1,5 @@
 /// Response tester screen - test how a reply might impact the conversation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +91,7 @@ class _ResponseTesterScreenState extends State<ResponseTesterScreen> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: _selectedSpeaker,
+                        initialValue: _selectedSpeaker,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
                         ),

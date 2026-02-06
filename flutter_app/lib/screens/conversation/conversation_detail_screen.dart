@@ -1,4 +1,5 @@
 /// Conversation detail screen - view messages, verify speakers, run analysis
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

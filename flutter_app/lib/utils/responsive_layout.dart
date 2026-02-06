@@ -11,6 +11,7 @@
 /// - Phone: Bottom navigation bar, single-column
 /// - Tablet: Navigation rail, two-column master-detail
 /// - Desktop: Persistent navigation drawer, multi-column
+library;
 
 import 'package:flutter/material.dart';
 

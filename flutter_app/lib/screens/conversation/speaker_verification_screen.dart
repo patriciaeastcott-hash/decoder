@@ -1,4 +1,5 @@
 /// Speaker verification screen - review and correct AI speaker identification
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -305,7 +306,7 @@ class _VerificationCard extends StatelessWidget {
                 // Speaker dropdown
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: speaker.id,
+                    initialValue: speaker.id,
                     decoration: InputDecoration(
                       labelText: 'Speaker',
                       prefixIcon: CircleAvatar(

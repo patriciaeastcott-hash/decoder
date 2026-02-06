@@ -558,13 +558,13 @@ class _SettingsTab extends StatelessWidget {
                   title: 'Support Resources',
                   children: [
                     ListTile(
-                      leading: Icon(Icons.phone, color: AppTheme.green),
+                      leading: const Icon(Icons.phone, color: AppTheme.green),
                       title: const Text('1800RESPECT'),
                       subtitle: const Text('1800 737 732'),
                       onTap: () => _launchUrl('tel:1800737732'),
                     ),
                     ListTile(
-                      leading: Icon(Icons.phone, color: AppTheme.lightBlue),
+                      leading: const Icon(Icons.phone, color: AppTheme.lightBlue),
                       title: const Text('Lifeline'),
                       subtitle: const Text('13 11 14'),
                       onTap: () => _launchUrl('tel:131114'),
