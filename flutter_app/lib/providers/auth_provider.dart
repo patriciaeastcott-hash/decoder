@@ -20,6 +20,9 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
   String? _error;
   String? get error => _error;
 
@@ -40,6 +43,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _initialize() async {
     await _authService.initialize();
     _initAuthListener();
+    _isInitialized = true;
     notifyListeners();
   }
 

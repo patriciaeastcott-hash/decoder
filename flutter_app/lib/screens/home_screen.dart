@@ -22,6 +22,7 @@ import '../utils/accessibility_utils.dart';
 import '../utils/platform_utils.dart';
 import '../utils/responsive_layout.dart';
 import '../utils/app_theme.dart';
+import 'auth/login_screen.dart';
 import 'conversation/conversation_detail_screen.dart';
 import 'profile/profile_detail_screen.dart';
 import 'profile/self_profile_screen.dart';
@@ -468,12 +469,49 @@ class _SettingsTab extends StatelessWidget {
                   children: [
                     Consumer<AuthProvider>(
                       builder: (context, auth, _) {
+                        if (auth.isAuthenticated) {
+                          return ListTile(
+                            leading: const Icon(Icons.account_circle),
+                            title: Text(auth.userDisplayName ?? 'Signed in'),
+                            subtitle: Text(auth.userEmail ?? ''),
+                            trailing: TextButton(
+                              onPressed: () async {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Sign Out'),
+                                    content: const Text('Are you sure you want to sign out?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, true),
+                                        child: const Text('Sign Out'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true && context.mounted) {
+                                  await context.read<AuthProvider>().signOut();
+                                }
+                              },
+                              child: const Text('Sign Out'),
+                            ),
+                          );
+                        }
                         return ListTile(
                           leading: const Icon(Icons.account_circle),
-                          title: Text(auth.userDisplayName ?? 'Not signed in'),
-                          subtitle: Text(auth.userEmail ?? 'Tap to sign in'),
+                          title: const Text('Not signed in'),
+                          subtitle: const Text('Tap to sign in'),
+                          trailing: const Icon(Icons.chevron_right),
                           onTap: () {
-                            // Navigate to account settings
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
                           },
                         );
                       },
