@@ -54,17 +54,6 @@
       ]
     },
     {
-      "name": "integration_test",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter",
-        "flutter_driver",
-        "flutter_test",
-        "path",
-        "vm_service"
-      ]
-    },
-    {
       "name": "mockito",
       "version": "5.4.4",
       "dependencies": [
@@ -586,19 +575,9 @@
       ]
     },
     {
-      "name": "build",
-      "version": "2.4.1",
-      "dependencies": [
-        "analyzer",
-        "async",
-        "convert",
-        "crypto",
-        "glob",
-        "logging",
-        "meta",
-        "package_config",
-        "path"
-      ]
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
     },
     {
       "name": "package_config",
@@ -606,6 +585,11 @@
       "dependencies": [
         "path"
       ]
+    },
+    {
+      "name": "collection",
+      "version": "1.19.1",
+      "dependencies": []
     },
     {
       "name": "build_config",
@@ -797,19 +781,11 @@
       ]
     },
     {
-      "name": "io",
-      "version": "1.0.5",
+      "name": "file",
+      "version": "7.0.0",
       "dependencies": [
         "meta",
-        "path",
-        "string_scanner"
-      ]
-    },
-    {
-      "name": "http_multi_server",
-      "version": "3.2.2",
-      "dependencies": [
-        "async"
+        "path"
       ]
     },
     {
@@ -877,8 +853,32 @@
       ]
     },
     {
+      "name": "leak_tracker_testing",
+      "version": "3.0.2",
+      "dependencies": [
+        "leak_tracker",
+        "matcher",
+        "meta"
+      ]
+    },
+    {
+      "name": "boolean_selector",
+      "version": "2.1.1",
+      "dependencies": [
+        "source_span",
+        "string_scanner"
+      ]
+    },
+    {
+      "name": "screen_retriever",
+      "version": "0.1.9",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
       "name": "url_launcher_windows",
-      "version": "3.1.5",
+      "version": "3.1.4",
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
