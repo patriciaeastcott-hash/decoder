@@ -136,6 +136,8 @@ class AnalysisResult extends Equatable {
       relationshipDynamics: relationshipDynamics ?? this.relationshipDynamics,
       manipulationCheck: manipulationCheck ?? this.manipulationCheck,
       actionableInsights: actionableInsights ?? this.actionableInsights,
+      conversationHealthScore:
+          conversationHealthScore ?? this.conversationHealthScore,
       conversationHealthScore: conversationHealthScore ?? this.conversationHealthScore,
       followUpQuestions: followUpQuestions ?? this.followUpQuestions,
       analyzedAt: analyzedAt ?? this.analyzedAt,

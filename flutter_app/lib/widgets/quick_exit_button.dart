@@ -38,7 +38,7 @@ class QuickExitButton extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -69,7 +69,7 @@ class QuickExitAction extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -117,7 +117,7 @@ class QuickExitBanner extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -151,7 +151,7 @@ class QuickExitGestureDetector extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 

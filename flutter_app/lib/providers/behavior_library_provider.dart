@@ -99,6 +99,16 @@ class BehaviorLibraryProvider extends ChangeNotifier {
   List<Behavior> get unhealthyBehaviors =>
       getBehaviorsByNature(BehaviorNature.unhealthy);
 
+  /// Get behaviors by category name
+  List<Behavior> getBehaviorsByCategory(String categoryName) {
+    final cat = categories.where((c) => c.category == categoryName).firstOrNull;
+    if (cat == null) return [];
+    return cat.subcategories.expand((s) => s.behaviors).toList();
+  }
+
+  /// Search behaviors by keyword (alias for search)
+  List<Behavior> searchBehaviors(String query) => search(query);
+
   /// Alias for search (for compatibility with UI code)
   List<Behavior> searchBehaviors(String query) => search(query);
 

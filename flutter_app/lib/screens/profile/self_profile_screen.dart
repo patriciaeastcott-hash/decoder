@@ -85,13 +85,19 @@ class _SelfProfileScreenState extends State<SelfProfileScreen>
                     _BlindSpotsTab(profile: userProfile),
                   ],
                 )
-              : _NoAnalysisView(profile: userProfile),
+              : _NoAnalysisView(profile: userProfile, onAnalyze: () => _refreshAnalysis(userProfile)),
         );
       },
     );
   }
 
   Future<void> _refreshAnalysis(Profile profile) async {
+    final provider = context.read<ProfileProvider>();
+    final convProvider = context.read<ConversationProvider>();
+    final conversations = convProvider.conversations
+        .where((c) => profile.conversationIds.contains(c.id))
+        .toList();
+    await provider.analyzeProfile(
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
 
@@ -229,8 +235,9 @@ class _NoProfileView extends StatelessWidget {
 
 class _NoAnalysisView extends StatelessWidget {
   final Profile profile;
+  final VoidCallback? onAnalyze;
 
-  const _NoAnalysisView({required this.profile});
+  const _NoAnalysisView({required this.profile, this.onAnalyze});
 
   @override
   Widget build(BuildContext context) {
@@ -267,6 +274,24 @@ class _NoAnalysisView extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             if (profile.hasEnoughDataForAnalysis)
+              Consumer<ProfileProvider>(
+                builder: (context, provider, _) => ElevatedButton.icon(
+                  onPressed: provider.isAnalyzing
+                      ? null
+                      : onAnalyze,
+                  icon: provider.isAnalyzing
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.psychology),
+                  label: Text(
+                    provider.isAnalyzing
+                        ? 'Analyzing...'
+                        : 'Analyze My Communication',
+                  ),
+                ),
               Consumer2<ProfileProvider, ConversationProvider>(
                 builder: (context, profileProvider, conversationProvider, _) {
                   final conversations = conversationProvider.conversations
@@ -489,7 +514,7 @@ class _SelfCommunicationTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -626,7 +651,7 @@ class _SelfCommunicationTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.purple.withOpacity(0.1),
+                    color: Colors.purple.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -726,7 +751,7 @@ class _SelfEmotionsTab extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: _getRegulationColor(emotionalProfile.baselineRegulation)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -920,7 +945,7 @@ class _SelfGrowthTab extends StatelessWidget {
               Text(
                 'Areas where you can develop your communication skills',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                 textAlign: TextAlign.center,
               ),

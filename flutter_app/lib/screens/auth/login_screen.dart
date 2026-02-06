@@ -1,12 +1,22 @@
+/// Login screen with platform-adaptive authentication options
+///
+/// Shows available sign-in methods based on platform:
+/// - iOS: Google, Apple, Email
+/// - Android: Google, Email
+/// - Web: Google, Email
+/// - macOS: Apple, Email
+/// - Windows/Linux: Email only
 /// Login screen with Google, Apple, and Email authentication
 library;
 
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/providers.dart';
 import '../../utils/accessibility_utils.dart';
+import '../../utils/platform_utils.dart';
+import '../../utils/responsive_layout.dart';
+import '../../utils/app_theme.dart';
 import '../home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,29 +49,74 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Consumer<AuthProvider>(
           builder: (context, auth, _) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 48),
+              child: ResponsiveContentWrapper(
+                maxWidth: Breakpoints.maxFormWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 48),
 
-                  // Logo and title
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(16),
+                    // Logo and title
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              gradient: AppTheme.brandGradient,
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.borderRadiusLarge,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.psychology_outlined,
+                              size: 48,
+                              color: Colors.white,
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.psychology_outlined,
-                            size: 48,
-                            color: Colors.white,
+                          const SizedBox(height: 24),
+                          AccessibleHeading(
+                            text: 'Text Decoder',
+                            level: 1,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Sign in to sync your data across devices',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  color: AppTheme.grey,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 48),
+
+                    // Error message
+                    if (auth.error != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.red.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.borderRadiusSmall,
+                          ),
+                          border: Border.all(
+                            color: AppTheme.red.withValues(alpha: 0.3),
                           ),
                         ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline,
+                                color: AppTheme.red),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                auth.error!,
+                                style: const TextStyle(color: AppTheme.red),
                         const SizedBox(height: 24),
                         const AccessibleHeading(
                           text: 'Text Decoder',
@@ -74,68 +129,73 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 color: Colors.grey,
                               ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Error message
-                  if (auth.error != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.error_outline, color: Colors.red),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              auth.error!,
-                              style: const TextStyle(color: Colors.red),
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: auth.clearError,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+
+                    // Platform info for desktop users
+                    if (PlatformUtils.isDesktop && !_showEmailForm) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.lightBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.borderRadiusSmall,
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.close, size: 18),
-                            onPressed: auth.clearError,
-                          ),
-                        ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline,
+                                color: AppTheme.navy, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'You\'re using ${PlatformUtils.platformName}. '
+                                'Sign in with email to sync across devices.',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    if (_showEmailForm)
+                      _buildEmailForm(auth)
+                    else
+                      _buildSignInOptions(auth),
+
+                    const SizedBox(height: 24),
+
+                    // Skip sign in
+                    Center(
+                      child: TextButton(
+                        onPressed: () => _navigateToHome(),
+                        child: const Text('Continue without signing in'),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                  ],
 
-                  if (_showEmailForm)
-                    _buildEmailForm(auth)
-                  else
-                    _buildSocialButtons(auth),
+                    const SizedBox(height: 48),
 
-                  const SizedBox(height: 24),
-
-                  // Skip sign in
-                  Center(
-                    child: TextButton(
-                      onPressed: () => _navigateToHome(),
-                      child: const Text('Continue without signing in'),
+                    // Privacy note
+                    Text(
+                      'Your conversations stay on your device. '
+                      'Sign in only enables optional cloud sync.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                      textAlign: TextAlign.center,
                     ),
-                  ),
 
-                  const SizedBox(height: 48),
-
-                  // Privacy note
-                  Text(
-                    'Your conversations stay on your device. '
-                    'Sign in only enables optional cloud sync.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             );
           },
@@ -144,27 +204,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSocialButtons(AuthProvider auth) {
+  Widget _buildSignInOptions(AuthProvider auth) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Google Sign In
-        _SocialSignInButton(
-          icon: Icons.g_mobiledata,
-          label: 'Continue with Google',
-          onPressed: auth.isLoading
-              ? null
-              : () async {
-                  final success = await auth.signInWithGoogle();
-                  if (success && mounted) _navigateToHome();
-                },
-          isLoading: auth.isLoading,
-        ),
+        // Google Sign In (iOS, Android, Web only)
+        if (PlatformUtils.supportsGoogleSignIn) ...[
+          _SocialSignInButton(
+            icon: Icons.g_mobiledata,
+            label: 'Continue with Google',
+            onPressed: auth.isLoading
+                ? null
+                : () async {
+                    final success = await auth.signInWithGoogle();
+                    if (success && mounted) _navigateToHome();
+                  },
+            isLoading: auth.isLoading,
+          ),
+          const SizedBox(height: 12),
+        ],
 
-        const SizedBox(height: 12),
-
-        // Apple Sign In (iOS only)
-        if (Platform.isIOS) ...[
+        // Apple Sign In (iOS, macOS only)
+        if (PlatformUtils.supportsAppleSignIn) ...[
           _SocialSignInButton(
             icon: Icons.apple,
             label: 'Continue with Apple',
@@ -180,24 +241,26 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 12),
         ],
 
-        // Divider
-        Row(
-          children: [
-            const Expanded(child: Divider()),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'or',
-                style: Theme.of(context).textTheme.bodySmall,
+        // Divider (only if there are social options above)
+        if (PlatformUtils.supportsGoogleSignIn ||
+            PlatformUtils.supportsAppleSignIn) ...[
+          Row(
+            children: [
+              const Expanded(child: Divider()),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'or',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ),
-            ),
-            const Expanded(child: Divider()),
-          ],
-        ),
+              const Expanded(child: Divider()),
+            ],
+          ),
+          const SizedBox(height: 12),
+        ],
 
-        const SizedBox(height: 12),
-
-        // Email Sign In
+        // Email Sign In (all platforms)
         OutlinedButton.icon(
           onPressed: () => setState(() => _showEmailForm = true),
           icon: const Icon(Icons.email_outlined),
@@ -214,7 +277,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Back button
         Align(
           alignment: Alignment.centerLeft,
           child: TextButton.icon(
@@ -229,7 +291,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 16),
 
-        // Name field (sign up only)
         if (_isSignUp) ...[
           AccessibleTextField(
             controller: _nameController,
@@ -240,7 +301,6 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 16),
         ],
 
-        // Email field
         AccessibleTextField(
           controller: _emailController,
           labelText: 'Email',
@@ -252,7 +312,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 16),
 
-        // Password field
         AccessibleTextField(
           controller: _passwordController,
           labelText: 'Password',
@@ -264,7 +323,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 24),
 
-        // Submit button
         ElevatedButton(
           onPressed: auth.isLoading ? null : _handleEmailSubmit,
           style: ElevatedButton.styleFrom(
@@ -281,7 +339,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 16),
 
-        // Toggle sign up / sign in
         Center(
           child: TextButton(
             onPressed: () => setState(() => _isSignUp = !_isSignUp),
@@ -293,7 +350,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
 
-        // Forgot password
         if (!_isSignUp)
           Center(
             child: TextButton(

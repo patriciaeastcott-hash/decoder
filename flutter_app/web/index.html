@@ -1,4 +1,58 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+  <!-- PWA & App metadata -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Text Decoder">
+  <meta name="application-name" content="Text Decoder">
+  <meta name="description" content="Decode conversations, understand communication patterns, and build better relationships. A Digital ABCs AI App.">
+  <meta name="theme-color" content="#1E3A8A">
+  <meta name="color-scheme" content="light dark">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Text Decoder - Digital ABCs">
+  <meta property="og:description" content="Decode conversations, understand communication patterns, and build better relationships.">
+  <meta property="og:type" content="website">
+
+  <!-- Accessibility -->
+  <meta name="robots" content="noindex">
+
+  <title>Text Decoder</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Flutter bootstrap -->
+  <script src="flutter_bootstrap.js" async></script>
+</head>
+<body>
+  <!-- Accessibility: skip link for keyboard navigation -->
+  <a href="#flutter-app" class="skip-link" style="
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #1E3A8A;
+    color: white;
+    padding: 8px 16px;
+    z-index: 100;
+    transition: top 0.15s;
+  ">Skip to content</a>
+
+  <style>
+    .skip-link:focus {
+      top: 0;
+    }
+  </style>
+
+  <div id="flutter-app"></div>
 <html>
 <head>
   <!--
