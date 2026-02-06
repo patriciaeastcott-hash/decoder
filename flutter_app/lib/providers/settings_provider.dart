@@ -1,5 +1,6 @@
 /// Settings provider for app configuration
 /// Handles theme, accessibility, privacy, and user preferences
+library;
 
 import 'package:flutter/material.dart';
 import '../services/storage_service.dart';

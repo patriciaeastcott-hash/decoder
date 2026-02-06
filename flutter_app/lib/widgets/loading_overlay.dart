@@ -1,4 +1,5 @@
 /// Loading overlay widget for displaying loading states
+library;
 
 import 'package:flutter/material.dart';
 

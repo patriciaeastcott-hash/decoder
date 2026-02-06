@@ -1,4 +1,5 @@
 /// Profile model for speaker profiles built over time
+library;
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';

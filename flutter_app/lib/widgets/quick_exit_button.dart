@@ -1,4 +1,5 @@
 /// Quick exit button widget for safety features
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class QuickExitButton extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -68,7 +69,7 @@ class QuickExitAction extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -116,7 +117,7 @@ class QuickExitBanner extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -150,7 +151,7 @@ class QuickExitGestureDetector extends StatelessWidget {
 
   void _handleQuickExit(BuildContext context) {
     final appState = context.read<AppStateProvider>();
-    appState.quickExit();
+    appState.triggerQuickExit();
   }
 }
 
@@ -158,13 +159,13 @@ class _MultiTapDetector extends StatefulWidget {
   final Widget child;
   final int requiredTaps;
   final VoidCallback onMultiTap;
-  final Duration timeout;
+
+  static const Duration timeout = Duration(seconds: 1);
 
   const _MultiTapDetector({
     required this.child,
     required this.requiredTaps,
     required this.onMultiTap,
-    this.timeout = const Duration(milliseconds: 500),
   });
 
   @override
@@ -179,7 +180,7 @@ class _MultiTapDetectorState extends State<_MultiTapDetector> {
     final now = DateTime.now();
 
     if (_lastTapTime != null &&
-        now.difference(_lastTapTime!) > widget.timeout) {
+        now.difference(_lastTapTime!) > _MultiTapDetector.timeout) {
       _tapCount = 0;
     }
 

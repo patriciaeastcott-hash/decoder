@@ -1,4 +1,5 @@
 /// Behavior model for the offline behavior/trait library
+library;
 
 import 'package:equatable/equatable.dart';
 
@@ -129,6 +130,16 @@ class BehaviorCategory extends Equatable {
     return subcategories.fold(0, (sum, sub) => sum + sub.behaviors.length);
   }
 
+  /// Alias for category field, used by UI screens
+  String get name => category;
+
+  /// Alias for behaviorCount, used by UI screens
+  /// Alias for category (for compatibility with UI code)
+  String get name => category;
+
+  /// Alias for behaviorCount (for compatibility with UI code)
+  int get totalBehaviors => behaviorCount;
+
   @override
   List<Object?> get props => [id, category, description, icon, subcategories];
 }
@@ -181,6 +192,14 @@ class Behavior extends Equatable {
   final List<String> healthyIndicators;
   final List<String> unhealthyIndicators;
   final String frequencyNote;
+  final List<String> commonContexts;
+  final List<String> potentialImpact;
+  final List<String> relatedBehaviors;
+  final List<String> communicationTips;
+  final String category;
+  final String subcategory;
+  final bool isHealthy;
+  final String severity;
 
   const Behavior({
     required this.id,
@@ -190,6 +209,14 @@ class Behavior extends Equatable {
     this.healthyIndicators = const [],
     this.unhealthyIndicators = const [],
     this.frequencyNote = '',
+    this.commonContexts = const [],
+    this.potentialImpact = const [],
+    this.relatedBehaviors = const [],
+    this.communicationTips = const [],
+    this.category = '',
+    this.subcategory = '',
+    this.isHealthy = true,
+    this.severity = 'low',
   });
 
   factory Behavior.fromJson(Map<String, dynamic> json) {
@@ -210,6 +237,26 @@ class Behavior extends Equatable {
               .toList() ??
           [],
       frequencyNote: json['frequency_note'] as String? ?? '',
+      commonContexts: (json['common_contexts'] as List<dynamic>?)
+              ?.map((c) => c as String)
+              .toList() ??
+          [],
+      potentialImpact: (json['potential_impact'] as List<dynamic>?)
+              ?.map((p) => p as String)
+              .toList() ??
+          [],
+      relatedBehaviors: (json['related_behaviors'] as List<dynamic>?)
+              ?.map((r) => r as String)
+              .toList() ??
+          [],
+      communicationTips: (json['communication_tips'] as List<dynamic>?)
+              ?.map((t) => t as String)
+              .toList() ??
+          [],
+      category: json['category'] as String? ?? '',
+      subcategory: json['subcategory'] as String? ?? '',
+      isHealthy: json['is_healthy'] as bool? ?? true,
+      severity: json['severity'] as String? ?? 'low',
     );
   }
 
@@ -222,8 +269,40 @@ class Behavior extends Equatable {
       'healthy_indicators': healthyIndicators,
       'unhealthy_indicators': unhealthyIndicators,
       'frequency_note': frequencyNote,
+      'common_contexts': commonContexts,
+      'potential_impact': potentialImpact,
+      'related_behaviors': relatedBehaviors,
+      'communication_tips': communicationTips,
+      'category': category,
+      'subcategory': subcategory,
+      'is_healthy': isHealthy,
+      'severity': severity,
     };
   }
+
+  /// Whether this behavior is generally healthy
+  bool get isHealthy => nature == BehaviorNature.healthy;
+
+  /// Category name (empty if not known from context)
+  String get category => '';
+
+  /// Subcategory name (empty if not known from context)
+  String get subcategory => '';
+
+  /// Severity level (empty string - derived from context)
+  String get severity => '';
+
+  /// Common contexts where this behavior appears (derived from examples)
+  List<String> get commonContexts => const [];
+
+  /// Potential impact description (derived from indicators)
+  String get potentialImpact => frequencyNote;
+
+  /// IDs of related behaviors
+  List<String> get relatedBehaviors => const [];
+
+  /// Communication tips for dealing with this behavior
+  List<String> get communicationTips => const [];
 
   /// Determine if this is a generally healthy or unhealthy behavior
   BehaviorNature get nature {
@@ -249,6 +328,14 @@ class Behavior extends Equatable {
         healthyIndicators,
         unhealthyIndicators,
         frequencyNote,
+        commonContexts,
+        potentialImpact,
+        relatedBehaviors,
+        communicationTips,
+        category,
+        subcategory,
+        isHealthy,
+        severity,
       ];
 
   @override
@@ -336,7 +423,7 @@ extension BehaviorAccessibility on Behavior {
 
   String get fullAccessibilityDescription {
     final buffer = StringBuffer();
-    buffer.writeln('$name');
+    buffer.writeln(name);
     buffer.writeln('Definition: $definition');
 
     if (examples.isNotEmpty) {
@@ -361,7 +448,7 @@ extension BehaviorAccessibility on Behavior {
 
 extension BehaviorCategoryAccessibility on BehaviorCategory {
   String get accessibilityLabel {
-    return '$category with ${behaviorCount} behaviors';
+    return '$category with $behaviorCount behaviors';
   }
 
   String get accessibilityHint {
