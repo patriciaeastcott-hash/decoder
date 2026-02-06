@@ -1,4 +1,5 @@
 /// Empty state widget for displaying when there's no content
+library;
 
 import 'package:flutter/material.dart';
 
@@ -145,7 +146,7 @@ class EmptyAnalysisState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!hasEnoughData) {
-      return EmptyState(
+      return const EmptyState(
         icon: Icons.analytics_outlined,
         title: 'Not Enough Data',
         message:

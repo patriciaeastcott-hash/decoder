@@ -66,6 +66,7 @@ dependencies:
   freezed_annotation: ^2.4.1
 
   # URL Launcher (cross-platform)
+  # URL Launcher
   url_launcher: ^6.2.2
 
   # Window management (desktop: Windows, macOS, Linux)

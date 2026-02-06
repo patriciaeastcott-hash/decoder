@@ -3,6 +3,7 @@
 ///
 /// Cross-platform: does NOT import dart:io (crashes on web).
 /// Network errors are caught as http.ClientException or generic exceptions.
+library;
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;

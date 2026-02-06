@@ -6,6 +6,8 @@
 /// - Web: Google, Email
 /// - macOS: Apple, Email
 /// - Windows/Linux: Email only
+/// Login screen with Google, Apple, and Email authentication
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -115,6 +117,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 auth.error!,
                                 style: const TextStyle(color: AppTheme.red),
+                        const SizedBox(height: 24),
+                        const AccessibleHeading(
+                          text: 'Text Decoder',
+                          level: 1,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign in to sync your data',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: Colors.grey,
                               ),
                             ),
                             IconButton(

@@ -8,6 +8,8 @@
 /// Quick exit uses platform-safe methods:
 /// - Android: SystemNavigator.pop()
 /// - Desktop/Web: Minimise or close window
+/// Main home screen with bottom navigation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

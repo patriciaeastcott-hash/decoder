@@ -1,4 +1,5 @@
 /// Health score badge widget for compact display
+library;
 
 import 'package:flutter/material.dart';
 

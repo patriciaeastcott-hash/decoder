@@ -7,6 +7,9 @@
 /// - macOS: Apple, Email/Password (Firebase supported)
 /// - Windows: Email/Password only (no Firebase — uses REST API fallback)
 /// - Linux: Email/Password only (no Firebase — uses REST API fallback)
+/// Authentication service using Firebase
+/// Supports Google, Apple, and Email/Password sign-in
+library;
 
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';

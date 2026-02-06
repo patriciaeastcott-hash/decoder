@@ -1,4 +1,5 @@
 /// Splash screen with loading and navigation logic
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

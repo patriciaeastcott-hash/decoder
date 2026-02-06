@@ -1,4 +1,5 @@
 /// Providers barrel file - export all providers from single import
+library;
 
 export 'app_state_provider.dart';
 export 'auth_provider.dart';

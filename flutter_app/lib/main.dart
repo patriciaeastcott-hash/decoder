@@ -18,6 +18,7 @@
 /// - Apple App Store Review Guidelines
 /// - Google Play Developer Program Policies
 /// - Microsoft Store Policies
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

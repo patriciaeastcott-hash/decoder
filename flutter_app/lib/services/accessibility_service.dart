@@ -7,6 +7,7 @@
 /// - Mouse hover effects: desktop/web
 /// - Screen readers: all platforms (VoiceOver, TalkBack, Narrator, Orca, JAWS)
 /// - Touch targets: 48dp minimum on all platforms (WCAG)
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
