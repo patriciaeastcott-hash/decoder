@@ -129,7 +129,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
         .toList();
     await provider.analyzeProfile(
       profile: profile,
-      conversations: conversations,
+      conversations: conv `ersations,
     );
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
