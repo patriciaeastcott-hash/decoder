@@ -1694,18 +1694,6 @@
       ]
     },
     {
-      "name": "hooks",
-      "version": "1.0.1",
-      "dependencies": [
-        "collection",
-        "crypto",
-        "logging",
-        "meta",
-        "pub_semver",
-        "yaml"
-      ]
-    },
-    {
       "name": "code_assets",
       "version": "1.0.0",
       "dependencies": [
@@ -1719,6 +1707,18 @@
       "dependencies": [
         "collection",
         "meta"
+      ]
+    },
+    {
+      "name": "hooks",
+      "version": "1.0.1",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "yaml"
       ]
     }
   ],

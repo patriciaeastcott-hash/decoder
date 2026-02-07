@@ -1,0 +1,2196 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-06",
+  "total_behaviors": 39,
+  "categories": [
+    {
+      "id": "cat_communication",
+      "category": "Communication Patterns",
+      "description": "Behaviours related to how individuals express themselves, share information, and engage in dialogue within relationships.",
+      "icon": "chat_bubble_outline",
+      "subcategories": [
+        {
+          "id": "sub_constructive_comm",
+          "name": "Constructive Communication",
+          "description": "Positive communication habits that foster understanding, connection, and mutual respect between partners.",
+          "behaviors": [
+            {
+              "id": "beh_active_listening",
+              "name": "Active Listening",
+              "definition": "Fully concentrating on what a partner is saying, understanding their message, responding thoughtfully, and retaining the information shared. Goes beyond simply hearing words to genuinely engaging with the speaker's perspective.",
+              "examples": [
+                "Putting down your phone and making eye contact when your partner is speaking",
+                "Paraphrasing what your partner said to confirm understanding: 'So what I hear you saying is...'",
+                "Asking clarifying questions rather than making assumptions about their meaning",
+                "Nodding and using verbal affirmations like 'I understand' or 'That makes sense'"
+              ],
+              "healthy_indicators": [
+                "Both partners feel heard and understood after conversations",
+                "Misunderstandings are caught and corrected early",
+                "Partners can accurately restate each other's viewpoints",
+                "Conversations feel balanced with both speaking and listening"
+              ],
+              "unhealthy_indicators": [
+                "Frequently interrupting or talking over each other",
+                "Thinking about your response instead of listening",
+                "Dismissing or minimising what the other person says",
+                "Regularly having to repeat yourself because your partner was not paying attention"
+              ],
+              "frequency_note": "Should be practised consistently in everyday interactions, not only during serious discussions.",
+              "common_contexts": [
+                "Daily check-ins about each other's day",
+                "Discussions about feelings or concerns",
+                "Conflict resolution conversations",
+                "Planning and decision-making together"
+              ],
+              "potential_impact": [
+                "Strengthens emotional intimacy and trust",
+                "Reduces miscommunication and unnecessary conflict",
+                "Helps partners feel valued and respected",
+                "Builds a foundation for effective problem-solving"
+              ],
+              "related_behaviors": [
+                "beh_empathy",
+                "beh_open_dialogue",
+                "beh_assertive_communication",
+                "beh_emotional_regulation"
+              ],
+              "communication_tips": [
+                "Remove distractions before important conversations",
+                "Use reflective listening: repeat back what you heard in your own words",
+                "Resist the urge to formulate your response while your partner is still speaking",
+                "Ask open-ended questions to encourage deeper sharing"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Constructive Communication",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_assertive_communication",
+              "name": "Assertive Communication",
+              "definition": "Expressing your thoughts, feelings, and needs clearly, directly, and respectfully without violating the rights of others. Balances self-advocacy with consideration for your partner's perspective.",
+              "examples": [
+                "Saying 'I feel hurt when plans change without discussion' rather than 'You never consider me'",
+                "Clearly stating a boundary: 'I need some quiet time after work before we discuss household tasks'",
+                "Expressing disagreement respectfully: 'I see it differently and here is why'",
+                "Making direct requests: 'I would really appreciate it if you could help with dinner tonight'"
+              ],
+              "healthy_indicators": [
+                "Using 'I' statements to express feelings and needs",
+                "Maintaining a calm and steady tone even when discussing difficult topics",
+                "Being willing to negotiate and find middle ground",
+                "Expressing both positive and negative feelings openly"
+              ],
+              "unhealthy_indicators": [
+                "Confusing aggression with assertiveness by being harsh or demanding",
+                "Only being assertive in anger rather than as a regular practice",
+                "Using assertiveness to control outcomes rather than communicate needs",
+                "Dismissing your partner's assertiveness as being difficult or demanding"
+              ],
+              "frequency_note": "A daily practice that strengthens over time. Most effective when used consistently rather than only during disagreements.",
+              "common_contexts": [
+                "Negotiating household responsibilities",
+                "Discussing relationship expectations",
+                "Setting personal boundaries",
+                "Addressing behaviours that cause discomfort"
+              ],
+              "potential_impact": [
+                "Builds mutual respect and equality in the relationship",
+                "Prevents resentment from building up over unspoken needs",
+                "Models healthy communication for children and others",
+                "Increases confidence and self-esteem in both partners"
+              ],
+              "related_behaviors": [
+                "beh_active_listening",
+                "beh_boundary_setting",
+                "beh_compromise",
+                "beh_vulnerability"
+              ],
+              "communication_tips": [
+                "Practice 'I feel [emotion] when [situation] because [reason]' statements",
+                "Keep your body language open and non-threatening",
+                "Choose appropriate timing; avoid raising issues when either partner is exhausted or stressed",
+                "Acknowledge your partner's perspective even when you disagree"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Constructive Communication",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_open_dialogue",
+              "name": "Open Dialogue",
+              "definition": "Creating and maintaining a safe space where both partners can share thoughts, feelings, concerns, and ideas without fear of judgement, ridicule, or punishment.",
+              "examples": [
+                "Regularly checking in with each other: 'How are you feeling about us lately?'",
+                "Sharing vulnerable thoughts without fear: 'I have been feeling insecure about something and want to talk about it'",
+                "Welcoming feedback: 'I appreciate you telling me that; it helps me understand your perspective'",
+                "Discussing future plans and dreams together openly"
+              ],
+              "healthy_indicators": [
+                "Both partners feel safe raising difficult topics",
+                "Conversations happen proactively rather than only in crisis",
+                "There is no topic that is completely off-limits for respectful discussion",
+                "Both partners share roughly equally in conversations"
+              ],
+              "unhealthy_indicators": [
+                "One or both partners withhold important thoughts or feelings out of fear",
+                "Certain topics are 'forbidden' and always lead to conflict",
+                "One partner dominates conversations while the other stays silent",
+                "Sharing vulnerable feelings is met with criticism or contempt"
+              ],
+              "frequency_note": "Should be an ongoing dynamic in the relationship, not reserved for scheduled 'relationship talks' alone.",
+              "common_contexts": [
+                "Relationship check-ins",
+                "Processing difficult life events together",
+                "Sharing personal growth and changes",
+                "Discussing differences in values or opinions"
+              ],
+              "potential_impact": [
+                "Deepens emotional intimacy and connection",
+                "Prevents small issues from escalating into major problems",
+                "Fosters a culture of honesty and transparency",
+                "Strengthens resilience as a couple when facing challenges"
+              ],
+              "related_behaviors": [
+                "beh_active_listening",
+                "beh_vulnerability",
+                "beh_trust_building",
+                "beh_empathy"
+              ],
+              "communication_tips": [
+                "Set aside regular time for deeper conversations without distractions",
+                "Respond to vulnerability with warmth, not solutions or judgement",
+                "Use encouraging phrases: 'Tell me more' or 'I want to understand'",
+                "Thank your partner for sharing difficult things with you"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Constructive Communication",
+              "is_healthy": true,
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "id": "sub_destructive_comm",
+          "name": "Destructive Communication",
+          "description": "Negative communication patterns that erode trust, create distance, and cause emotional harm in relationships.",
+          "behaviors": [
+            {
+              "id": "beh_passive_aggression",
+              "name": "Passive Aggression",
+              "definition": "Expressing negative feelings indirectly rather than openly addressing them. Characterised by subtle hostility, sarcasm, backhanded compliments, deliberate inefficiency, or silent resistance instead of direct communication.",
+              "examples": [
+                "Giving the silent treatment while insisting 'I am fine'",
+                "Making sarcastic comments disguised as jokes: 'Oh, nice of you to finally show up'",
+                "Deliberately 'forgetting' to do something your partner asked",
+                "Agreeing to something but then subtly sabotaging it through procrastination or poor effort"
+              ],
+              "healthy_indicators": [
+                "Recognising passive-aggressive impulses and choosing direct communication instead",
+                "Identifying the underlying emotion and expressing it openly",
+                "Taking responsibility for feelings rather than expressing them sideways",
+                "Addressing frustrations promptly rather than letting them build"
+              ],
+              "unhealthy_indicators": [
+                "Chronic pattern of indirect hostility that partner cannot address openly",
+                "Denying anger or frustration while clearly demonstrating it through actions",
+                "Using sarcasm and put-downs as a primary communication style",
+                "Punishing partner through withdrawal or deliberate unhelpfulness"
+              ],
+              "frequency_note": "Occasional passive-aggressive moments are human; a persistent pattern indicates a significant communication problem that needs addressing.",
+              "common_contexts": [
+                "When one partner feels unable to express anger directly",
+                "After perceived slights or unmet expectations",
+                "In response to feeling powerless or unheard",
+                "When conflict avoidance is combined with resentment"
+              ],
+              "potential_impact": [
+                "Erodes trust as the partner never knows where they truly stand",
+                "Creates a confusing emotional environment of mixed signals",
+                "Prevents genuine resolution of underlying issues",
+                "Can escalate into more overt forms of hostility over time"
+              ],
+              "related_behaviors": [
+                "beh_stonewalling",
+                "beh_contempt",
+                "beh_conflict_avoidance",
+                "beh_emotional_withdrawal"
+              ],
+              "communication_tips": [
+                "If you notice passive-aggressive patterns in yourself, pause and ask 'What am I actually feeling right now?'",
+                "Practice naming your emotions directly even when it feels uncomfortable",
+                "If your partner is being passive-aggressive, calmly name what you observe: 'It seems like something is bothering you'",
+                "Seek to understand the fear behind the indirect expression"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Destructive Communication",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_stonewalling",
+              "name": "Stonewalling",
+              "definition": "Withdrawing from interaction entirely, shutting down communication, and refusing to engage with a partner's attempts at conversation. Often involves physically or emotionally 'checking out' during discussions.",
+              "examples": [
+                "Walking out of the room mid-conversation without explanation",
+                "Staring blankly and refusing to respond when spoken to",
+                "Busying yourself with tasks to avoid a conversation your partner is trying to have",
+                "Saying 'I have nothing to say' and completely disengaging"
+              ],
+              "healthy_indicators": [
+                "Requesting a temporary break rather than shutting down: 'I need 20 minutes to calm down and then I want to continue this conversation'",
+                "Returning to the conversation after taking space",
+                "Communicating that you are feeling overwhelmed rather than simply disappearing",
+                "Working to identify what triggers the shutdown response"
+              ],
+              "unhealthy_indicators": [
+                "Regularly refusing to engage in any conversation about relationship issues",
+                "Using silence as a weapon or punishment",
+                "Never returning to the unresolved conversation",
+                "Partner feels they are talking to a wall and becomes increasingly desperate to get a response"
+              ],
+              "frequency_note": "Distinguished from healthy self-regulation by the absence of communication about the withdrawal and the failure to re-engage once calm.",
+              "common_contexts": [
+                "During heated arguments or conflict",
+                "When feeling emotionally overwhelmed or flooded",
+                "In response to perceived criticism or attack",
+                "When the topic triggers deep vulnerability or shame"
+              ],
+              "potential_impact": [
+                "Identified by relationship researchers as one of the strongest predictors of relationship breakdown",
+                "Leaves the other partner feeling abandoned and powerless",
+                "Prevents any resolution or progress on issues",
+                "Can trigger anxiety and protest behaviours in the other partner"
+              ],
+              "related_behaviors": [
+                "beh_emotional_flooding",
+                "beh_conflict_avoidance",
+                "beh_passive_aggression",
+                "beh_avoidant_attachment"
+              ],
+              "communication_tips": [
+                "If you tend to stonewall, develop a signal with your partner that means 'I need a break but I will come back'",
+                "Agree on a specific timeframe for the break (e.g. 30 minutes) and honour it",
+                "During the break, practise self-soothing rather than rehearsing arguments",
+                "The partner who is not stonewalling should allow the break without pursuing"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Destructive Communication",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_contempt",
+              "name": "Contempt",
+              "definition": "Communicating a sense of superiority and disrespect towards a partner through mockery, ridicule, name-calling, eye-rolling, sneering, or hostile humour. Conveys disgust and a fundamental lack of respect.",
+              "examples": [
+                "Mocking a partner's intelligence: 'Wow, you really cannot figure that out?'",
+                "Eye-rolling or sneering while a partner is speaking",
+                "Using belittling nicknames or mimicking a partner's voice during arguments",
+                "Dismissing a partner's contributions: 'You would not understand; it is above your level'"
+              ],
+              "healthy_indicators": [
+                "Recognising contemptuous thoughts and choosing to reframe them",
+                "Expressing frustration without attacking a partner's character or worth",
+                "Maintaining a baseline of respect even during intense disagreements",
+                "Building a culture of appreciation to counteract negative patterns"
+              ],
+              "unhealthy_indicators": [
+                "Regularly speaking to a partner with disdain or superiority",
+                "Using humiliation as a tool in arguments",
+                "Inability to identify anything admirable or positive about the partner",
+                "Partner feels fundamentally disrespected and worthless after interactions"
+              ],
+              "frequency_note": "Even occasional contempt is deeply corrosive. Relationship researchers have identified it as the single strongest predictor of relationship dissolution.",
+              "common_contexts": [
+                "During escalated conflicts",
+                "When frustration and resentment have built up over time",
+                "In front of others as a way to publicly diminish the partner",
+                "When one partner feels morally or intellectually superior"
+              ],
+              "potential_impact": [
+                "Devastating to the recipient's self-esteem and mental health",
+                "Destroys emotional safety and intimacy",
+                "Strongly associated with relationship failure in research",
+                "Creates a toxic dynamic that is difficult to repair without professional help"
+              ],
+              "related_behaviors": [
+                "beh_criticism",
+                "beh_passive_aggression",
+                "beh_emotional_invalidation",
+                "beh_gaslighting"
+              ],
+              "communication_tips": [
+                "If you recognise contempt in yourself, it signals deep unresolved issues that likely need professional support",
+                "Actively practise gratitude and appreciation for your partner daily",
+                "Replace contemptuous thoughts with curiosity about your partner's perspective",
+                "Address the underlying resentment driving the contempt"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Destructive Communication",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_criticism",
+              "name": "Criticism",
+              "definition": "Attacking a partner's character or personality rather than addressing a specific behaviour. Distinct from a complaint, which focuses on a specific action; criticism implies something is fundamentally wrong with the person.",
+              "examples": [
+                "Saying 'You never think about anyone but yourself' instead of 'I felt hurt when you made plans without asking me'",
+                "Using 'you always' or 'you never' statements: 'You are always so careless'",
+                "Labelling character: 'You are lazy' rather than 'I would appreciate help with the housework'",
+                "Bringing up past failings to build a case: 'This is just like when you forgot my birthday, you just do not care'"
+              ],
+              "healthy_indicators": [
+                "Framing concerns as specific complaints about behaviours rather than character attacks",
+                "Using 'I' statements to express how actions affected you",
+                "Focusing on one issue at a time rather than building a catalogue of faults",
+                "Expressing the underlying need behind the frustration"
+              ],
+              "unhealthy_indicators": [
+                "Regularly framing feedback as character attacks",
+                "A pattern of making the partner feel fundamentally flawed",
+                "Cataloguing faults and using them during disagreements",
+                "Partner becomes defensive and unable to hear any feedback at all"
+              ],
+              "frequency_note": "Some critical moments are normal in any relationship, but a persistent pattern of criticism can spiral into contempt if not addressed.",
+              "common_contexts": [
+                "When feeling frustrated about recurring household issues",
+                "During disagreements about responsibilities",
+                "When underlying needs are not being met",
+                "Times of stress when patience is low"
+              ],
+              "potential_impact": [
+                "Triggers defensiveness, making productive conversation impossible",
+                "Erodes the partner's sense of being valued and accepted",
+                "Often escalates into the criticism-defensiveness cycle",
+                "Can gradually shift into contempt over time"
+              ],
+              "related_behaviors": [
+                "beh_contempt",
+                "beh_defensiveness",
+                "beh_assertive_communication",
+                "beh_emotional_regulation"
+              ],
+              "communication_tips": [
+                "Reframe 'You are...' statements to 'I feel... when...' statements",
+                "Focus on one specific recent event, not a generalised pattern",
+                "Express the positive need behind the complaint: 'I need to feel included in decisions'",
+                "Take a moment before speaking to consider whether you are addressing a behaviour or attacking character"
+              ],
+              "category": "Communication Patterns",
+              "subcategory": "Destructive Communication",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_manipulation",
+      "category": "Manipulation & Control",
+      "description": "Behaviours that involve one partner exerting undue influence, power, or control over the other, often through psychological or emotional tactics.",
+      "icon": "warning_amber",
+      "subcategories": [
+        {
+          "id": "sub_emotional_manipulation",
+          "name": "Emotional Manipulation",
+          "description": "Tactics that exploit a partner's emotions to gain control, create self-doubt, or maintain a power imbalance in the relationship.",
+          "behaviors": [
+            {
+              "id": "beh_gaslighting",
+              "name": "Gaslighting",
+              "definition": "A form of psychological manipulation where one partner causes the other to question their own reality, memory, perceptions, or sanity. Involves persistent denial, misdirection, contradiction, and lying to destabilise the victim.",
+              "examples": [
+                "Flatly denying something happened that the partner clearly remembers: 'That never happened; you are imagining things'",
+                "Trivialising the partner's feelings: 'You are being way too sensitive; no normal person would react that way'",
+                "Countering the partner's memory of events with a fabricated version: 'That is not what I said; you always twist my words'",
+                "Telling others the partner is unstable to undermine their credibility"
+              ],
+              "healthy_indicators": [
+                "Both partners validate each other's experiences and memories",
+                "Disagreements about what happened are resolved with openness rather than insistence",
+                "Neither partner tells the other what they should or should not feel",
+                "Both feel confident in their own perceptions within the relationship"
+              ],
+              "unhealthy_indicators": [
+                "One partner frequently doubts their own memory or perception of events",
+                "Feeling like you are 'going crazy' or constantly second-guessing yourself",
+                "Being told you are 'too sensitive' when raising legitimate concerns",
+                "Friends and family express concern about changes in your confidence"
+              ],
+              "frequency_note": "Even isolated incidents of gaslighting are concerning. A pattern of this behaviour constitutes emotional abuse and warrants seeking professional support.",
+              "common_contexts": [
+                "When the manipulator is confronted about their behaviour",
+                "After incidents the manipulator wants to deny or rewrite",
+                "During arguments where accountability is at stake",
+                "As a way to maintain control and avoid responsibility"
+              ],
+              "potential_impact": [
+                "Severe erosion of self-trust and self-esteem",
+                "Can lead to anxiety, depression, and complex trauma",
+                "Victim becomes increasingly dependent on the manipulator's version of reality",
+                "Isolation as the victim loses confidence in their own judgement"
+              ],
+              "related_behaviors": [
+                "beh_emotional_invalidation",
+                "beh_isolation",
+                "beh_playing_victim",
+                "beh_contempt"
+              ],
+              "communication_tips": [
+                "If you suspect gaslighting, keep a private journal of events and your experiences",
+                "Trust your feelings and perceptions; they are valid",
+                "Seek perspective from trusted friends, family, or a counsellor",
+                "This behaviour pattern typically requires professional intervention to address"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Emotional Manipulation",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_guilt_tripping",
+              "name": "Guilt-Tripping",
+              "definition": "Deliberately making a partner feel guilty to manipulate their behaviour, decisions, or emotions. Uses the partner's conscience and desire to be a good person against them.",
+              "examples": [
+                "Saying 'After everything I have done for you, this is how you repay me' when the partner sets a boundary",
+                "Using exaggerated sighs, sad expressions, or sulking to make the partner feel bad about their choices",
+                "Reminding the partner of past sacrifices to create a sense of obligation: 'I gave up my career for you'",
+                "Framing reasonable requests as betrayals: 'I guess spending time with your friends is more important than me'"
+              ],
+              "healthy_indicators": [
+                "Expressing disappointment honestly without trying to manipulate a particular outcome",
+                "Respecting a partner's right to make decisions even when you disagree",
+                "Discussing needs directly rather than trying to leverage guilt",
+                "Accepting that both partners have equal right to autonomy"
+              ],
+              "unhealthy_indicators": [
+                "Regularly using emotional leverage to get your way",
+                "Partner feels they cannot say no without causing a crisis",
+                "Keeping a mental scoreboard of sacrifices to use in arguments",
+                "Partner changes their behaviour out of guilt rather than genuine agreement"
+              ],
+              "frequency_note": "Occasional guilt-tripping can be an unconscious habit that responds well to self-awareness and direct communication. Chronic guilt-tripping is a manipulation tactic.",
+              "common_contexts": [
+                "When a partner tries to set boundaries or say no",
+                "When one partner wants something the other has not agreed to",
+                "Around decisions about time, money, or social activities",
+                "When one partner feels insecure about the relationship"
+              ],
+              "potential_impact": [
+                "Partner loses sense of their own needs and rights",
+                "Builds resentment and damages authenticity in the relationship",
+                "Creates a dynamic of obligation rather than genuine care",
+                "Erodes the partner's ability to make autonomous decisions"
+              ],
+              "related_behaviors": [
+                "beh_playing_victim",
+                "beh_love_bombing",
+                "beh_boundary_violations",
+                "beh_people_pleasing"
+              ],
+              "communication_tips": [
+                "Express your needs directly: 'I would really like us to spend the evening together' rather than leveraging guilt",
+                "If you feel guilt-tripped, name it calmly: 'I feel like I am being asked to feel guilty for my decision'",
+                "Recognise the difference between genuine hurt and manufactured guilt",
+                "Both partners should be free to say no without emotional consequences"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Emotional Manipulation",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_love_bombing",
+              "name": "Love Bombing",
+              "definition": "Overwhelming a partner with excessive affection, attention, flattery, and grand gestures, typically early in a relationship or after conflict, to create emotional dependency and an imbalanced power dynamic.",
+              "examples": [
+                "Showering a new partner with constant texts, calls, gifts, and declarations of love within days or weeks",
+                "Insisting on spending every moment together very early in the relationship",
+                "Making grand future plans (moving in, marriage) unusually quickly",
+                "After a major argument or boundary violation, suddenly becoming excessively affectionate and attentive"
+              ],
+              "healthy_indicators": [
+                "Affection and attention are consistent over time rather than coming in intense bursts",
+                "The pace of the relationship feels comfortable for both partners",
+                "Gestures of love are proportionate to the stage of the relationship",
+                "Affection does not increase dramatically after arguments as a way to avoid accountability"
+              ],
+              "unhealthy_indicators": [
+                "Intensity of affection feels overwhelming or 'too good to be true'",
+                "Affection is withdrawn abruptly if the partner does not comply with wishes",
+                "Grand gestures come with implicit expectations of loyalty or compliance",
+                "The cycle of intense affection followed by withdrawal or mistreatment repeats"
+              ],
+              "frequency_note": "Most concerning when it follows a cyclical pattern: love bombing followed by devaluation, or when it is used to fast-track emotional commitment before genuine trust is established.",
+              "common_contexts": [
+                "Early stages of a new relationship",
+                "After the manipulator has behaved badly and wants to regain favour",
+                "When the partner is pulling away or considering leaving",
+                "As a way to overwhelm a partner's natural caution or boundaries"
+              ],
+              "potential_impact": [
+                "Creates an intense emotional bond that makes it difficult to recognise later red flags",
+                "Establishes an unrealistic baseline that the partner craves returning to",
+                "Can mask controlling or abusive tendencies",
+                "Makes the partner feel indebted or obligated"
+              ],
+              "related_behaviors": [
+                "beh_guilt_tripping",
+                "beh_isolation",
+                "beh_anxious_attachment",
+                "beh_boundary_violations"
+              ],
+              "communication_tips": [
+                "Pay attention to whether affection is consistent or comes in strategic bursts",
+                "Healthy love allows space and grows at a pace comfortable for both people",
+                "If the intensity feels overwhelming, it is okay to ask to slow down",
+                "Notice whether grand gestures come with strings attached"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Emotional Manipulation",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_playing_victim",
+              "name": "Playing the Victim",
+              "definition": "Consistently positioning oneself as the wronged party in conflicts regardless of the actual circumstances, deflecting accountability and redirecting the focus to one's own suffering to gain sympathy and control.",
+              "examples": [
+                "Responding to being called out on hurtful behaviour by crying and saying 'I guess I can never do anything right'",
+                "Turning every discussion about the partner's needs into a conversation about their own pain",
+                "Reframing situations so that any consequence of their own actions becomes something that was done to them",
+                "Telling others a one-sided story to gather allies and sympathy"
+              ],
+              "healthy_indicators": [
+                "Ability to acknowledge one's own role in conflicts",
+                "Expressing hurt without using it as a shield against accountability",
+                "Listening to a partner's concerns without immediately redirecting to own suffering",
+                "Taking responsibility for mistakes while also expressing how the situation affected you"
+              ],
+              "unhealthy_indicators": [
+                "Every conflict ends with the focus on the manipulator's pain regardless of who was hurt",
+                "Partner feels unable to raise concerns without being made to feel like the aggressor",
+                "A persistent narrative of being mistreated that does not align with observed reality",
+                "Using tears or emotional distress strategically to shut down conversations"
+              ],
+              "frequency_note": "Everyone feels victimised at times, and that is valid. This becomes a manipulation tactic when it is the automatic response to any form of accountability.",
+              "common_contexts": [
+                "When confronted about hurtful behaviour",
+                "During arguments where responsibility needs to be shared",
+                "When the partner tries to set boundaries",
+                "In social situations where the manipulator wants sympathy from others"
+              ],
+              "potential_impact": [
+                "Partner learns to suppress their own needs to avoid being cast as the villain",
+                "Prevents genuine conflict resolution and growth",
+                "Distorts the partner's sense of what is reasonable to expect",
+                "Creates an exhausting dynamic where one person's feelings always take priority"
+              ],
+              "related_behaviors": [
+                "beh_guilt_tripping",
+                "beh_gaslighting",
+                "beh_defensiveness",
+                "beh_emotional_invalidation"
+              ],
+              "communication_tips": [
+                "Gently hold the focus: 'I want to hear how you feel too, but right now I need us to address what I raised'",
+                "Recognise the difference between genuine hurt and strategic victimhood",
+                "If you tend to play the victim, practise saying 'I can see how my behaviour affected you' before sharing your own feelings",
+                "Seek professional support if this pattern feels deeply entrenched"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Emotional Manipulation",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        },
+        {
+          "id": "sub_control_tactics",
+          "name": "Control Tactics",
+          "description": "Behaviours aimed at restricting a partner's autonomy, independence, or access to resources in order to maintain power over them.",
+          "behaviors": [
+            {
+              "id": "beh_isolation",
+              "name": "Isolation",
+              "definition": "Systematically cutting a partner off from their support network of friends, family, and community to increase dependence on the controlling partner and reduce outside perspectives.",
+              "examples": [
+                "Criticising the partner's friends and family to create distance: 'Your sister is a bad influence on you'",
+                "Creating conflict or drama around social events so the partner stops attending",
+                "Monitoring and controlling communication with others: checking texts or demanding to know conversation details",
+                "Moving the partner away from their support network under the guise of a 'fresh start'"
+              ],
+              "healthy_indicators": [
+                "Both partners maintain their own friendships and family relationships",
+                "Encouraging each other to spend time with their own social circles",
+                "Respecting each other's privacy in communications with others",
+                "Both partners have people they can confide in outside the relationship"
+              ],
+              "unhealthy_indicators": [
+                "Partner's social circle has significantly shrunk since the relationship began",
+                "Feeling like you need permission to see friends or family",
+                "Partner becomes angry or sulky when you spend time with others",
+                "Being told that others are 'turning you against' the partner"
+              ],
+              "frequency_note": "Isolation often happens gradually, making it difficult to recognise. It is a serious red flag and a hallmark of coercive control.",
+              "common_contexts": [
+                "Early relationship when establishing patterns",
+                "After the partner confides in others about relationship problems",
+                "When the controlling partner feels their influence is threatened",
+                "During periods of escalating control"
+              ],
+              "potential_impact": [
+                "Complete dependence on the controlling partner for emotional support",
+                "Loss of outside perspective makes it harder to recognise unhealthy dynamics",
+                "Increases vulnerability to other forms of abuse",
+                "Significant damage to the partner's mental health and sense of identity"
+              ],
+              "related_behaviors": [
+                "beh_gaslighting",
+                "beh_monitoring",
+                "beh_love_bombing",
+                "beh_financial_control"
+              ],
+              "communication_tips": [
+                "Maintaining outside relationships is essential to healthy partnerships; this is non-negotiable",
+                "If you notice your social circle shrinking, talk to someone you trust about what is happening",
+                "A healthy partner will encourage your connections, not compete with them",
+                "Reach out to support services if you feel you are being isolated"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Control Tactics",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_financial_control",
+              "name": "Financial Control",
+              "definition": "Using money and financial resources as a tool of power and control in the relationship, restricting a partner's access to funds, employment, or financial independence.",
+              "examples": [
+                "Controlling all household finances and giving the partner an 'allowance'",
+                "Requiring the partner to account for every dollar spent",
+                "Preventing or discouraging the partner from working or advancing their career",
+                "Running up debt in the partner's name or destroying their credit"
+              ],
+              "healthy_indicators": [
+                "Both partners have transparency about and input into financial decisions",
+                "Each partner has access to funds and some financial independence",
+                "Financial decisions are made collaboratively",
+                "Both partners are free to pursue employment and career goals"
+              ],
+              "unhealthy_indicators": [
+                "One partner has no access to bank accounts or financial information",
+                "Having to ask permission to make even small purchases",
+                "Being prevented from working or having income controlled by the partner",
+                "Feeling trapped in the relationship because of financial dependence"
+              ],
+              "frequency_note": "Financial control is a form of domestic abuse recognised under Australian law as part of coercive control. Any pattern of restricting financial autonomy is serious.",
+              "common_contexts": [
+                "When one partner earns significantly more or is the sole income earner",
+                "After a partner leaves employment to care for children",
+                "During periods of increasing control in the relationship",
+                "When the partner tries to gain independence"
+              ],
+              "potential_impact": [
+                "Traps the partner in the relationship by removing their ability to be financially independent",
+                "Significant long-term damage to the partner's financial health and credit",
+                "Loss of career opportunities and economic independence",
+                "Profound impact on self-esteem and sense of agency"
+              ],
+              "related_behaviors": [
+                "beh_isolation",
+                "beh_monitoring",
+                "beh_boundary_violations",
+                "beh_guilt_tripping"
+              ],
+              "communication_tips": [
+                "Both partners should have agreed-upon access to household finances",
+                "Regular financial check-ins should be collaborative, not interrogative",
+                "If financial control is occurring, contact 1800RESPECT or a financial counsellor",
+                "Financial independence is a right, not a privilege granted by a partner"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Control Tactics",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_monitoring",
+              "name": "Excessive Monitoring",
+              "definition": "Obsessively tracking, checking, and surveilling a partner's activities, communications, whereabouts, and social interactions beyond what is reasonable or consensual in the relationship.",
+              "examples": [
+                "Checking a partner's phone, emails, and social media without permission",
+                "Demanding to know their exact location at all times or using tracking apps without consent",
+                "Showing up unannounced at their workplace to 'check on' them",
+                "Interrogating them about interactions with others: 'Who were you talking to? What did they say?'"
+              ],
+              "healthy_indicators": [
+                "Trusting your partner without needing to verify their activities",
+                "Respecting each other's privacy with devices and communications",
+                "Sharing location information voluntarily and mutually, not under coercion",
+                "Feeling secure without needing constant updates on partner's whereabouts"
+              ],
+              "unhealthy_indicators": [
+                "Feeling the need to check a partner's phone or accounts regularly",
+                "Partner feeling surveilled, tracked, or unable to have private conversations",
+                "Intense anxiety or anger when unable to monitor the partner",
+                "Justifying monitoring as 'I just care about your safety'"
+              ],
+              "frequency_note": "Some transparency is healthy in relationships, but monitoring becomes controlling when it is non-consensual, obsessive, or driven by the need to control rather than genuine concern.",
+              "common_contexts": [
+                "When there are unresolved trust issues",
+                "In relationships with significant jealousy",
+                "When one partner has an anxious attachment style taken to an extreme",
+                "As part of a broader pattern of coercive control"
+              ],
+              "potential_impact": [
+                "Destroys trust and creates a climate of surveillance and fear",
+                "Partner feels they have no privacy or autonomy",
+                "Can escalate to stalking behaviours if the relationship ends",
+                "Reinforces the monitor's anxiety rather than resolving it"
+              ],
+              "related_behaviors": [
+                "beh_isolation",
+                "beh_jealousy",
+                "beh_anxious_attachment",
+                "beh_boundary_violations"
+              ],
+              "communication_tips": [
+                "If you feel the urge to monitor, address the underlying insecurity directly with your partner or a therapist",
+                "Establish mutually agreed-upon boundaries around privacy and transparency",
+                "Trust is built through consistent behaviour over time, not through surveillance",
+                "If you are being monitored, name it clearly and set firm boundaries"
+              ],
+              "category": "Manipulation & Control",
+              "subcategory": "Control Tactics",
+              "is_healthy": false,
+              "severity": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_emotional",
+      "category": "Emotional Patterns",
+      "description": "Behaviours related to how individuals experience, process, express, and respond to emotions within the context of their relationship.",
+      "icon": "favorite_border",
+      "subcategories": [
+        {
+          "id": "sub_healthy_emotional",
+          "name": "Healthy Emotional Expression",
+          "description": "Constructive ways of experiencing, processing, and sharing emotions that build connection and support mutual wellbeing.",
+          "behaviors": [
+            {
+              "id": "beh_emotional_regulation",
+              "name": "Emotional Regulation",
+              "definition": "The ability to manage and respond to emotional experiences in a way that is socially acceptable, flexible, and proportionate to the situation. Involves recognising emotions, tolerating distress, and choosing how to respond rather than reacting impulsively.",
+              "examples": [
+                "Taking a few deep breaths before responding when feeling angry during a disagreement",
+                "Recognising 'I am feeling really anxious right now' and using grounding techniques before reacting",
+                "Choosing to delay a difficult conversation until you are in a calmer state",
+                "Managing frustration without yelling, slamming doors, or other escalating behaviours"
+              ],
+              "healthy_indicators": [
+                "Able to experience strong emotions without being overwhelmed by them",
+                "Can pause between feeling an emotion and acting on it",
+                "Emotional responses are generally proportionate to the situation",
+                "Recovery time from emotional upset is reasonable"
+              ],
+              "unhealthy_indicators": [
+                "Emotions frequently feel uncontrollable or overwhelming",
+                "Responses are often disproportionate to the trigger",
+                "Using unhealthy coping mechanisms: substance use, shutting down, or lashing out",
+                "Partner feels they must walk on eggshells to avoid emotional outbursts"
+              ],
+              "frequency_note": "Emotional regulation is a skill that strengthens with practice. Everyone has moments of dysregulation; what matters is the overall pattern and willingness to improve.",
+              "common_contexts": [
+                "During disagreements or conflicts",
+                "When receiving difficult news or feedback",
+                "Under stress from work, finances, or other external pressures",
+                "When triggered by events that connect to past experiences"
+              ],
+              "potential_impact": [
+                "Creates a sense of safety and predictability in the relationship",
+                "Enables productive conflict resolution",
+                "Reduces the frequency and intensity of destructive arguments",
+                "Models healthy emotional processing for children and others"
+              ],
+              "related_behaviors": [
+                "beh_active_listening",
+                "beh_vulnerability",
+                "beh_emotional_flooding",
+                "beh_repair_attempts"
+              ],
+              "communication_tips": [
+                "Develop a personal toolkit: breathing exercises, taking a walk, journalling",
+                "Communicate your emotional state: 'I am feeling overwhelmed and need a moment'",
+                "Practise naming emotions specifically rather than just 'good' or 'bad'",
+                "Seek therapy if emotional regulation feels consistently difficult"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Healthy Emotional Expression",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_empathy",
+              "name": "Empathy",
+              "definition": "The capacity to understand and share in a partner's emotional experience, to see things from their perspective, and to respond with care and compassion even when you may not agree with them.",
+              "examples": [
+                "Responding to a partner's bad day with genuine concern: 'That sounds really frustrating; tell me more about what happened'",
+                "Acknowledging a partner's feelings even during disagreement: 'I can see why that would upset you'",
+                "Noticing non-verbal cues and checking in: 'You seem quiet tonight; is everything okay?'",
+                "Adjusting your behaviour when you can see your partner is struggling: reducing demands or offering support"
+              ],
+              "healthy_indicators": [
+                "Both partners regularly demonstrate understanding of each other's emotional states",
+                "Feeling truly 'seen' and understood by your partner",
+                "Ability to hold space for a partner's feelings without trying to fix them immediately",
+                "Compassionate responses to vulnerability and distress"
+              ],
+              "unhealthy_indicators": [
+                "Consistently dismissing or ignoring a partner's emotional experience",
+                "Responding to distress with irritation or impatience",
+                "Inability or unwillingness to consider the partner's perspective",
+                "Using knowledge of a partner's vulnerabilities against them"
+              ],
+              "frequency_note": "Empathy should be a consistent feature of the relationship, not something that only appears in good times.",
+              "common_contexts": [
+                "When a partner is experiencing stress, grief, or difficulty",
+                "During conflicts where understanding the other perspective is crucial",
+                "In response to a partner sharing vulnerable feelings",
+                "Everyday moments of connection and attunement"
+              ],
+              "potential_impact": [
+                "Forms the emotional foundation of a secure, loving relationship",
+                "Enables partners to navigate differences without damaging the bond",
+                "Promotes healing and resilience in both individuals and the relationship",
+                "Creates a positive cycle of emotional responsiveness"
+              ],
+              "related_behaviors": [
+                "beh_active_listening",
+                "beh_vulnerability",
+                "beh_open_dialogue",
+                "beh_emotional_regulation"
+              ],
+              "communication_tips": [
+                "Listen to understand, not to respond or fix",
+                "Validate before problem-solving: 'That sounds really hard' before 'Have you tried...'",
+                "Ask 'What do you need from me right now?' rather than assuming",
+                "Practise perspective-taking: 'If I were in their shoes, how might I feel?'"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Healthy Emotional Expression",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_vulnerability",
+              "name": "Vulnerability",
+              "definition": "The willingness to share one's authentic feelings, fears, needs, and imperfections with a partner, allowing oneself to be emotionally exposed despite the risk of being hurt. A cornerstone of deep emotional intimacy.",
+              "examples": [
+                "Sharing a personal fear: 'I worry sometimes that I am not a good enough partner'",
+                "Admitting a mistake openly: 'I handled that badly and I am sorry'",
+                "Expressing a need without guaranteeing the outcome: 'I really need more affection from you'",
+                "Talking about past experiences that shaped who you are today"
+              ],
+              "healthy_indicators": [
+                "Both partners feel safe enough to be emotionally honest",
+                "Vulnerability is met with care and respect, not weaponised later",
+                "Sharing deepens the connection rather than creating anxiety",
+                "Both partners gradually increase emotional openness over time"
+              ],
+              "unhealthy_indicators": [
+                "Vulnerability is shut down by dismissal, mockery, or discomfort",
+                "Past vulnerable disclosures are used as ammunition in arguments",
+                "One partner is always vulnerable while the other never reciprocates",
+                "Avoiding vulnerability entirely to maintain an illusion of strength"
+              ],
+              "frequency_note": "Vulnerability should increase naturally as trust builds. Forced or premature vulnerability can feel unsafe, while chronic avoidance limits intimacy.",
+              "common_contexts": [
+                "During intimate conversations about feelings and the relationship",
+                "When processing difficult life events together",
+                "After conflicts as part of repair and reconnection",
+                "When navigating new stages of the relationship"
+              ],
+              "potential_impact": [
+                "Essential for building deep emotional intimacy and secure attachment",
+                "Strengthens trust when met with empathy and care",
+                "Allows for authentic connection rather than surface-level relating",
+                "Promotes personal growth and emotional maturity in both partners"
+              ],
+              "related_behaviors": [
+                "beh_open_dialogue",
+                "beh_empathy",
+                "beh_trust_building",
+                "beh_secure_attachment"
+              ],
+              "communication_tips": [
+                "Start small; vulnerability is a muscle that strengthens with practice",
+                "Respond to your partner's vulnerability as a gift, with gratitude and care",
+                "Create rituals of connection that invite vulnerability: nightly check-ins, weekly deeper conversations",
+                "Never use something shared in vulnerability as a weapon"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Healthy Emotional Expression",
+              "is_healthy": true,
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "id": "sub_unhealthy_emotional",
+          "name": "Unhealthy Emotional Expression",
+          "description": "Patterns of emotional expression that cause harm, create instability, or prevent genuine connection in relationships.",
+          "behaviors": [
+            {
+              "id": "beh_emotional_flooding",
+              "name": "Emotional Flooding",
+              "definition": "Becoming so overwhelmed by emotions during an interaction that the ability to think clearly, listen, and respond constructively is severely impaired. The nervous system goes into fight-or-flight mode, making productive communication impossible.",
+              "examples": [
+                "Heart racing, feeling physically overwhelmed, and being unable to form coherent thoughts during an argument",
+                "Exploding with intense emotion over something relatively minor because stress has been building",
+                "Feeling paralysed, shutting down completely, or wanting to flee the conversation",
+                "Saying things you do not mean in the heat of the moment because the emotion is so intense"
+              ],
+              "healthy_indicators": [
+                "Recognising the early signs of flooding and communicating them to your partner",
+                "Having a pre-agreed plan for taking breaks when flooding occurs",
+                "Returning to the conversation once you have calmed down",
+                "Working on underlying triggers with self-reflection or professional support"
+              ],
+              "unhealthy_indicators": [
+                "Frequent episodes where emotions completely override rational thought",
+                "Saying or doing hurtful things during flooded states and minimising them later",
+                "Refusing to take breaks when overwhelmed and instead escalating further",
+                "Partner lives in fear of triggering a flooding episode"
+              ],
+              "frequency_note": "Everyone experiences emotional flooding occasionally. It becomes problematic when it is frequent, when there is no recovery strategy, or when it is used to justify harmful behaviour.",
+              "common_contexts": [
+                "During heated arguments or perceived attacks",
+                "When multiple stressors are compounding",
+                "When sensitive personal topics are raised unexpectedly",
+                "After prolonged periods of suppressing emotions"
+              ],
+              "potential_impact": [
+                "Makes productive conflict resolution impossible during episodes",
+                "Can lead to saying or doing things that cause lasting damage",
+                "Often triggers stonewalling as a self-protective response",
+                "Creates a volatile emotional climate in the relationship"
+              ],
+              "related_behaviors": [
+                "beh_emotional_regulation",
+                "beh_stonewalling",
+                "beh_escalation",
+                "beh_repair_attempts"
+              ],
+              "communication_tips": [
+                "Learn your body's warning signs: increased heart rate, tension, difficulty thinking",
+                "Agree on a calm word or signal that means 'I am flooding and need a break'",
+                "During the break, engage in self-soothing: deep breathing, walking, or progressive muscle relaxation",
+                "Commit to returning to the discussion within a specified timeframe"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Unhealthy Emotional Expression",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_emotional_withdrawal",
+              "name": "Emotional Withdrawal",
+              "definition": "Habitually pulling away emotionally from a partner, reducing emotional availability, warmth, and engagement as a way of coping with discomfort, avoiding vulnerability, or punishing the partner.",
+              "examples": [
+                "Becoming emotionally distant and cold after a disagreement without explaining why",
+                "Gradually reducing expressions of affection, interest, and emotional engagement",
+                "Responding to a partner's emotional bids with indifference or minimal engagement",
+                "Retreating into work, hobbies, or devices to avoid emotional connection"
+              ],
+              "healthy_indicators": [
+                "Communicating a need for space clearly while reassuring the partner of your commitment",
+                "Distinguishing between needing solitude and withdrawing as avoidance",
+                "Returning to emotional engagement after taking necessary space",
+                "Being aware of and working on patterns of withdrawal"
+              ],
+              "unhealthy_indicators": [
+                "Partner consistently feels emotionally abandoned or alone in the relationship",
+                "Withdrawal is used as punishment after conflicts",
+                "Chronic emotional unavailability that does not respond to the partner's bids for connection",
+                "Pattern of withdrawing whenever emotional depth is required"
+              ],
+              "frequency_note": "Occasional emotional withdrawal during stress is normal. A persistent pattern where one partner is emotionally unavailable causes significant harm to the relationship.",
+              "common_contexts": [
+                "After arguments or unresolved conflicts",
+                "When feeling emotionally overwhelmed or threatened",
+                "In response to perceived criticism or demands for emotional engagement",
+                "During periods of personal stress or depression"
+              ],
+              "potential_impact": [
+                "The pursuing partner feels rejected and may escalate bids for connection",
+                "Creates a pursue-withdraw cycle that reinforces both patterns",
+                "Emotional intimacy erodes over time",
+                "Can mask underlying depression, anxiety, or avoidant attachment"
+              ],
+              "related_behaviors": [
+                "beh_stonewalling",
+                "beh_avoidant_attachment",
+                "beh_passive_aggression",
+                "beh_emotional_flooding"
+              ],
+              "communication_tips": [
+                "If you withdraw, practise communicating what you need: 'I need some time alone but I am not rejecting you'",
+                "If your partner withdraws, give them space while expressing availability: 'I am here when you are ready'",
+                "Explore the underlying fears driving the withdrawal with a therapist if needed",
+                "Build small, manageable moments of connection that feel safe for both partners"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Unhealthy Emotional Expression",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_emotional_invalidation",
+              "name": "Emotional Invalidation",
+              "definition": "Dismissing, minimising, judging, or rejecting a partner's emotional experience, communicating that their feelings are wrong, irrational, unimportant, or should not exist.",
+              "examples": [
+                "Responding to tears with 'You are overreacting; it is not that big a deal'",
+                "Dismissing anxiety or worry: 'There is nothing to be upset about; you are being ridiculous'",
+                "Comparing suffering: 'You think that is bad? You should hear what I went through'",
+                "Telling a partner how they should feel: 'You should be grateful, not upset'"
+              ],
+              "healthy_indicators": [
+                "Acknowledging a partner's emotions as valid even when you do not fully understand them",
+                "Responding to distress with curiosity rather than judgement",
+                "Holding space for emotions you might find uncomfortable",
+                "Distinguishing between validating feelings and agreeing with every perspective"
+              ],
+              "unhealthy_indicators": [
+                "Regularly telling your partner their feelings are wrong or irrational",
+                "Partner stops sharing feelings because they expect dismissal",
+                "Using logic to argue away a partner's emotional experience",
+                "Showing visible irritation or contempt when a partner expresses emotion"
+              ],
+              "frequency_note": "Persistent emotional invalidation teaches the partner that their inner experience does not matter, leading to emotional suppression and disconnection.",
+              "common_contexts": [
+                "When a partner expresses sadness, fear, or anxiety",
+                "During conflicts where emotions are running high",
+                "When the invalidator is uncomfortable with certain emotions",
+                "In response to issues the invalidator considers trivial"
+              ],
+              "potential_impact": [
+                "The invalidated partner learns to suppress and distrust their own emotions",
+                "Can contribute to anxiety, depression, and identity confusion",
+                "Destroys emotional safety and intimacy",
+                "The invalidated partner may eventually stop communicating altogether"
+              ],
+              "related_behaviors": [
+                "beh_gaslighting",
+                "beh_contempt",
+                "beh_empathy",
+                "beh_active_listening"
+              ],
+              "communication_tips": [
+                "Replace 'You should not feel that way' with 'I can see this is really affecting you'",
+                "You do not need to fix the feeling; just acknowledge it exists",
+                "Validation does not mean agreement; it means respect for their experience",
+                "If your feelings are being invalidated, name it: 'When you say I should not feel this way, it makes me feel dismissed'"
+              ],
+              "category": "Emotional Patterns",
+              "subcategory": "Unhealthy Emotional Expression",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_attachment",
+      "category": "Attachment & Trust",
+      "description": "Behaviours related to attachment styles, trust dynamics, and the fundamental sense of security within the relationship bond.",
+      "icon": "link",
+      "subcategories": [
+        {
+          "id": "sub_attachment_styles",
+          "name": "Attachment Styles",
+          "description": "Enduring patterns of relating to others formed in early life that shape how individuals approach intimacy, dependence, and emotional closeness in adult relationships.",
+          "behaviors": [
+            {
+              "id": "beh_secure_attachment",
+              "name": "Secure Attachment",
+              "definition": "A relational pattern characterised by comfort with emotional intimacy and interdependence, a positive view of self and others, effective communication of needs, and the ability to provide and receive support.",
+              "examples": [
+                "Feeling comfortable both giving and receiving emotional support",
+                "Being able to spend time apart without excessive anxiety while also enjoying closeness",
+                "Communicating needs clearly and directly without fear of rejection",
+                "Responding to a partner's distress with warmth and availability"
+              ],
+              "healthy_indicators": [
+                "Trusting your partner and feeling trusted in return",
+                "Comfortable with interdependence; neither overly clingy nor avoidant",
+                "Able to repair after conflict and return to a positive connection",
+                "Maintaining a stable sense of self within the relationship"
+              ],
+              "unhealthy_indicators": [
+                "Note: these would indicate movement away from secure attachment",
+                "Increasing anxiety about the relationship despite no concrete reasons",
+                "Growing avoidance of emotional intimacy or vulnerability",
+                "Difficulty trusting even when the partner is consistently trustworthy"
+              ],
+              "frequency_note": "Secure attachment is not a fixed state; it can be strengthened through positive relationship experiences and therapeutic work, even if it was not the dominant pattern in earlier life.",
+              "common_contexts": [
+                "Everyday interactions and expressions of affection",
+                "During times of stress when partners turn to each other for support",
+                "In conflict where secure attachment enables repair",
+                "When navigating changes and transitions together"
+              ],
+              "potential_impact": [
+                "Associated with higher relationship satisfaction and longevity",
+                "Provides a secure base from which both partners can grow individually",
+                "Buffers against the negative effects of stress and adversity",
+                "Creates a positive model for children in the household"
+              ],
+              "related_behaviors": [
+                "beh_trust_building",
+                "beh_vulnerability",
+                "beh_empathy",
+                "beh_emotional_regulation"
+              ],
+              "communication_tips": [
+                "Continue to nurture secure attachment by being consistently responsive and available",
+                "Express appreciation for your partner regularly",
+                "Address issues directly rather than letting them erode security",
+                "Remember that security is built through many small moments of connection"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Attachment Styles",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_anxious_attachment",
+              "name": "Anxious Attachment",
+              "definition": "A relational pattern characterised by a strong desire for closeness and intimacy coupled with fear of abandonment, rejection, or being unloved. Often leads to hypervigilance about relationship threats and a need for frequent reassurance.",
+              "examples": [
+                "Feeling intense anxiety when a partner does not respond to messages quickly",
+                "Needing frequent verbal reassurance that the partner still loves you",
+                "Interpreting neutral or ambiguous behaviour as signs of rejection or waning interest",
+                "Becoming preoccupied with the relationship to the point of difficulty focusing on other areas of life"
+              ],
+              "healthy_indicators": [
+                "Recognising anxious patterns and working to self-soothe before seeking reassurance",
+                "Communicating attachment needs directly rather than through protest behaviours",
+                "Developing a strong sense of self-worth independent of the relationship",
+                "Choosing partners who are emotionally available and consistent"
+              ],
+              "unhealthy_indicators": [
+                "Excessive reassurance-seeking that never feels like enough",
+                "Protest behaviours when feeling insecure: threatening to leave, creating jealousy, or picking fights",
+                "Losing sense of self and identity in the relationship",
+                "Tolerating poor treatment because of fear of being alone"
+              ],
+              "frequency_note": "Anxious attachment is not a flaw; it is a learned pattern that can be understood and worked with. Self-awareness and a securely attached partner can shift this pattern significantly.",
+              "common_contexts": [
+                "Early stages of dating when uncertainty is highest",
+                "During separations, even brief ones",
+                "When a partner seems distant, distracted, or less available",
+                "After conflicts or perceived rejections"
+              ],
+              "potential_impact": [
+                "Can create a self-fulfilling prophecy where anxiety pushes the partner away",
+                "Often pairs with avoidant attachment creating an anxious-avoidant trap",
+                "Can lead to chronic stress, exhaustion, and emotional burnout",
+                "With awareness and effort, can move towards earned secure attachment"
+              ],
+              "related_behaviors": [
+                "beh_monitoring",
+                "beh_jealousy",
+                "beh_people_pleasing",
+                "beh_secure_attachment"
+              ],
+              "communication_tips": [
+                "Practise self-soothing techniques before reaching out for reassurance",
+                "Share your attachment needs openly: 'I feel more secure when you text me during the day'",
+                "Work with a therapist to understand the origins of your attachment patterns",
+                "Build self-worth through personal interests, friendships, and achievements outside the relationship"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Attachment Styles",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_avoidant_attachment",
+              "name": "Avoidant Attachment",
+              "definition": "A relational pattern characterised by a strong emphasis on independence and self-reliance, discomfort with emotional closeness and vulnerability, and a tendency to withdraw when a partner seeks intimacy or makes emotional demands.",
+              "examples": [
+                "Pulling away when a partner tries to get emotionally closer",
+                "Valuing independence to the point of difficulty accepting help or support",
+                "Feeling 'suffocated' or 'trapped' when a partner expresses needs for closeness",
+                "Keeping conversations surface-level and deflecting deeper emotional topics"
+              ],
+              "healthy_indicators": [
+                "Recognising avoidant tendencies and intentionally moving towards connection",
+                "Communicating need for space without rejecting the partner",
+                "Gradually increasing comfort with vulnerability over time",
+                "Choosing to stay present during difficult emotional conversations"
+              ],
+              "unhealthy_indicators": [
+                "Consistently shutting down partner's bids for emotional connection",
+                "Leaving the partner feeling unwanted, unimportant, or unloved",
+                "Using independence as a wall against all intimacy",
+                "Exiting relationships whenever they become 'too serious'"
+              ],
+              "frequency_note": "Avoidant attachment does not mean someone is incapable of love; it means emotional closeness triggers discomfort. With awareness and work, avoidant individuals can develop more secure patterns.",
+              "common_contexts": [
+                "When the relationship reaches new levels of commitment",
+                "During emotional conversations or when a partner is upset",
+                "After periods of closeness, triggering a need to 'rebalance' with distance",
+                "When a partner explicitly expresses needs or dependency"
+              ],
+              "potential_impact": [
+                "Partners often feel rejected, unloved, or unimportant",
+                "Can pair with anxious attachment to create a painful pursue-withdraw cycle",
+                "Limits the depth of emotional intimacy achievable in the relationship",
+                "With therapeutic work, can move towards earned secure attachment"
+              ],
+              "related_behaviors": [
+                "beh_emotional_withdrawal",
+                "beh_stonewalling",
+                "beh_secure_attachment",
+                "beh_boundary_setting"
+              ],
+              "communication_tips": [
+                "If you are avoidant, practise staying in emotional conversations a little longer each time",
+                "Communicate your need for space as a need, not a rejection: 'I need some alone time to recharge, not because of anything you did'",
+                "Challenge the belief that needing people is weakness",
+                "If your partner is avoidant, pursue gently and respect their need for space while maintaining your own needs"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Attachment Styles",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_disorganised_attachment",
+              "name": "Disorganised Attachment",
+              "definition": "A relational pattern characterised by conflicting desires for and fears of closeness, often resulting in confusing or contradictory behaviour. The partner is simultaneously the source of comfort and the source of fear, creating an unresolvable dilemma.",
+              "examples": [
+                "Craving closeness but then pushing the partner away when they get close",
+                "Oscillating between intense neediness and cold withdrawal without clear cause",
+                "Reacting to intimacy with panic, anger, or dissociation",
+                "Sending mixed signals: 'Come here, go away' patterns that confuse both partners"
+              ],
+              "healthy_indicators": [
+                "Recognising the pattern and seeking professional support to address it",
+                "Developing awareness of triggers that activate contradictory responses",
+                "Building safety in the relationship through small, consistent steps",
+                "Working through underlying trauma that drives the disorganised pattern"
+              ],
+              "unhealthy_indicators": [
+                "Relationship is characterised by chaos, unpredictability, and emotional intensity",
+                "Both partners are confused and exhausted by the contradictory dynamics",
+                "Past trauma is being re-enacted within the relationship without awareness",
+                "Difficulty maintaining stable relationships over time"
+              ],
+              "frequency_note": "Disorganised attachment often has roots in early experiences of trauma or loss. Professional support, particularly from a therapist trained in attachment and trauma, is strongly recommended.",
+              "common_contexts": [
+                "When intimacy triggers past traumatic experiences",
+                "During moments that echo early attachment wounds",
+                "In times of high stress when coping resources are stretched",
+                "When the partner's behaviour inadvertently triggers trauma responses"
+              ],
+              "potential_impact": [
+                "Creates a highly unpredictable and often distressing relational dynamic",
+                "Both partners may struggle to find stable ground",
+                "Without support, can lead to relationship breakdown or harmful patterns",
+                "With appropriate therapeutic support, significant healing and change is possible"
+              ],
+              "related_behaviors": [
+                "beh_emotional_flooding",
+                "beh_anxious_attachment",
+                "beh_avoidant_attachment",
+                "beh_emotional_withdrawal"
+              ],
+              "communication_tips": [
+                "Professional support is strongly recommended for working with disorganised attachment",
+                "Building safety through predictable, consistent routines and rituals",
+                "Learning to identify when trauma responses are being activated",
+                "Both partners benefit from understanding this pattern through psychoeducation"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Attachment Styles",
+              "is_healthy": false,
+              "severity": "high"
+            }
+          ]
+        },
+        {
+          "id": "sub_trust_dynamics",
+          "name": "Trust Dynamics",
+          "description": "Behaviours related to the building, maintenance, erosion, and repair of trust between partners.",
+          "behaviors": [
+            {
+              "id": "beh_trust_building",
+              "name": "Trust-Building",
+              "definition": "Consistent, reliable behaviour that demonstrates integrity, honesty, and commitment, creating a foundation of safety and confidence in the relationship over time.",
+              "examples": [
+                "Following through on commitments and promises consistently",
+                "Being honest even when the truth is uncomfortable",
+                "Sharing relevant information proactively rather than waiting to be asked",
+                "Being emotionally reliable: showing up for your partner when they need you"
+              ],
+              "healthy_indicators": [
+                "Both partners feel confident in each other's reliability and honesty",
+                "Words and actions are consistently aligned",
+                "There is transparency about relevant matters without invasive monitoring",
+                "Both partners feel safe being vulnerable with each other"
+              ],
+              "unhealthy_indicators": [
+                "Frequent broken promises or inconsistent follow-through",
+                "Discovering that your partner has been dishonest about important matters",
+                "Saying one thing but doing another repeatedly",
+                "Feeling you cannot rely on your partner to be there when it matters"
+              ],
+              "frequency_note": "Trust is built in small moments over time and can be damaged by a single significant breach. It is the accumulation of consistent, reliable behaviour that creates deep trust.",
+              "common_contexts": [
+                "Everyday interactions and keeping small promises",
+                "During difficult conversations that require honesty",
+                "When external pressures create temptation to cut corners on commitments",
+                "After a breach of trust that requires intentional rebuilding"
+              ],
+              "potential_impact": [
+                "Forms the bedrock of a secure, lasting relationship",
+                "Enables deeper vulnerability, intimacy, and connection",
+                "Creates resilience to weather challenges and conflicts",
+                "Provides a stable foundation for personal growth within the relationship"
+              ],
+              "related_behaviors": [
+                "beh_secure_attachment",
+                "beh_vulnerability",
+                "beh_open_dialogue",
+                "beh_mutual_respect"
+              ],
+              "communication_tips": [
+                "Only make promises you intend and are able to keep",
+                "If you cannot follow through, communicate proactively rather than letting the deadline pass silently",
+                "Be honest about small things; trust erodes from minor deceptions as well as major ones",
+                "After a trust breach, recovery requires consistent changed behaviour over time, not just words"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Trust Dynamics",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_betrayal",
+              "name": "Betrayal",
+              "definition": "A significant breach of trust that violates the explicit or implicit agreements of the relationship, causing deep emotional harm and fundamentally disrupting the sense of safety between partners.",
+              "examples": [
+                "Infidelity: engaging in romantic or sexual contact outside the agreed boundaries of the relationship",
+                "Sharing private, confidential information about the partner with others",
+                "Making major life decisions secretly that affect both partners",
+                "Secretly maintaining a hidden relationship, financial account, or addiction"
+              ],
+              "healthy_indicators": [
+                "Full accountability without blame-shifting or minimising the impact",
+                "Willingness to do the hard work of rebuilding trust over time",
+                "Transparent behaviour going forward to demonstrate changed commitment",
+                "Seeking professional help such as couples counselling to process the betrayal together"
+              ],
+              "unhealthy_indicators": [
+                "Blaming the betrayed partner for the betrayal: 'If you had been more attentive, I would not have...'",
+                "Minimising the impact: 'It did not mean anything; you are overreacting'",
+                "Repeating the betrayal after promising to change",
+                "Expecting the partner to 'get over it' quickly without doing repair work"
+              ],
+              "frequency_note": "A single significant betrayal can fundamentally alter a relationship. Recovery is possible but requires sustained effort from both partners, typically with professional support.",
+              "common_contexts": [
+                "When relationship needs are unmet and not communicated directly",
+                "During periods of distance or disconnection in the relationship",
+                "When individual issues such as addiction or mental health challenges are unaddressed",
+                "When opportunity and rationalisation align"
+              ],
+              "potential_impact": [
+                "Devastating to the betrayed partner's sense of safety, self-worth, and reality",
+                "Can cause trauma responses including hypervigilance, intrusive thoughts, and emotional dysregulation",
+                "The relationship may end or may be rebuilt but will be fundamentally changed",
+                "With significant effort and professional support, some couples emerge with a stronger relationship"
+              ],
+              "related_behaviors": [
+                "beh_trust_building",
+                "beh_gaslighting",
+                "beh_repair_attempts",
+                "beh_vulnerability"
+              ],
+              "communication_tips": [
+                "The betraying partner must take full responsibility without excuses or blame-shifting",
+                "The betrayed partner needs space to process a full range of emotions without a timeline imposed",
+                "Professional support is strongly recommended; this is extremely difficult to navigate alone",
+                "Recovery requires both partners to eventually rebuild a new relationship, as the old one has been fundamentally altered"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Trust Dynamics",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_jealousy",
+              "name": "Jealousy",
+              "definition": "An emotional response to a perceived threat to the relationship, ranging from mild and manageable to intense and destructive. Can serve as useful information about needs or insecurities when handled constructively, or become toxic when acted on with controlling behaviour.",
+              "examples": [
+                "Feeling a twinge of discomfort when a partner mentions an attractive colleague",
+                "Openly sharing feelings of jealousy: 'I felt a bit jealous when I saw you talking with your ex; can we talk about it?'",
+                "Demanding that a partner stop interacting with certain people",
+                "Checking a partner's phone or social media driven by jealous anxiety"
+              ],
+              "healthy_indicators": [
+                "Recognising jealousy as an emotion to be understood, not acted on impulsively",
+                "Communicating jealous feelings openly and vulnerably",
+                "Using jealousy as information about unmet needs or insecurities to work on",
+                "Trusting your partner's commitment despite occasional jealous feelings"
+              ],
+              "unhealthy_indicators": [
+                "Jealousy driving controlling behaviour: restricting friendships, monitoring communications",
+                "Explosive reactions to perceived threats that are not grounded in reality",
+                "Constant accusations of infidelity or interest in others",
+                "Partner feeling they must modify their behaviour to avoid triggering jealousy"
+              ],
+              "frequency_note": "Occasional mild jealousy is a normal human emotion. Problematic jealousy is persistent, intense, and drives controlling or harmful behaviour.",
+              "common_contexts": [
+                "When a partner interacts with potential romantic rivals",
+                "On social media where interactions are public and easily misinterpreted",
+                "When the relationship has unresolved trust issues or past betrayals",
+                "During periods of distance or reduced connection in the relationship"
+              ],
+              "potential_impact": [
+                "Mild jealousy can prompt important conversations about needs and boundaries",
+                "Unchecked jealousy erodes trust and creates a controlling dynamic",
+                "Can escalate into monitoring, isolation, and coercive control",
+                "The jealous partner's anxiety is reinforced rather than relieved by controlling behaviour"
+              ],
+              "related_behaviors": [
+                "beh_monitoring",
+                "beh_trust_building",
+                "beh_anxious_attachment",
+                "beh_isolation"
+              ],
+              "communication_tips": [
+                "Express jealousy as a feeling about yourself, not an accusation about your partner: 'I am feeling insecure' not 'You are flirting'",
+                "Explore the root of the jealousy: is it about the current situation or past experiences?",
+                "Agree together on boundaries that feel respectful to both of you",
+                "If jealousy is persistent and intense, consider individual therapy to address underlying insecurities"
+              ],
+              "category": "Attachment & Trust",
+              "subcategory": "Trust Dynamics",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_conflict",
+      "category": "Conflict Resolution",
+      "description": "Behaviours related to how partners navigate disagreements, differences of opinion, and interpersonal tensions within the relationship.",
+      "icon": "handshake",
+      "subcategories": [
+        {
+          "id": "sub_constructive_conflict",
+          "name": "Constructive Approaches",
+          "description": "Healthy strategies for addressing and resolving disagreements that strengthen rather than damage the relationship.",
+          "behaviors": [
+            {
+              "id": "beh_compromise",
+              "name": "Compromise",
+              "definition": "A conflict resolution approach where both partners make concessions to reach a mutually acceptable solution, ensuring that neither person's needs are completely overridden. Involves flexibility, good faith, and a genuine desire for fairness.",
+              "examples": [
+                "Alternating whose family to visit during holidays when both cannot be accommodated",
+                "Finding a middle ground on spending: 'We can go out to dinner on Friday if we cook at home during the week'",
+                "Splitting household tasks based on preferences and strengths rather than insisting on a rigid system",
+                "Agreeing to try one partner's suggestion for a set period and then reassessing"
+              ],
+              "healthy_indicators": [
+                "Both partners feel the outcome is fair, even if not ideal for either",
+                "Willingness to be flexible and creative in finding solutions",
+                "Neither partner consistently sacrifices their needs while the other always 'wins'",
+                "Compromises are honoured once agreed upon"
+              ],
+              "unhealthy_indicators": [
+                "One partner always gives in while the other always gets their way",
+                "Compromises are agreed to but then resented or not followed through on",
+                "Using compromise as a tool: agreeing to things with no intention of honouring them",
+                "Seeing compromise as losing rather than as a collaborative process"
+              ],
+              "frequency_note": "Not every issue requires compromise; some matters are non-negotiable for each person. Healthy relationships have both compromise and mutual acceptance of differences.",
+              "common_contexts": [
+                "Decisions about finances, social activities, and household management",
+                "Navigating differences in preferences, habits, and routines",
+                "Planning and prioritising shared goals",
+                "Resolving disagreements about parenting approaches"
+              ],
+              "potential_impact": [
+                "Builds a sense of fairness and partnership",
+                "Prevents resentment from one-sided decision-making",
+                "Teaches flexibility and respect for different perspectives",
+                "Strengthens the relationship's problem-solving capacity"
+              ],
+              "related_behaviors": [
+                "beh_collaborative_problem_solving",
+                "beh_assertive_communication",
+                "beh_active_listening",
+                "beh_mutual_respect"
+              ],
+              "communication_tips": [
+                "Start by understanding each other's underlying needs, not just surface positions",
+                "Brainstorm multiple options before settling on a solution",
+                "Check in after implementing a compromise to see if it is working for both of you",
+                "Recognise that a good compromise means neither person gets everything they want"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Constructive Approaches",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_collaborative_problem_solving",
+              "name": "Collaborative Problem-Solving",
+              "definition": "An approach to conflict where both partners work together as a team to find solutions that address both people's needs, rather than viewing the disagreement as a competition to be won.",
+              "examples": [
+                "Sitting down together to create a budget that reflects both partners' priorities",
+                "Using phrases like 'How can we solve this together?' rather than 'This is what we are going to do'",
+                "Brainstorming solutions together without immediately judging or dismissing ideas",
+                "Tackling a parenting challenge as a united team rather than blaming each other"
+              ],
+              "healthy_indicators": [
+                "Both partners feel they are on the same team, even during disagreements",
+                "Solutions reflect input and needs from both people",
+                "Problems are framed as 'us versus the problem' rather than 'me versus you'",
+                "Both partners bring creativity and good faith to the process"
+              ],
+              "unhealthy_indicators": [
+                "One partner dominates the problem-solving process",
+                "Disagreements are framed as win-lose competitions",
+                "Solutions are imposed rather than agreed upon",
+                "One partner's ideas are consistently dismissed or devalued"
+              ],
+              "frequency_note": "Should be the default approach to shared problems. Most effective when both partners are calm and have had time to think about their needs.",
+              "common_contexts": [
+                "Making major life decisions together",
+                "Addressing recurring relationship issues",
+                "Managing household logistics and responsibilities",
+                "Navigating external challenges as a couple"
+              ],
+              "potential_impact": [
+                "Strengthens the sense of partnership and mutual respect",
+                "Produces better solutions that both partners are invested in",
+                "Builds confidence in the couple's ability to handle future challenges",
+                "Reduces adversarial dynamics in the relationship"
+              ],
+              "related_behaviors": [
+                "beh_compromise",
+                "beh_active_listening",
+                "beh_open_dialogue",
+                "beh_assertive_communication"
+              ],
+              "communication_tips": [
+                "Begin with 'What do we both need here?' rather than 'What do I want?'",
+                "Listen to your partner's perspective fully before offering solutions",
+                "Be willing to try creative solutions you may not have thought of",
+                "Celebrate successes: 'We figured that out together; good team'"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Constructive Approaches",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_repair_attempts",
+              "name": "Repair Attempts",
+              "definition": "Any statement or action made during or after conflict that aims to de-escalate tension, reconnect with the partner, and prevent further negativity. Considered one of the most important predictors of relationship success.",
+              "examples": [
+                "Using humour gently to break tension during an argument (when appropriate and not dismissive)",
+                "Reaching for physical connection during a disagreement: a touch on the arm or offering a hug",
+                "Saying 'I think we are getting off track; can we start over?' during a heated discussion",
+                "Apologising mid-conflict: 'I am sorry I raised my voice; that was not okay'"
+              ],
+              "healthy_indicators": [
+                "Both partners make repair attempts during and after conflicts",
+                "Repair attempts are recognised and accepted by the other partner",
+                "The couple can de-escalate before arguments become destructive",
+                "There is a shared repertoire of repair strategies that work for both"
+              ],
+              "unhealthy_indicators": [
+                "Repair attempts are consistently rejected, ignored, or mocked",
+                "Neither partner attempts to de-escalate during conflicts",
+                "Arguments always escalate to their worst before any repair occurs",
+                "One partner's repair attempts are seen as manipulation or weakness"
+              ],
+              "frequency_note": "The success of repair attempts depends more on the overall health of the relationship than on the skill of the attempt. In distressed relationships, even good repairs are often rejected.",
+              "common_contexts": [
+                "During arguments that are escalating",
+                "In the aftermath of a hurtful exchange",
+                "When reconnecting after a period of distance or tension",
+                "As part of an ongoing practice of maintaining connection"
+              ],
+              "potential_impact": [
+                "The ability to make and accept repair attempts is a key predictor of relationship longevity",
+                "Prevents conflicts from causing lasting damage to the relationship",
+                "Builds resilience and confidence in the couple's ability to weather storms",
+                "Creates a culture of grace and second chances within the relationship"
+              ],
+              "related_behaviors": [
+                "beh_emotional_regulation",
+                "beh_empathy",
+                "beh_vulnerability",
+                "beh_compromise"
+              ],
+              "communication_tips": [
+                "Develop a set of repair phrases or gestures that work for your relationship",
+                "When your partner makes a repair attempt, try to receive it generously even if you are still upset",
+                "Repair does not mean the issue is resolved; it means you are choosing connection over combat",
+                "Even imperfect repair attempts should be acknowledged and appreciated"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Constructive Approaches",
+              "is_healthy": true,
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "id": "sub_destructive_conflict",
+          "name": "Destructive Approaches",
+          "description": "Harmful patterns during conflict that damage the relationship, prevent resolution, and erode emotional safety.",
+          "behaviors": [
+            {
+              "id": "beh_escalation",
+              "name": "Escalation",
+              "definition": "A conflict pattern where disagreements rapidly increase in intensity, volume, and hostility, moving from the original issue to personal attacks, past grievances, and increasingly harmful exchanges.",
+              "examples": [
+                "A discussion about dishes quickly becomes a shouting match about respect and commitment",
+                "Responding to criticism by bringing up a catalogue of the partner's past mistakes",
+                "Raising the volume, intensity, and harshness of language as the argument progresses",
+                "Making threats or ultimatums during heated moments: 'Fine, maybe we should just break up then'"
+              ],
+              "healthy_indicators": [
+                "Ability to stay focused on the topic at hand during disagreements",
+                "Noticing when intensity is rising and choosing to de-escalate",
+                "Taking breaks when conversations become too heated",
+                "Returning to a calmer discussion after emotions have settled"
+              ],
+              "unhealthy_indicators": [
+                "Most disagreements quickly become full-blown arguments",
+                "Arguments regularly include yelling, insults, or threats",
+                "Each partner tries to 'win' by being more aggressive than the other",
+                "Physical objects are thrown, or there is physical intimidation"
+              ],
+              "frequency_note": "Occasional escalation during high-stress moments is human. A pattern where most disagreements quickly become intense and hostile is a significant problem requiring intervention.",
+              "common_contexts": [
+                "When core values or deep needs feel threatened",
+                "During discussions about recurring, unresolved issues",
+                "When both partners are already stressed, tired, or triggered",
+                "When contempt or defensiveness are already present in the dynamic"
+              ],
+              "potential_impact": [
+                "Creates a climate of emotional unsafety where partners dread conflict",
+                "Leads to saying things that cause lasting emotional wounds",
+                "Prevents resolution of the actual underlying issues",
+                "Can escalate to verbal, emotional, or physical abuse"
+              ],
+              "related_behaviors": [
+                "beh_emotional_flooding",
+                "beh_contempt",
+                "beh_criticism",
+                "beh_defensiveness"
+              ],
+              "communication_tips": [
+                "Agree on a de-escalation strategy before conflict arises",
+                "Use a 'time out' signal when you notice intensity rising",
+                "Stay focused on one issue at a time; do not bring in additional grievances",
+                "If escalation is a regular pattern, couples counselling can provide new tools"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Destructive Approaches",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_conflict_avoidance",
+              "name": "Conflict Avoidance",
+              "definition": "A pattern of systematically avoiding disagreements, difficult conversations, and expressions of discontent to maintain surface-level peace, at the cost of leaving important issues unresolved and needs unmet.",
+              "examples": [
+                "Changing the subject whenever a disagreement begins to surface",
+                "Saying 'It does not matter' or 'It is fine' when it clearly does matter and is not fine",
+                "Agreeing with everything the partner says to prevent any friction",
+                "Avoiding spending time together because interactions might lead to conflict"
+              ],
+              "healthy_indicators": [
+                "Choosing to address some minor issues selectively rather than fighting about everything",
+                "Being able to raise difficult topics even when it is uncomfortable",
+                "Distinguishing between genuine acceptance and avoidance of necessary conversations",
+                "Addressing issues before resentment builds up"
+              ],
+              "unhealthy_indicators": [
+                "Important issues in the relationship are never discussed",
+                "Resentment builds silently until it erupts or leads to emotional shutdown",
+                "One or both partners feel they cannot be honest about their feelings",
+                "The relationship looks peaceful on the surface but lacks genuine intimacy"
+              ],
+              "frequency_note": "Some selectivity about which battles to fight is healthy. Systematic avoidance of all conflict leads to superficial relationships and accumulated resentment.",
+              "common_contexts": [
+                "When past experiences of conflict were traumatic or frightening",
+                "In relationships where one partner reacts very poorly to any disagreement",
+                "When cultural or family backgrounds teach that conflict is always destructive",
+                "When one partner fears the other's reaction or emotional escalation"
+              ],
+              "potential_impact": [
+                "Issues fester and grow more complex over time",
+                "Resentment accumulates until it either explodes or leads to emotional disconnection",
+                "Partners do not truly know each other because honest communication is suppressed",
+                "Prevents the growth and deepening that comes from working through challenges together"
+              ],
+              "related_behaviors": [
+                "beh_stonewalling",
+                "beh_passive_aggression",
+                "beh_people_pleasing",
+                "beh_assertive_communication"
+              ],
+              "communication_tips": [
+                "Start with smaller, less threatening topics to build the muscle of addressing disagreements",
+                "Reframe conflict as an opportunity for understanding, not a threat to the relationship",
+                "Practise saying 'I see it differently' in low-stakes situations",
+                "Consider whether peace-keeping is actually peace-faking"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Destructive Approaches",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_defensiveness",
+              "name": "Defensiveness",
+              "definition": "Responding to perceived criticism or complaints by protecting oneself through counter-attacks, excuse-making, or denying responsibility, rather than genuinely considering the partner's perspective or concern.",
+              "examples": [
+                "Responding to 'I wish you would help more with the housework' with 'Well, you never appreciate what I do around here'",
+                "Making excuses instead of acknowledging the partner's concern: 'I was busy; you do not understand my schedule'",
+                "Turning the complaint back on the partner: 'Well, what about the time you forgot to...'",
+                "Playing the innocent victim: 'I do not know what you want from me; nothing I do is ever good enough'"
+              ],
+              "healthy_indicators": [
+                "Listening to feedback without immediately mounting a defence",
+                "Acknowledging the valid part of a complaint even if you disagree with some aspects",
+                "Taking responsibility for your part in a problem",
+                "Responding with curiosity: 'Help me understand what you need from me'"
+              ],
+              "unhealthy_indicators": [
+                "Every piece of feedback is met with a counter-complaint or excuse",
+                "Partner feels it is impossible to raise any concern without it being deflected",
+                "Never taking responsibility for mistakes or impact on the partner",
+                "Conversations about issues go in circles because neither partner can listen without defending"
+              ],
+              "frequency_note": "Defensiveness is a natural human response to perceived attack, but as a habitual pattern it prevents growth and resolution. It is often triggered by criticism and can be reduced by addressing the criticism pattern as well.",
+              "common_contexts": [
+                "When receiving complaints or feedback about behaviour",
+                "During arguments about responsibilities or unfulfilled expectations",
+                "When feeling blamed or attacked by the partner",
+                "When feedback touches on areas of insecurity or shame"
+              ],
+              "potential_impact": [
+                "Prevents productive resolution of issues",
+                "The complaining partner feels unheard and may escalate or give up",
+                "Creates a cycle of criticism and defensiveness that deteriorates the relationship",
+                "Both partners become entrenched in their positions"
+              ],
+              "related_behaviors": [
+                "beh_criticism",
+                "beh_escalation",
+                "beh_playing_victim",
+                "beh_repair_attempts"
+              ],
+              "communication_tips": [
+                "When you feel defensive, pause and ask yourself 'Is there a valid point in what my partner is saying?'",
+                "Try responding with 'You are right about...' before sharing your perspective",
+                "Separate feedback about behaviour from attacks on your worth as a person",
+                "Practise saying 'I can see how that affected you' without adding 'but...'"
+              ],
+              "category": "Conflict Resolution",
+              "subcategory": "Destructive Approaches",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_boundaries",
+      "category": "Boundary Behaviours",
+      "description": "Behaviours related to the establishment, maintenance, and respect of personal limits, emotional space, and individual identity within the relationship.",
+      "icon": "shield_outlined",
+      "subcategories": [
+        {
+          "id": "sub_healthy_boundaries",
+          "name": "Healthy Boundaries",
+          "description": "Constructive practices of setting, communicating, and respecting personal limits that protect individual wellbeing while supporting a healthy relationship.",
+          "behaviors": [
+            {
+              "id": "beh_boundary_setting",
+              "name": "Healthy Boundary-Setting",
+              "definition": "The practice of identifying, communicating, and maintaining personal limits regarding what is acceptable and unacceptable in how you are treated, how your time and energy are used, and what you are willing and unwilling to do.",
+              "examples": [
+                "Telling your partner 'I am not comfortable with you sharing details of our arguments with your friends'",
+                "Setting a boundary around work-life balance: 'I do not want to discuss work issues after 8pm'",
+                "Saying no to a request without excessive guilt or over-explaining: 'I cannot do that this weekend; I need rest'",
+                "Communicating a physical boundary: 'I need some physical space when I am upset; please do not try to hug me right away'"
+              ],
+              "healthy_indicators": [
+                "Both partners can say no without fear of punishment or withdrawal of affection",
+                "Boundaries are communicated clearly and respectfully",
+                "Both partners respect each other's stated boundaries consistently",
+                "Boundaries are flexible enough to accommodate genuine needs but firm enough to protect wellbeing"
+              ],
+              "unhealthy_indicators": [
+                "Boundaries are set in anger as ultimatums rather than communicated calmly",
+                "Partner consistently crosses stated boundaries and dismisses objections",
+                "Feeling unable to set any boundaries for fear of the partner's reaction",
+                "Using 'boundaries' as a way to control the partner's behaviour rather than protect your own wellbeing"
+              ],
+              "frequency_note": "Boundary-setting is an ongoing process that evolves as the relationship develops. Boundaries may need to be restated, renegotiated, and updated over time.",
+              "common_contexts": [
+                "Around privacy, personal space, and alone time",
+                "Regarding interactions with family members and friends",
+                "About emotional, physical, and sexual limits",
+                "Around time, energy, and commitments"
+              ],
+              "potential_impact": [
+                "Protects individual identity and wellbeing within the relationship",
+                "Creates clarity and predictability for both partners",
+                "Prevents resentment from overextending oneself",
+                "Paradoxically, healthy boundaries often increase intimacy by creating safety"
+              ],
+              "related_behaviors": [
+                "beh_assertive_communication",
+                "beh_mutual_respect",
+                "beh_autonomy",
+                "beh_boundary_violations"
+              ],
+              "communication_tips": [
+                "Frame boundaries as what you need, not what your partner is doing wrong",
+                "Be specific about what the boundary is and why it matters to you",
+                "State the boundary calmly, not in the heat of the moment if possible",
+                "Follow through consistently; a boundary without enforcement teaches that it can be ignored"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Healthy Boundaries",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_mutual_respect",
+              "name": "Mutual Respect",
+              "definition": "A foundational relationship quality where both partners consistently treat each other with dignity, value each other's opinions and feelings, and honour each other's autonomy and individuality.",
+              "examples": [
+                "Speaking to and about your partner with kindness, even when frustrated",
+                "Valuing your partner's opinion even when it differs from yours",
+                "Supporting your partner's interests, goals, and friendships",
+                "Making decisions that affect both people collaboratively rather than unilaterally"
+              ],
+              "healthy_indicators": [
+                "Both partners feel valued, appreciated, and treated as equals",
+                "Disagreements are handled without personal attacks or demeaning language",
+                "Each partner's individual identity and interests are encouraged",
+                "There is a genuine sense of partnership and equality"
+              ],
+              "unhealthy_indicators": [
+                "One partner regularly belittles, mocks, or dismisses the other",
+                "Decision-making is dominated by one person",
+                "One partner's needs, opinions, or feelings are treated as less important",
+                "There is an obvious power imbalance where one person's word is always final"
+              ],
+              "frequency_note": "Mutual respect should be the constant backdrop of the relationship, present in both good times and bad. A temporary lapse during high conflict is forgivable; a persistent absence is not.",
+              "common_contexts": [
+                "Everyday interactions and daily communication",
+                "During disagreements and conflicts",
+                "In social situations and interactions with others",
+                "When making decisions that affect the relationship"
+              ],
+              "potential_impact": [
+                "Creates the foundation upon which all other healthy dynamics are built",
+                "Both partners can be their authentic selves without fear",
+                "Sustains love and connection over the long term",
+                "Protects against the erosion that contempt and disrespect cause"
+              ],
+              "related_behaviors": [
+                "beh_trust_building",
+                "beh_boundary_setting",
+                "beh_empathy",
+                "beh_open_dialogue"
+              ],
+              "communication_tips": [
+                "Practise speaking to your partner as you would wish to be spoken to",
+                "When frustrated, address the behaviour not the person: 'That action upset me' not 'You are...'",
+                "Express gratitude regularly for your partner's qualities and efforts",
+                "Stand up for your partner in social situations"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Healthy Boundaries",
+              "is_healthy": true,
+              "severity": "low"
+            },
+            {
+              "id": "beh_autonomy",
+              "name": "Autonomy",
+              "definition": "Maintaining a healthy sense of individual identity, interests, friendships, and personal space within the relationship, while also being committed to the partnership. The ability to be 'two whole people' rather than 'two halves making a whole'.",
+              "examples": [
+                "Maintaining personal hobbies and interests that are separate from the relationship",
+                "Having friendships and social connections independent of the partner",
+                "Making some decisions independently without needing partner approval for everything",
+                "Spending time alone comfortably without interpreting it as rejection of the partner"
+              ],
+              "healthy_indicators": [
+                "Both partners have a clear sense of who they are outside the relationship",
+                "Time apart is seen as healthy and normal, not threatening",
+                "Individual goals and growth are encouraged and supported",
+                "Neither partner needs the other to complete their sense of self"
+              ],
+              "unhealthy_indicators": [
+                "One or both partners have given up all individual interests and friendships",
+                "Wanting to do anything alone is interpreted as a rejection of the relationship",
+                "Individual identity has been subsumed by the couple identity",
+                "Anxiety or guilt about having independent thoughts, opinions, or activities"
+              ],
+              "frequency_note": "A healthy balance of togetherness and autonomy is unique to each couple and may shift over time. What matters is that both partners feel the balance serves their wellbeing.",
+              "common_contexts": [
+                "Planning how to spend free time",
+                "Navigating different interests and social circles",
+                "Making personal decisions about career, health, or self-development",
+                "Managing the transition to living together or becoming parents"
+              ],
+              "potential_impact": [
+                "Individuals bring more energy, interest, and richness to the relationship",
+                "Prevents the suffocation and resentment that can come from excessive togetherness",
+                "Maintains each partner's mental health and sense of self",
+                "Creates a relationship of choice rather than dependency"
+              ],
+              "related_behaviors": [
+                "beh_boundary_setting",
+                "beh_secure_attachment",
+                "beh_enmeshment",
+                "beh_mutual_respect"
+              ],
+              "communication_tips": [
+                "Communicate your need for alone time or independent activities as a positive, not a rejection",
+                "Show genuine interest in your partner's independent activities",
+                "Encourage each other to pursue personal growth and goals",
+                "Discuss what balance of togetherness and separateness works for both of you"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Healthy Boundaries",
+              "is_healthy": true,
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "id": "sub_boundary_issues",
+          "name": "Boundary Issues",
+          "description": "Problematic patterns where personal limits are either absent, persistently violated, or used in harmful ways.",
+          "behaviors": [
+            {
+              "id": "beh_enmeshment",
+              "name": "Enmeshment",
+              "definition": "An unhealthy blurring of boundaries between partners where individual identities become merged, independence is lost, and the couple functions as a single fused unit rather than two connected individuals. Emotional states, opinions, and decisions become inseparable.",
+              "examples": [
+                "Feeling unable to have a thought, opinion, or feeling that differs from your partner's",
+                "Having no friendships, hobbies, or activities that do not include the partner",
+                "Needing to be together constantly and feeling intense anxiety at any separation",
+                "Making every decision jointly, including minor personal choices like what to wear or eat"
+              ],
+              "healthy_indicators": [
+                "Recognising the need for individual identity within the relationship",
+                "Gradually rebuilding independent interests and connections",
+                "Tolerating the discomfort of separateness as a growth edge",
+                "Supporting each other's individuality rather than feeling threatened by it"
+              ],
+              "unhealthy_indicators": [
+                "Complete loss of individual identity; unable to say where one partner ends and the other begins",
+                "Any expression of separateness is experienced as betrayal or abandonment",
+                "Third parties (friends, family, therapists) are seen as threats to the unit",
+                "Neither partner can regulate their emotions independently; each depends entirely on the other"
+              ],
+              "frequency_note": "Intense closeness is normal in early relationship stages ('honeymoon phase'). Enmeshment becomes problematic when it persists and prevents healthy individuation.",
+              "common_contexts": [
+                "In relationships where one or both partners have anxious attachment",
+                "When codependent patterns from family of origin are replicated",
+                "After traumatic experiences that increase need for security",
+                "In cultures or families that strongly prioritise togetherness over individuality"
+              ],
+              "potential_impact": [
+                "Loss of personal identity, goals, and growth",
+                "Extreme difficulty functioning independently if the relationship ends",
+                "Suffocation and resentment when needs for individuality inevitably arise",
+                "Children in enmeshed family systems struggle to develop healthy autonomy"
+              ],
+              "related_behaviors": [
+                "beh_autonomy",
+                "beh_anxious_attachment",
+                "beh_boundary_setting",
+                "beh_people_pleasing"
+              ],
+              "communication_tips": [
+                "Begin with small steps towards independence: a solo walk, an evening with a friend",
+                "Practise having and expressing opinions that differ from your partner's in low-stakes situations",
+                "Reframe individuality as strengthening the relationship, not weakening it",
+                "Consider individual therapy to develop a stronger sense of self"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Boundary Issues",
+              "is_healthy": false,
+              "severity": "moderate"
+            },
+            {
+              "id": "beh_boundary_violations",
+              "name": "Boundary Violations",
+              "definition": "Consistently crossing, dismissing, or ignoring a partner's clearly communicated personal limits, demonstrating a lack of respect for their autonomy, comfort, and right to say no.",
+              "examples": [
+                "Continuing to raise a topic a partner has explicitly said they need a break from discussing",
+                "Reading a partner's journal, messages, or emails after being told this is not acceptable",
+                "Sharing private information about the partner that they asked to be kept confidential",
+                "Pressuring a partner to engage in activities they have clearly said no to"
+              ],
+              "healthy_indicators": [
+                "Respecting stated boundaries even when you disagree with them",
+                "Asking permission before engaging in actions that affect a partner's personal space or privacy",
+                "Accepting 'no' gracefully without argument, sulking, or punishment",
+                "Discussing boundary disagreements respectfully and seeking compromise where appropriate"
+              ],
+              "unhealthy_indicators": [
+                "Dismissing boundaries as unreasonable, controlling, or unnecessary",
+                "Repeatedly crossing the same boundary despite being told it is not acceptable",
+                "Framing boundary violations as expressions of love or care: 'I only did it because I love you'",
+                "Retaliating against the partner for setting boundaries"
+              ],
+              "frequency_note": "A single boundary violation can be addressed through conversation and repair. Persistent boundary violations, especially of clearly communicated limits, are a form of disrespect that may constitute emotional or psychological abuse.",
+              "common_contexts": [
+                "Around privacy and personal space",
+                "Regarding physical and sexual boundaries",
+                "About topics of conversation or interactions with certain people",
+                "When one partner's desire conflicts with the other's stated limit"
+              ],
+              "potential_impact": [
+                "Destroys trust and emotional safety",
+                "The violated partner may stop setting boundaries entirely, leading to loss of self",
+                "Escalation of violations over time as boundaries are tested and found unenforceable",
+                "Can constitute coercive control, particularly when systematic and deliberate"
+              ],
+              "related_behaviors": [
+                "beh_boundary_setting",
+                "beh_gaslighting",
+                "beh_monitoring",
+                "beh_isolation"
+              ],
+              "communication_tips": [
+                "If your boundary is violated, restate it clearly and name the consequence if it happens again",
+                "If you have violated a boundary, apologise genuinely and change the behaviour, not just the words",
+                "Do not negotiate boundaries in the moment they are being violated; wait until you are both calm",
+                "Persistent violation of clearly stated boundaries may require professional support or reconsidering the relationship"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Boundary Issues",
+              "is_healthy": false,
+              "severity": "high"
+            },
+            {
+              "id": "beh_people_pleasing",
+              "name": "People-Pleasing",
+              "definition": "A pattern of prioritising a partner's needs, desires, and comfort over one's own to an excessive degree, driven by fear of conflict, rejection, or abandonment. Involves chronic self-sacrifice, difficulty saying no, and suppression of authentic feelings and needs.",
+              "examples": [
+                "Always agreeing with your partner even when you have a different opinion",
+                "Saying yes to requests even when you are exhausted, overwhelmed, or uncomfortable",
+                "Anticipating and meeting your partner's needs before they ask while neglecting your own",
+                "Apologising constantly, even for things that are not your fault"
+              ],
+              "healthy_indicators": [
+                "Being generous and considerate while also honouring your own needs",
+                "Saying no when something genuinely does not work for you without excessive guilt",
+                "Expressing your authentic opinions even when they differ from your partner's",
+                "Recognising the difference between healthy compromise and chronic self-abandonment"
+              ],
+              "unhealthy_indicators": [
+                "Chronic exhaustion and resentment from overextending yourself",
+                "Loss of sense of self; unsure of your own opinions or desires",
+                "Terror at the thought of saying no or displeasing your partner",
+                "Partner is unaware of your actual feelings because you never express them"
+              ],
+              "frequency_note": "Occasional accommodation is a healthy part of relationships. People-pleasing becomes problematic when it is the default setting and comes at consistent cost to one's own wellbeing.",
+              "common_contexts": [
+                "When making plans or decisions as a couple",
+                "In response to a partner's requests or expressed needs",
+                "When conflict is brewing and the people-pleaser tries to prevent it at any cost",
+                "In relationships where one partner has become accustomed to having their needs prioritised"
+              ],
+              "potential_impact": [
+                "Builds deep resentment that eventually surfaces in destructive ways",
+                "The relationship loses authenticity as one partner's true self is hidden",
+                "The people-pleaser's mental health suffers from chronic self-neglect",
+                "Creates an imbalanced dynamic where one partner unknowingly takes more than they give"
+              ],
+              "related_behaviors": [
+                "beh_conflict_avoidance",
+                "beh_boundary_setting",
+                "beh_enmeshment",
+                "beh_anxious_attachment"
+              ],
+              "communication_tips": [
+                "Start practising small assertions: choosing a restaurant, expressing a preference",
+                "Notice and challenge the fear behind the people-pleasing: 'What am I afraid will happen if I say no?'",
+                "Your partner deserves to know the real you, including your true opinions and needs",
+                "Therapy can be very helpful in understanding and changing long-standing people-pleasing patterns"
+              ],
+              "category": "Boundary Behaviours",
+              "subcategory": "Boundary Issues",
+              "is_healthy": false,
+              "severity": "moderate"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "sources": [
+      "Gottman, J.M. & Silver, N. (2015). The Seven Principles for Making Marriage Work. Harmony Books.",
+      "Johnson, S.M. (2008). Hold Me Tight: Seven Conversations for a Lifetime of Love. Little, Brown Spark.",
+      "Bowlby, J. (1988). A Secure Base: Parent-Child Attachment and Healthy Human Development. Basic Books.",
+      "Bancroft, L. (2002). Why Does He Do That? Inside the Minds of Angry and Controlling Men. Berkley Books.",
+      "Brown, B. (2012). Daring Greatly: How the Courage to Be Vulnerable Transforms the Way We Live, Love, Parent, and Lead. Avery.",
+      "Levine, A. & Heller, R. (2010). Attached: The New Science of Adult Attachment. TarcherPerigee.",
+      "Chapman, G. (2015). The Five Love Languages: The Secret to Love that Lasts. Northfield Publishing.",
+      "Rosenberg, M.B. (2015). Nonviolent Communication: A Language of Life. PuddleDancer Press.",
+      "Australian Institute of Family Studies - Research and publications on family relationships",
+      "Relationships Australia - Educational resources on healthy relationships"
+    ],
+    "disclaimer": "This behaviour library is designed for educational and self-awareness purposes only. It is not a diagnostic tool and should not be used as a substitute for professional advice from a qualified psychologist, counsellor, or therapist. Relationship dynamics are complex, and individual behaviours should be understood in context rather than in isolation. If you or someone you know is experiencing domestic or family violence, please contact 1800RESPECT (1800 737 732) immediately. If you are in immediate danger, call 000.",
+    "australian_resources": {
+      "1800RESPECT": "1800 737 732 - National domestic violence and sexual assault helpline, available 24/7",
+      "Lifeline": "13 11 14 - Crisis support and suicide prevention, available 24/7",
+      "Beyond Blue": "1300 22 4636 - Mental health support for anxiety, depression, and wellbeing",
+      "Relationships Australia": "1300 364 277 - Relationship support, mediation, and counselling services",
+      "MensLine Australia": "1300 78 99 78 - Support for men dealing with relationship and family concerns",
+      "Kids Helpline": "1800 55 1800 - Free counselling service for young people aged 5 to 25",
+      "QLife": "1800 184 527 - LGBTIQ+ peer support and referral, available 3pm to midnight daily",
+      "DV Connect Womensline (QLD)": "1800 811 811 - Support for women experiencing domestic and family violence in Queensland",
+      "Safe Steps (VIC)": "1800 015 188 - 24/7 family violence response centre for Victoria",
+      "NSW Domestic Violence Line": "1800 656 463 - 24/7 crisis support for women in New South Wales",
+      "Women's Safety Services SA": "1800 800 098 - Domestic and family violence support in South Australia",
+      "Crisis Care (WA)": "1800 199 008 - After hours crisis support in Western Australia"
+    }
+  }
+}

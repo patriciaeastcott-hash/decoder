@@ -95,7 +95,6 @@ class _SelfProfileScreenState extends State<SelfProfileScreen>
     final profileProvider = context.read<ProfileProvider>();
     final conversationProvider = context.read<ConversationProvider>();
 
-    // Get conversations linked to this profile
     final conversations = conversationProvider.conversations
         .where((c) => profile.conversationIds.contains(c.id))
         .toList();
