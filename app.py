@@ -459,7 +459,7 @@ def health_check():
 
 @app.route('/api/v1/analyze/identify-speakers', methods=['POST'])
 @limiter.limit("30 per minute")
-@validate_api_key
+#@validate_api_key
 def identify_speakers():
     """
     Identify speakers in a conversation text.
@@ -524,7 +524,7 @@ def identify_speakers():
 
 @app.route('/api/v1/analyze/conversation', methods=['POST'])
 @limiter.limit("20 per minute")
-@validate_api_key
+#@validate_api_key
 def analyze_conversation():
     """
     Perform deep psychological analysis of a conversation.
@@ -593,7 +593,7 @@ def analyze_conversation():
 
 @app.route('/api/v1/analyze/response-impact', methods=['POST'])
 @limiter.limit("30 per minute")
-@validate_api_key
+#@validate_api_key
 def analyze_response_impact():
     """
     Analyze how a drafted response might impact the conversation.
@@ -658,7 +658,7 @@ def analyze_response_impact():
 
 @app.route('/api/v1/analyze/profile', methods=['POST'])
 @limiter.limit("10 per minute")
-@validate_api_key
+#@validate_api_key
 def analyze_profile():
     """
     Generate comprehensive profile analysis for a speaker.
@@ -713,7 +713,7 @@ def analyze_profile():
 
 @app.route('/api/v1/analyze/self-profile', methods=['POST'])
 @limiter.limit("10 per minute")
-@validate_api_key
+#@validate_api_key
 def analyze_self_profile():
     """
     Generate unbiased self-analysis profile for the user.
@@ -812,7 +812,7 @@ def get_behavior_categories():
 
 @app.route('/api/v1/sync/upload', methods=['POST'])
 @limiter.limit("10 per minute")
-@validate_api_key
+#@validate_api_key
 def sync_upload():
     """
     Upload encrypted, anonymized data for cross-device sync.
@@ -858,7 +858,7 @@ def sync_upload():
 
 @app.route('/api/v1/sync/download', methods=['POST'])
 @limiter.limit("10 per minute")
-@validate_api_key
+#@validate_api_key
 def sync_download():
     """
     Download encrypted sync data for a user.
@@ -895,7 +895,7 @@ def sync_download():
 
 @app.route('/api/v1/user/delete', methods=['DELETE'])
 @limiter.limit("5 per minute")
-@validate_api_key
+#@validate_api_key
 def delete_user_data():
     """
     Delete all server-side data for a user.
