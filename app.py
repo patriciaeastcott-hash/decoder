@@ -455,6 +455,79 @@ def health_check():
         'version': '1.0.0-mvp',
         'timestamp': datetime.utcnow().isoformat()
     })
+    
+    @app.route('/analyze', methods=['POST'])
+@limiter.limit("30 per minute")
+def analyze_simple():
+    """
+    Simple analysis endpoint for Expo app backward compatibility.
+    Returns basic speaker analysis without requiring authentication.
+    """
+    try:
+        data = request.get_json()
+        if not data or 'text' not in data:
+            return jsonify({
+                'success': False,
+                'message': 'Missing required field: text'
+            }), 400
+
+        text = sanitize_input(data['text'])
+        if not text:
+            return jsonify({
+                'success': False,
+                'message': 'Text cannot be empty'
+            }), 400
+
+        # Call Gemini API for simple analysis
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt = f"""Analyze this conversation and identify speakers with their emotional states.
+
+Return ONLY valid JSON in this exact format:
+{{
+    "speakers": [
+        {{
+            "label": "Speaker 1",
+            "likely_emotional_state": "emotion description",
+            "translation": "what they really mean in plain language",
+            "advice": "how to respond effectively"
+        }}
+    ]
+}}
+
+Conversation:
+{text}
+"""
+
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.4,
+                response_mime_type="application/json"
+            )
+        )
+
+        # Parse response
+        try:
+            result = json.loads(response.text)
+            return jsonify(result), 200
+        except json.JSONDecodeError:
+            # Fallback if JSON parsing fails
+            return jsonify({
+                'speakers': [{
+                    'label': 'Speaker 1',
+                    'likely_emotional_state': 'Unable to analyze',
+                    'translation': 'The analysis could not be completed.',
+                    'advice': 'Please try again with clearer conversation text.'
+                }]
+            }), 200
+
+    except Exception as e:
+        logger.error(f"Analysis error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Analysis failed: {str(e)}'
+        }), 500
 
 
 @app.route('/api/v1/analyze/identify-speakers', methods=['POST'])
