@@ -456,9 +456,9 @@ def health_check():
         'timestamp': datetime.utcnow().isoformat()
     })
     
-    @app.route('/analyze', methods=['POST'])
+@app.route('/analyze', methods=['POST'])
 @limiter.limit("30 per minute")
-def analyze_simple():
+def analyze_simple():x
     """
     Simple analysis endpoint for Expo app backward compatibility.
     Returns basic speaker analysis without requiring authentication.
