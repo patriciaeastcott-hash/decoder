@@ -13,6 +13,11 @@ import 'package:logger/logger.dart';
 import '../models/models.dart';
 
 class ApiService {
+  // Singleton so auth token is shared across all providers
+  static final ApiService _instance = ApiService._internal();
+  factory ApiService() => _instance;
+  ApiService._internal();
+
   // Cloud Run API URL
   static const String _baseUrl = String.fromEnvironment(
     'API_BASE_URL',
@@ -68,6 +73,14 @@ class ApiService {
           return ApiResponse.success(fromJson(data));
         }
         return ApiResponse.error('No data in response');
+      }
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        _logger.w('API auth error (${response.statusCode}): token=${_authToken != null ? "set" : "missing"}');
+        return ApiResponse.error(
+          'Authentication required. Please sign in to use this feature. '
+          '(If running on web, Firebase must be configured.)',
+        );
       }
 
       final error = body['error'] as String? ?? 'Unknown error';

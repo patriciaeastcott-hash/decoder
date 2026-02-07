@@ -56,8 +56,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
+    // Wait for auth provider to finish initializing
+    final authProvider = context.read<AuthProvider>();
+    int waitCount = 0;
+    while (!authProvider.isInitialized && waitCount < 20) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      waitCount++;
+    }
+
     // Wait for minimum splash display
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
@@ -72,7 +80,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!appState.isOnboardingComplete) {
       nextScreen = const OnboardingScreen();
-    } else if (!authProvider.isAuthenticated) {
+    } else if (!authProvider.isAuthenticated && authProvider.isFirebaseAvailable) {
+      // Only show login if Firebase is available — otherwise skip to home
+      // (allows development/testing on web without Firebase config)
       nextScreen = const LoginScreen();
     } else {
       nextScreen = const HomeScreen();
