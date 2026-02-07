@@ -1,12 +1,32 @@
+/// Main home screen with responsive navigation
+///
+/// Navigation adapts by screen size:
+/// - Phone (compact): Bottom navigation bar
+/// - Tablet (medium/expanded): Navigation rail
+/// - Desktop (large+): Persistent navigation drawer
+///
+/// Quick exit uses platform-safe methods:
+/// - Android: SystemNavigator.pop()
+/// - Desktop/Web: Minimise or close window
 /// Main home screen with bottom navigation
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/models.dart';
 import '../providers/providers.dart';
 import '../utils/accessibility_utils.dart';
+import '../utils/platform_utils.dart';
+import '../utils/responsive_layout.dart';
+import '../utils/app_theme.dart';
+import 'auth/login_screen.dart';
+import 'conversation/conversation_detail_screen.dart';
+import 'profile/profile_detail_screen.dart';
+import 'profile/self_profile_screen.dart';
+import 'library/behavior_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,55 +45,50 @@ class _HomeScreenState extends State<HomeScreen> {
     const _SettingsTab(),
   ];
 
+  static const _destinations = [
+    NavigationDestination(
+      icon: Icon(Icons.chat_bubble_outline),
+      selectedIcon: Icon(Icons.chat_bubble),
+      label: 'Conversations',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.person_outline),
+      selectedIcon: Icon(Icons.person),
+      label: 'Profiles',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.menu_book_outlined),
+      selectedIcon: Icon(Icons.menu_book),
+      label: 'Library',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.settings_outlined),
+      selectedIcon: Icon(Icons.settings),
+      label: 'Settings',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
     final appState = context.watch<AppStateProvider>();
 
-    // Handle quick exit
+    // Handle quick exit — platform-safe
     if (appState.quickExitTriggered) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        SystemNavigator.pop();
+        _performQuickExit();
       });
     }
 
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: Semantics(
-        label: 'Main navigation',
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() => _currentIndex = index);
-            announceToScreenReader(_getTabName(index));
-          },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat_bubble),
-              label: 'Conversations',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profiles',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
-              selectedIcon: Icon(Icons.menu_book),
-              label: 'Library',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      ),
+    return ResponsiveScaffold(
+      selectedIndex: _currentIndex,
+      onDestinationSelected: (index) {
+        setState(() => _currentIndex = index);
+        announceToScreenReader(_getTabName(index));
+      },
+      destinations: _destinations,
+      bodies: _screens,
+      title: 'Text Decoder',
       // Quick exit FAB
       floatingActionButton: settings.quickExitEnabled
           ? Semantics(
@@ -81,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               button: true,
               child: FloatingActionButton.small(
                 heroTag: 'quick_exit',
-                backgroundColor: Colors.red,
+                backgroundColor: AppTheme.red,
                 onPressed: () => _handleQuickExit(context),
                 child: const Icon(Icons.close, color: Colors.white),
               ),
@@ -108,6 +123,35 @@ class _HomeScreenState extends State<HomeScreen> {
   void _handleQuickExit(BuildContext context) {
     context.read<AppStateProvider>().triggerQuickExit();
   }
+
+  /// Platform-safe app exit
+  void _performQuickExit() {
+    if (PlatformUtils.supportsSystemNavigatorPop) {
+      // Android: close the app via system navigator
+      SystemNavigator.pop();
+    } else {
+      // iOS/Desktop/Web: navigate to a blank screen (iOS doesn't allow programmatic exit)
+      // On desktop, the user can close the window via Ctrl+Q or the window close button
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const _BlankExitScreen()),
+        (_) => false,
+      );
+    }
+  }
+}
+
+/// Blank screen shown on platforms that don't support programmatic exit
+class _BlankExitScreen extends StatelessWidget {
+  const _BlankExitScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('You can close this window.'),
+      ),
+    );
+  }
 }
 
 // ============================================
@@ -126,7 +170,7 @@ class _ConversationsTab extends StatelessWidget {
           AccessibleIconButton(
             icon: Icons.add,
             semanticLabel: 'Add new conversation',
-            onPressed: () => _showAddConversationSheet(context),
+            onPressed: () => _showAddConversation(context),
           ),
         ],
       ),
@@ -146,54 +190,63 @@ class _ConversationsTab extends StatelessWidget {
               title: 'No conversations yet',
               subtitle: 'Add your first conversation to decode',
               actionLabel: 'Add Conversation',
-              onAction: () => _showAddConversationSheet(context),
+              onAction: () => _showAddConversation(context),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.conversations.length,
-            itemBuilder: (context, index) {
-              final conversation = provider.conversations[index];
-              return AccessibleListItem(
-                index: index,
-                total: provider.conversations.length,
-                semanticLabel: conversation.accessibilityLabel,
-                semanticHint: conversation.accessibilityHint,
-                onTap: () {
-                  // Navigate to conversation detail
-                },
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          conversation.title,
-                          style: Theme.of(context).textTheme.titleMedium,
+          return ResponsiveContentWrapper(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: provider.conversations.length,
+              itemBuilder: (context, index) {
+                final conversation = provider.conversations[index];
+                return AccessibleListItem(
+                  index: index,
+                  total: provider.conversations.length,
+                  semanticLabel: conversation.accessibilityLabel,
+                  semanticHint: conversation.accessibilityHint,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConversationDetailScreen(
+                          conversationId: conversation.id,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${conversation.messageCount} messages • ${conversation.status.displayName}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
+                      ),
+                    );
+                  },
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            conversation.title,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${conversation.messageCount} messages • ${conversation.status.displayName}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),
     );
   }
 
-  void _showAddConversationSheet(BuildContext context) {
-    showModalBottomSheet(
+  void _showAddConversation(BuildContext context) {
+    // Use responsive dialog — bottom sheet on phone, dialog on desktop
+    showResponsiveDialog(
       context: context,
-      isScrollControlled: true,
       builder: (context) => const _AddConversationSheet(),
     );
   }
@@ -234,40 +287,60 @@ class _ProfilesTab extends StatelessWidget {
               subtitle: 'Profiles are created from analyzed conversations',
               actionLabel: 'Go to Conversations',
               onAction: () {
-                // Navigate to conversations
+                // Switch to conversations tab
+                final homeState = context.findAncestorStateOfType<_HomeScreenState>();
+                homeState?.setState(() => homeState._currentIndex = 0);
               },
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: allProfiles.length,
-            itemBuilder: (context, index) {
-              final profile = allProfiles[index];
-              return Card(
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: profile.isUserProfile
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(context).colorScheme.secondary,
-                    child: Text(
-                      profile.name[0].toUpperCase(),
-                      style: const TextStyle(color: Colors.white),
+          return ResponsiveContentWrapper(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: allProfiles.length,
+              itemBuilder: (context, index) {
+                final profile = allProfiles[index];
+                return Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: profile.isUserProfile
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).colorScheme.secondary,
+                      child: Text(
+                        profile.name[0].toUpperCase(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
+                    title: Text(profile.displayName ?? profile.name),
+                    subtitle: Text(
+                      profile.isUserProfile
+                          ? 'Your self-profile'
+                          : '${profile.conversationCount} conversations',
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      if (profile.isUserProfile) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelfProfileScreen(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileDetailScreen(
+                              profileId: profile.id,
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
-                  title: Text(profile.displayName ?? profile.name),
-                  subtitle: Text(
-                    profile.isUserProfile
-                        ? 'Your self-profile'
-                        : '${profile.conversationCount} conversations',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // Navigate to profile detail
-                  },
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),
@@ -308,29 +381,63 @@ class _LibraryTab extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.categories.length,
-            itemBuilder: (context, index) {
-              final category = provider.categories[index];
-              return Card(
-                child: ExpansionTile(
-                  leading: const Icon(Icons.folder_outlined),
-                  title: Text(category.category),
-                  subtitle: Text('${category.behaviorCount} behaviors'),
-                  children: category.subcategories.map((sub) {
-                    return ListTile(
-                      contentPadding: const EdgeInsets.only(left: 72, right: 16),
-                      title: Text(sub.name),
-                      subtitle: Text('${sub.behaviors.length} behaviors'),
-                      onTap: () {
-                        // Navigate to subcategory
-                      },
-                    );
-                  }).toList(),
-                ),
-              );
-            },
+          return ResponsiveContentWrapper(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: provider.categories.length,
+              itemBuilder: (context, index) {
+                final category = provider.categories[index];
+                return Card(
+                  child: ExpansionTile(
+                    leading: const Icon(Icons.folder_outlined),
+                    title: Text(category.category),
+                    subtitle: Text('${category.behaviorCount} behaviors'),
+                    children: category.subcategories.map((sub) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 72, right: 16, top: 8, bottom: 4),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                sub.name,
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          ...sub.behaviors.map((behavior) {
+                            return ListTile(
+                              contentPadding: const EdgeInsets.only(left: 72, right: 16),
+                              leading: Icon(
+                                behavior.isHealthy ? Icons.check_circle : Icons.warning,
+                                color: behavior.isHealthy ? Colors.green : Colors.orange,
+                                size: 20,
+                              ),
+                              title: Text(behavior.name),
+                              trailing: const Icon(Icons.chevron_right, size: 18),
+                              dense: true,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BehaviorDetailScreen(
+                                      behaviorId: behavior.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
@@ -353,161 +460,220 @@ class _SettingsTab extends StatelessWidget {
       ),
       body: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
-          return ListView(
-            children: [
-              // Account section
-              _SettingsSection(
-                title: 'Account',
-                children: [
-                  Consumer<AuthProvider>(
-                    builder: (context, auth, _) {
-                      return ListTile(
-                        leading: const Icon(Icons.account_circle),
-                        title: Text(auth.userDisplayName ?? 'Not signed in'),
-                        subtitle: Text(auth.userEmail ?? 'Tap to sign in'),
-                        onTap: () {
-                          // Navigate to account settings
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              // Appearance section
-              _SettingsSection(
-                title: 'Appearance',
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.brightness_6),
-                    title: const Text('Theme'),
-                    trailing: DropdownButton<ThemeMode>(
-                      value: settings.themeMode,
-                      onChanged: (mode) {
-                        if (mode != null) settings.setThemeMode(mode);
+          return ResponsiveContentWrapper(
+            child: ListView(
+              children: [
+                // Account section
+                _SettingsSection(
+                  title: 'Account',
+                  children: [
+                    Consumer<AuthProvider>(
+                      builder: (context, auth, _) {
+                        if (auth.isAuthenticated) {
+                          return ListTile(
+                            leading: const Icon(Icons.account_circle),
+                            title: Text(auth.userDisplayName ?? 'Signed in'),
+                            subtitle: Text(auth.userEmail ?? ''),
+                            trailing: TextButton(
+                              onPressed: () async {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Sign Out'),
+                                    content: const Text('Are you sure you want to sign out?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, true),
+                                        child: const Text('Sign Out'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true && context.mounted) {
+                                  await context.read<AuthProvider>().signOut();
+                                }
+                              },
+                              child: const Text('Sign Out'),
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          leading: const Icon(Icons.account_circle),
+                          title: const Text('Not signed in'),
+                          subtitle: const Text('Tap to sign in'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
+                          },
+                        );
                       },
-                      items: const [
-                        DropdownMenuItem(
-                          value: ThemeMode.system,
-                          child: Text('System'),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.light,
-                          child: Text('Light'),
-                        ),
-                        DropdownMenuItem(
-                          value: ThemeMode.dark,
-                          child: Text('Dark'),
-                        ),
-                      ],
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              // Accessibility section
-              _SettingsSection(
-                title: 'Accessibility',
-                children: [
-                  SwitchListTile(
-                    secondary: const Icon(Icons.contrast),
-                    title: const Text('High Contrast'),
-                    value: settings.highContrastMode,
-                    onChanged: settings.setHighContrastMode,
-                  ),
-                  SwitchListTile(
-                    secondary: const Icon(Icons.animation),
-                    title: const Text('Reduce Motion'),
-                    value: settings.reduceMotion,
-                    onChanged: settings.setReduceMotion,
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.text_fields),
-                    title: const Text('Text Size'),
-                    trailing: Text('${(settings.fontSizeMultiplier * 100).toInt()}%'),
-                    onTap: () => _showTextSizeDialog(context, settings),
-                  ),
-                ],
-              ),
+                // Appearance section
+                _SettingsSection(
+                  title: 'Appearance',
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.brightness_6),
+                      title: const Text('Theme'),
+                      trailing: DropdownButton<ThemeMode>(
+                        value: settings.themeMode,
+                        onChanged: (mode) {
+                          if (mode != null) settings.setThemeMode(mode);
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
 
-              // Privacy section
-              _SettingsSection(
-                title: 'Privacy & Data',
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Data Retention'),
-                    subtitle: Text('${settings.dataRetentionMonths} months'),
-                    onTap: () => _showRetentionDialog(context, settings),
-                  ),
-                  SwitchListTile(
-                    secondary: const Icon(Icons.sync),
-                    title: const Text('Cloud Sync'),
-                    subtitle: const Text('Sync data via iCloud/Google Drive'),
-                    value: settings.cloudSyncEnabled,
-                    onChanged: settings.setCloudSyncEnabled,
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.delete_forever, color: Colors.red),
-                    title: const Text('Delete All Data',
-                        style: TextStyle(color: Colors.red)),
-                    onTap: () => _showDeleteDataDialog(context),
-                  ),
-                ],
-              ),
+                // Accessibility section
+                _SettingsSection(
+                  title: 'Accessibility',
+                  children: [
+                    SwitchListTile(
+                      secondary: const Icon(Icons.contrast),
+                      title: const Text('High Contrast'),
+                      value: settings.highContrastMode,
+                      onChanged: settings.setHighContrastMode,
+                    ),
+                    SwitchListTile(
+                      secondary: const Icon(Icons.animation),
+                      title: const Text('Reduce Motion'),
+                      value: settings.reduceMotion,
+                      onChanged: settings.setReduceMotion,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.text_fields),
+                      title: const Text('Text Size'),
+                      trailing: Text('${(settings.fontSizeMultiplier * 100).toInt()}%'),
+                      onTap: () => _showTextSizeDialog(context, settings),
+                    ),
+                  ],
+                ),
 
-              // Safety section
-              _SettingsSection(
-                title: 'Safety',
-                children: [
-                  SwitchListTile(
-                    secondary: const Icon(Icons.exit_to_app),
-                    title: const Text('Quick Exit Button'),
-                    subtitle: const Text('Show button to instantly close app'),
-                    value: settings.quickExitEnabled,
-                    onChanged: settings.setQuickExitEnabled,
-                  ),
-                ],
-              ),
+                // Privacy section
+                _SettingsSection(
+                  title: 'Privacy & Data',
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.schedule),
+                      title: const Text('Data Retention'),
+                      subtitle: Text('${settings.dataRetentionMonths} months'),
+                      onTap: () => _showRetentionDialog(context, settings),
+                    ),
+                    SwitchListTile(
+                      secondary: const Icon(Icons.sync),
+                      title: const Text('Cloud Sync'),
+                      subtitle: const Text('Sync data across devices'),
+                      value: settings.cloudSyncEnabled,
+                      onChanged: settings.setCloudSyncEnabled,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.delete_forever, color: AppTheme.red),
+                      title: const Text('Delete All Data',
+                          style: TextStyle(color: AppTheme.red)),
+                      onTap: () => _showDeleteDataDialog(context),
+                    ),
+                  ],
+                ),
 
-              // Legal section
-              _SettingsSection(
-                title: 'Legal',
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.privacy_tip),
-                    title: const Text('Privacy Policy'),
-                    onTap: () => _launchUrl('https://digitalabcs.com.au/privacy.html'),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.description),
-                    title: const Text('Terms of Service'),
-                    onTap: () => _launchUrl('https://digitalabcs.com.au/terms.html'),
-                  ),
-                ],
-              ),
+                // Safety section
+                _SettingsSection(
+                  title: 'Safety',
+                  children: [
+                    SwitchListTile(
+                      secondary: const Icon(Icons.exit_to_app),
+                      title: const Text('Quick Exit Button'),
+                      subtitle: Text(
+                        PlatformUtils.isDesktop
+                            ? 'Also available via Ctrl+Q'
+                            : 'Show button to instantly close app',
+                      ),
+                      value: settings.quickExitEnabled,
+                      onChanged: settings.setQuickExitEnabled,
+                    ),
+                  ],
+                ),
 
-              // Support resources
-              _SettingsSection(
-                title: 'Support Resources',
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.phone, color: Colors.green),
-                    title: const Text('1800RESPECT'),
-                    subtitle: const Text('1800 737 732'),
-                    onTap: () => _launchUrl('tel:1800737732'),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.phone, color: Colors.blue),
-                    title: const Text('Lifeline'),
-                    subtitle: const Text('13 11 14'),
-                    onTap: () => _launchUrl('tel:131114'),
-                  ),
-                ],
-              ),
+                // Legal section
+                _SettingsSection(
+                  title: 'Legal',
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.privacy_tip),
+                      title: const Text('Privacy Policy'),
+                      onTap: () => _launchUrl(PlatformUtils.privacyPolicyUrl),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.description),
+                      title: const Text('Terms of Service'),
+                      onTap: () => _launchUrl(PlatformUtils.termsOfServiceUrl),
+                    ),
+                  ],
+                ),
 
-              const SizedBox(height: 32),
-            ],
+                // About section
+                _SettingsSection(
+                  title: 'About',
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.info_outline),
+                      title: const Text('Text Decoder'),
+                      subtitle: Text(
+                        'Version 1.0.0 • ${PlatformUtils.platformName}\n'
+                        'A Digital ABCs AI App',
+                      ),
+                      isThreeLine: true,
+                    ),
+                  ],
+                ),
+
+                // Support resources
+                _SettingsSection(
+                  title: 'Support Resources',
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.phone, color: AppTheme.green),
+                      title: const Text('1800RESPECT'),
+                      subtitle: const Text('1800 737 732'),
+                      onTap: () => _launchUrl('tel:1800737732'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.phone, color: AppTheme.lightBlue),
+                      title: const Text('Lifeline'),
+                      subtitle: const Text('13 11 14'),
+                      onTap: () => _launchUrl('tel:131114'),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+              ],
+            ),
           );
         },
       ),
@@ -585,7 +751,7 @@ class _SettingsTab extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.red),
             onPressed: () async {
               Navigator.pop(context);
               final storage = context.read<ConversationProvider>();
@@ -789,6 +955,16 @@ class _AddConversationSheetState extends State<_AddConversationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Conversation added')),
         );
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConversationDetailScreen(
+                conversationId: conversation.id,
+              ),
+            ),
+          );
+        }
       }
     }
   }

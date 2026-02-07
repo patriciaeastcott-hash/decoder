@@ -1,5 +1,6 @@
 /// App theme configuration with Digital ABCs branding
 /// WCAG 2.1 AAA compliant with rounded corners and soft shadows
+library;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,7 +55,7 @@ class AppTheme {
   // Soft shadows for approachable feel
   static List<BoxShadow> get softShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),
@@ -62,7 +63,7 @@ class AppTheme {
 
   static List<BoxShadow> get mediumShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.08),
+          color: Colors.black.withValues(alpha: 0.08),
           blurRadius: 15,
           offset: const Offset(0, 6),
         ),
@@ -90,22 +91,22 @@ class AppTheme {
       colorScheme: ColorScheme.light(
         primary: navy,
         onPrimary: white,
-        primaryContainer: lightBlue.withOpacity(0.2),
+        primaryContainer: lightBlue.withValues(alpha: 0.2),
         onPrimaryContainer: navy,
         secondary: purple,
         onSecondary: white,
-        secondaryContainer: purple.withOpacity(0.1),
+        secondaryContainer: purple.withValues(alpha: 0.1),
         onSecondaryContainer: purple,
         tertiary: green,
         onTertiary: white,
-        tertiaryContainer: green.withOpacity(0.1),
+        tertiaryContainer: green.withValues(alpha: 0.1),
         onTertiaryContainer: green,
         surface: highContrast ? white : surfaceLight,
         onSurface: black,
-        surfaceContainerHighest: grey.withOpacity(0.1),
+        surfaceContainerHighest: grey.withValues(alpha: 0.1),
         error: red,
         onError: white,
-        outline: grey.withOpacity(0.3),
+        outline: grey.withValues(alpha: 0.3),
       ),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
@@ -120,14 +121,14 @@ class AppTheme {
           color: navy,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: highContrast ? 0 : 0, // Using shadows instead
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
           side: highContrast
               ? const BorderSide(color: black, width: 2)
-              : BorderSide(color: grey.withOpacity(0.1)),
+              : BorderSide(color: grey.withValues(alpha: 0.1)),
         ),
         color: surfaceLight,
       ),
@@ -190,18 +191,18 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: grey.withOpacity(0.05),
+        fillColor: grey.withValues(alpha: 0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusSmall),
           borderSide: BorderSide(
-            color: grey.withOpacity(0.3),
+            color: grey.withValues(alpha: 0.3),
             width: highContrast ? 2 : 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusSmall),
           borderSide: BorderSide(
-            color: grey.withOpacity(0.3),
+            color: grey.withValues(alpha: 0.3),
             width: highContrast ? 2 : 1,
           ),
         ),
@@ -231,11 +232,11 @@ class AppTheme {
           vertical: 16,
         ),
         labelStyle: GoogleFonts.inter(color: grey),
-        hintStyle: GoogleFonts.inter(color: grey.withOpacity(0.7)),
+        hintStyle: GoogleFonts.inter(color: grey.withValues(alpha: 0.7)),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: grey.withOpacity(0.1),
-        selectedColor: purple.withOpacity(0.2),
+        backgroundColor: grey.withValues(alpha: 0.1),
+        selectedColor: purple.withValues(alpha: 0.2),
         labelStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -244,7 +245,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(borderRadiusSmall),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: navy,
         unselectedLabelColor: grey,
         indicatorColor: navy,
@@ -271,7 +272,7 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(
-        color: highContrast ? black : grey.withOpacity(0.2),
+        color: highContrast ? black : grey.withValues(alpha: 0.2),
         thickness: highContrast ? 2 : 1,
         space: 1,
       ),
@@ -290,7 +291,7 @@ class AppTheme {
         ),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surfaceLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
@@ -301,9 +302,9 @@ class AppTheme {
           color: navy,
         ),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: surfaceLight,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(borderRadiusLarge),
           ),
@@ -311,8 +312,8 @@ class AppTheme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: purple,
-        linearTrackColor: grey.withOpacity(0.2),
-        circularTrackColor: grey.withOpacity(0.2),
+        linearTrackColor: grey.withValues(alpha: 0.2),
+        circularTrackColor: grey.withValues(alpha: 0.2),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -321,9 +322,9 @@ class AppTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return green.withOpacity(0.3);
+            return green.withValues(alpha: 0.3);
           }
-          return grey.withOpacity(0.3);
+          return grey.withValues(alpha: 0.3);
         }),
       ),
       checkboxTheme: CheckboxThemeData(
@@ -373,22 +374,22 @@ class AppTheme {
       colorScheme: ColorScheme.dark(
         primary: darkLightBlue,
         onPrimary: black,
-        primaryContainer: navy.withOpacity(0.3),
+        primaryContainer: navy.withValues(alpha: 0.3),
         onPrimaryContainer: darkLightBlue,
         secondary: darkPurple,
         onSecondary: black,
-        secondaryContainer: purple.withOpacity(0.2),
+        secondaryContainer: purple.withValues(alpha: 0.2),
         onSecondaryContainer: darkPurple,
         tertiary: darkGreen,
         onTertiary: black,
-        tertiaryContainer: green.withOpacity(0.2),
+        tertiaryContainer: green.withValues(alpha: 0.2),
         onTertiaryContainer: darkGreen,
         surface: highContrast ? black : surfaceDark,
         onSurface: white,
-        surfaceContainerHighest: white.withOpacity(0.1),
+        surfaceContainerHighest: white.withValues(alpha: 0.1),
         error: darkRed,
         onError: black,
-        outline: white.withOpacity(0.2),
+        outline: white.withValues(alpha: 0.2),
       ),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
@@ -403,14 +404,14 @@ class AppTheme {
           color: white,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusMedium),
           side: highContrast
               ? const BorderSide(color: white, width: 2)
-              : BorderSide(color: white.withOpacity(0.1)),
+              : BorderSide(color: white.withValues(alpha: 0.1)),
         ),
         color: surfaceDark,
       ),
@@ -469,18 +470,18 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: white.withOpacity(0.05),
+        fillColor: white.withValues(alpha: 0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusSmall),
           borderSide: BorderSide(
-            color: white.withOpacity(0.2),
+            color: white.withValues(alpha: 0.2),
             width: highContrast ? 2 : 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadiusSmall),
           borderSide: BorderSide(
-            color: white.withOpacity(0.2),
+            color: white.withValues(alpha: 0.2),
             width: highContrast ? 2 : 1,
           ),
         ),
@@ -509,12 +510,12 @@ class AppTheme {
           horizontal: 16,
           vertical: 16,
         ),
-        labelStyle: GoogleFonts.inter(color: white.withOpacity(0.7)),
-        hintStyle: GoogleFonts.inter(color: white.withOpacity(0.5)),
+        labelStyle: GoogleFonts.inter(color: white.withValues(alpha: 0.7)),
+        hintStyle: GoogleFonts.inter(color: white.withValues(alpha: 0.5)),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: white.withOpacity(0.1),
-        selectedColor: darkPurple.withOpacity(0.3),
+        backgroundColor: white.withValues(alpha: 0.1),
+        selectedColor: darkPurple.withValues(alpha: 0.3),
         labelStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -524,9 +525,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(borderRadiusSmall),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: darkLightBlue,
-        unselectedLabelColor: white.withOpacity(0.6),
+        unselectedLabelColor: white.withValues(alpha: 0.6),
         indicatorColor: darkLightBlue,
         labelStyle: GoogleFonts.inter(
           fontSize: 14,
@@ -540,7 +541,7 @@ class AppTheme {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: surfaceDark,
         selectedItemColor: darkLightBlue,
-        unselectedItemColor: white.withOpacity(0.6),
+        unselectedItemColor: white.withValues(alpha: 0.6),
         selectedLabelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -551,12 +552,12 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(
-        color: highContrast ? white : white.withOpacity(0.1),
+        color: highContrast ? white : white.withValues(alpha: 0.1),
         thickness: highContrast ? 2 : 1,
         space: 1,
       ),
       iconTheme: IconThemeData(
-        color: highContrast ? white : white.withOpacity(0.8),
+        color: highContrast ? white : white.withValues(alpha: 0.8),
         size: 24,
       ),
       snackBarTheme: SnackBarThemeData(
@@ -570,7 +571,7 @@ class AppTheme {
         ),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surfaceDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadiusLarge),
@@ -581,9 +582,9 @@ class AppTheme {
           color: white,
         ),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: surfaceDark,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(borderRadiusLarge),
           ),
@@ -591,19 +592,19 @@ class AppTheme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: darkPurple,
-        linearTrackColor: white.withOpacity(0.2),
-        circularTrackColor: white.withOpacity(0.2),
+        linearTrackColor: white.withValues(alpha: 0.2),
+        circularTrackColor: white.withValues(alpha: 0.2),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return darkGreen;
-          return white.withOpacity(0.6);
+          return white.withValues(alpha: 0.6);
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return darkGreen.withOpacity(0.3);
+            return darkGreen.withValues(alpha: 0.3);
           }
-          return white.withOpacity(0.2);
+          return white.withValues(alpha: 0.2);
         }),
       ),
       checkboxTheme: CheckboxThemeData(
@@ -619,7 +620,7 @@ class AppTheme {
       radioTheme: RadioThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return darkGreen;
-          return white.withOpacity(0.6);
+          return white.withValues(alpha: 0.6);
         }),
       ),
     );
@@ -809,8 +810,8 @@ class AppTheme {
   /// Light gradient for backgrounds
   static LinearGradient get lightGradient => LinearGradient(
         colors: [
-          lightBlue.withOpacity(0.1),
-          purple.withOpacity(0.05),
+          lightBlue.withValues(alpha: 0.1),
+          purple.withValues(alpha: 0.05),
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,

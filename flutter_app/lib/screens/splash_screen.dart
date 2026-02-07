@@ -1,7 +1,7 @@
 /// Splash screen with loading and navigation logic
+library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/providers.dart';
@@ -56,8 +56,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
+    // Wait for auth provider to finish initializing
+    final authProvider = context.read<AuthProvider>();
+    int waitCount = 0;
+    while (!authProvider.isInitialized && waitCount < 20) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      waitCount++;
+    }
+
     // Wait for minimum splash display
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
@@ -72,7 +80,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!appState.isOnboardingComplete) {
       nextScreen = const OnboardingScreen();
-    } else if (!authProvider.isAuthenticated) {
+    } else if (!authProvider.isAuthenticated && authProvider.isFirebaseAvailable) {
+      // Only show login if Firebase is available — otherwise skip to home
+      // (allows development/testing on web without Firebase config)
       nextScreen = const LoginScreen();
     } else {
       nextScreen = const HomeScreen();
@@ -105,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.8),
+              Theme.of(context).primaryColor.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -127,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -155,7 +165,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'Understand your conversations',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                     ),
                     const SizedBox(height: 48),
@@ -167,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen>
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white.withOpacity(0.9),
+                          Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ),

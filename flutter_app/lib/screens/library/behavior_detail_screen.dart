@@ -1,4 +1,5 @@
 /// Behavior detail screen - view detailed information about a behavior from the library
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -134,7 +135,7 @@ class BehaviorDetailScreen extends StatelessWidget {
                                 return Chip(
                                   label: Text(ctx),
                                   backgroundColor:
-                                      Theme.of(context).primaryColor.withOpacity(0.1),
+                                      Theme.of(context).primaryColor.withValues(alpha: 0.1),
                                 );
                               }).toList(),
                             ),
@@ -151,7 +152,12 @@ class BehaviorDetailScreen extends StatelessWidget {
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            Text(behavior.potentialImpact),
+                            ...behavior.potentialImpact.map((impact) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Text(impact),
+                              );
+                            }),
                           ],
                         ],
                       ),
@@ -235,7 +241,7 @@ class _BehaviorHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor.withOpacity(0.7),
+            Theme.of(context).primaryColor.withValues(alpha: 0.7),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -246,22 +252,22 @@ class _BehaviorHeader extends StatelessWidget {
           // Category breadcrumb
           Row(
             children: [
-              Icon(Icons.folder, color: Colors.white.withOpacity(0.8), size: 16),
+              Icon(Icons.folder, color: Colors.white.withValues(alpha: 0.8), size: 16),
               const SizedBox(width: 4),
               Text(
                 behavior.category,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 12,
                 ),
               ),
               if (behavior.subcategory.isNotEmpty) ...[
                 Icon(Icons.chevron_right,
-                    color: Colors.white.withOpacity(0.6), size: 16),
+                    color: Colors.white.withValues(alpha: 0.6), size: 16),
                 Text(
                   behavior.subcategory,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 12,
                   ),
                 ),
@@ -330,9 +336,9 @@ class _HeaderTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -449,7 +455,7 @@ class _IndicatorsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: color.withOpacity(0.05),
+      color: color.withValues(alpha: 0.05),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(

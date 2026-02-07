@@ -1,4 +1,5 @@
 /// Screens barrel file
+library;
 
 // Main screens
 export 'splash_screen.dart';

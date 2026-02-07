@@ -1,4 +1,5 @@
 /// Message model for individual conversation messages
+library;
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
@@ -99,6 +100,9 @@ class Message extends Equatable {
       'order_index': orderIndex,
     };
   }
+
+  /// Alias for text (for compatibility with UI code)
+  String get content => text;
 
   @override
   List<Object?> get props => [

@@ -1,10 +1,16 @@
 name: text_decoder
-description: Decode conversations, understand communication patterns, and build better relationships.
+description: >
+  Decode conversations, understand communication patterns, and build better
+  relationships. A Digital ABCs AI App.
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
+
+# Supported platforms:
+# iOS (App Store), Android (Google Play), Web, Windows (Microsoft Store),
+# macOS (App Store), Linux
 
 dependencies:
   flutter:
@@ -19,17 +25,17 @@ dependencies:
 
   # State Management
   provider: ^6.1.1
-  flutter_riverpod: ^2.4.9
 
-  # Storage
+  # Storage (cross-platform: Keychain/Keystore/libsecret/credential manager)
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.1
   flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.2
 
-  # Authentication
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
+  # Authentication (Firebase - mobile/web, email fallback for desktop)
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.4
   google_sign_in: ^6.2.1
   sign_in_with_apple: ^5.0.0
 
@@ -42,7 +48,7 @@ dependencies:
   dio: ^5.4.0
   connectivity_plus: ^5.0.2
 
-  # File Handling
+  # File Handling (cross-platform)
   file_picker: ^6.1.1
   archive: ^3.4.9
   share_plus: ^7.2.1
@@ -59,11 +65,12 @@ dependencies:
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
 
-  # Accessibility
-  semantics_debugger: ^1.0.0
-
+  # URL Launcher (cross-platform)
   # URL Launcher
   url_launcher: ^6.2.2
+
+  # Window management (desktop: Windows, macOS, Linux)
+  window_manager: ^0.3.7
 
 dev_dependencies:
   flutter_test:
@@ -82,17 +89,21 @@ flutter:
 
   assets:
     - assets/
+    - assets/behavior_library.json
     - assets/images/
     - assets/icons/
     - assets/animations/
 
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
+  # Inter font loaded via google_fonts package at runtime.
+  # To bundle fonts for offline use, add .ttf files to assets/fonts/
+  # and uncomment:
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Inter-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700

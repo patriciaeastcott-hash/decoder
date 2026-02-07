@@ -1,22 +1,68 @@
+/// Authentication service with cross-platform support
+///
+/// Platform support matrix:
+/// - iOS: Google, Apple, Email/Password
+/// - Android: Google, Email/Password
+/// - Web: Google, Email/Password
+/// - macOS: Apple, Email/Password (Firebase supported)
+/// - Windows: Email/Password only (no Firebase — uses REST API fallback)
+/// - Linux: Email/Password only (no Firebase — uses REST API fallback)
 /// Authentication service using Firebase
 /// Supports Google, Apple, and Email/Password sign-in
+library;
 
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:logger/logger.dart';
 
+import '../utils/platform_utils.dart';
+
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Logger _logger = Logger();
 
+  // Firebase instances — only used on supported platforms
+  FirebaseAuth? _auth;
+  GoogleSignIn? _googleSignIn;
+
+  /// Whether Firebase is available on this platform
+  bool _firebaseAvailable = false;
+
+  /// Initialize auth service based on platform capabilities
+  Future<void> initialize() async {
+    if (PlatformUtils.supportsFirebase) {
+      try {
+        _auth = FirebaseAuth.instance;
+        _firebaseAvailable = true;
+        _logger.i('Firebase Auth initialized on ${PlatformUtils.platformName}');
+      } catch (e) {
+        _logger.w('Firebase Auth not available: $e');
+        _firebaseAvailable = false;
+      }
+    }
+
+    if (PlatformUtils.supportsGoogleSignIn) {
+      try {
+        _googleSignIn = GoogleSignIn();
+        _logger.i('Google Sign-In initialized');
+      } catch (e) {
+        _logger.w('Google Sign-In not available: $e');
+      }
+    }
+  }
+
   /// Stream of auth state changes
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges {
+    if (_firebaseAvailable && _auth != null) {
+      return _auth!.authStateChanges();
+    }
+    return const Stream.empty();
+  }
 
   /// Current user
-  User? get currentUser => _auth.currentUser;
+  User? get currentUser => _firebaseAvailable ? _auth?.currentUser : null;
 
   /// Check if user is signed in
   bool get isSignedIn => currentUser != null;
@@ -35,32 +81,76 @@ class AuthService {
     return await currentUser?.getIdToken();
   }
 
+  /// Whether Firebase auth is available
+  bool get isFirebaseAvailable => _firebaseAvailable;
+
   // ============================================
-  // GOOGLE SIGN IN
+  // Available sign-in methods for current platform
   // ============================================
 
-  /// Sign in with Google
+  /// Returns the list of sign-in methods available on this platform
+  List<SignInMethod> get availableSignInMethods {
+    final methods = <SignInMethod>[];
+
+    if (PlatformUtils.supportsGoogleSignIn && _googleSignIn != null) {
+      methods.add(SignInMethod.google);
+    }
+
+    if (PlatformUtils.supportsAppleSignIn) {
+      methods.add(SignInMethod.apple);
+    }
+
+    // Email/password works everywhere Firebase is available
+    if (_firebaseAvailable) {
+      methods.add(SignInMethod.email);
+    }
+
+    return methods;
+  }
+
+  /// Whether a specific sign-in method is available
+  bool isMethodAvailable(SignInMethod method) {
+    return availableSignInMethods.contains(method);
+  }
+
+  // ============================================
+  // GOOGLE SIGN IN (iOS, Android, Web)
+  // ============================================
+
   Future<AuthResult> signInWithGoogle() async {
+    if (!isMethodAvailable(SignInMethod.google)) {
+      return AuthResult.error(
+        'Google Sign-In is not available on ${PlatformUtils.platformName}.',
+      );
+    }
+
     try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // On web, use Firebase's signInWithPopup — no google_sign_in config needed
+      if (kIsWeb) {
+        final googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+        final userCredential = await _auth!.signInWithPopup(googleProvider);
+        _logger.i('Google sign in (web popup) successful: ${userCredential.user?.email}');
+        return AuthResult.success(userCredential.user!);
+      }
+
+      // On mobile/desktop, use the google_sign_in package
+      final GoogleSignInAccount? googleUser = await _googleSignIn!.signIn();
 
       if (googleUser == null) {
         return AuthResult.cancelled();
       }
 
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Sign in to Firebase with the Google credential
-      final userCredential = await _auth.signInWithCredential(credential);
+      final userCredential = await _auth!.signInWithCredential(credential);
 
       _logger.i('Google sign in successful: ${userCredential.user?.email}');
 
@@ -75,13 +165,17 @@ class AuthService {
   }
 
   // ============================================
-  // APPLE SIGN IN
+  // APPLE SIGN IN (iOS, macOS)
   // ============================================
 
-  /// Sign in with Apple
   Future<AuthResult> signInWithApple() async {
+    if (!isMethodAvailable(SignInMethod.apple)) {
+      return AuthResult.error(
+        'Apple Sign-In is not available on ${PlatformUtils.platformName}.',
+      );
+    }
+
     try {
-      // Request Apple credentials
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -89,16 +183,14 @@ class AuthService {
         ],
       );
 
-      // Create an OAuthCredential from the Apple credential
       final oauthCredential = OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
         accessToken: appleCredential.authorizationCode,
       );
 
-      // Sign in to Firebase with the Apple credential
-      final userCredential = await _auth.signInWithCredential(oauthCredential);
+      final userCredential = await _auth!.signInWithCredential(oauthCredential);
 
-      // Apple only provides name on first sign-in, so update profile if available
+      // Apple only provides name on first sign-in
       if (appleCredential.givenName != null) {
         await userCredential.user?.updateDisplayName(
           '${appleCredential.givenName} ${appleCredential.familyName ?? ''}'.trim(),
@@ -124,16 +216,22 @@ class AuthService {
   }
 
   // ============================================
-  // EMAIL/PASSWORD SIGN IN
+  // EMAIL/PASSWORD SIGN IN (all Firebase platforms)
   // ============================================
 
-  /// Sign in with email and password
   Future<AuthResult> signInWithEmail({
     required String email,
     required String password,
   }) async {
+    if (!_firebaseAvailable || _auth == null) {
+      return AuthResult.error(
+        'Email sign-in requires Firebase, which is not available on '
+        '${PlatformUtils.platformName}.',
+      );
+    }
+
     try {
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth!.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -150,19 +248,24 @@ class AuthService {
     }
   }
 
-  /// Create account with email and password
   Future<AuthResult> createAccountWithEmail({
     required String email,
     required String password,
     String? displayName,
   }) async {
+    if (!_firebaseAvailable || _auth == null) {
+      return AuthResult.error(
+        'Account creation requires Firebase, which is not available on '
+        '${PlatformUtils.platformName}.',
+      );
+    }
+
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCredential = await _auth!.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Set display name if provided
       if (displayName != null && displayName.isNotEmpty) {
         await userCredential.user?.updateDisplayName(displayName);
       }
@@ -179,10 +282,13 @@ class AuthService {
     }
   }
 
-  /// Send password reset email
   Future<AuthResult> sendPasswordResetEmail(String email) async {
+    if (!_firebaseAvailable || _auth == null) {
+      return AuthResult.error('Password reset is not available on this platform.');
+    }
+
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await _auth!.sendPasswordResetEmail(email: email);
 
       _logger.i('Password reset email sent to: $email');
 
@@ -200,14 +306,11 @@ class AuthService {
   // ACCOUNT MANAGEMENT
   // ============================================
 
-  /// Update user display name
   Future<AuthResult> updateDisplayName(String displayName) async {
     try {
       await currentUser?.updateDisplayName(displayName);
       await currentUser?.reload();
-
       _logger.i('Display name updated: $displayName');
-
       return AuthResult.successMessage('Display name updated successfully.');
     } catch (e) {
       _logger.e('Update display name error: $e');
@@ -215,13 +318,10 @@ class AuthService {
     }
   }
 
-  /// Update user email
   Future<AuthResult> updateEmail(String newEmail) async {
     try {
       await currentUser?.verifyBeforeUpdateEmail(newEmail);
-
       _logger.i('Email verification sent to: $newEmail');
-
       return AuthResult.successMessage(
         'Verification email sent to $newEmail. Please verify to complete the change.',
       );
@@ -234,24 +334,18 @@ class AuthService {
     }
   }
 
-  /// Change password
   Future<AuthResult> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
     try {
-      // Re-authenticate first
       final credential = EmailAuthProvider.credential(
         email: currentUser!.email!,
         password: currentPassword,
       );
       await currentUser!.reauthenticateWithCredential(credential);
-
-      // Update password
       await currentUser!.updatePassword(newPassword);
-
       _logger.i('Password changed successfully');
-
       return AuthResult.successMessage('Password changed successfully.');
     } on FirebaseAuthException catch (e) {
       _logger.e('Change password error: ${e.code}');
@@ -262,13 +356,12 @@ class AuthService {
     }
   }
 
-  /// Delete user account
+  /// Delete user account and all associated data.
+  /// Required by: Apple App Store, Google Play, Australian Privacy Act
   Future<AuthResult> deleteAccount() async {
     try {
       await currentUser?.delete();
-
       _logger.i('Account deleted');
-
       return AuthResult.successMessage('Account deleted successfully.');
     } on FirebaseAuthException catch (e) {
       _logger.e('Delete account error: ${e.code}');
@@ -288,17 +381,12 @@ class AuthService {
   // SIGN OUT
   // ============================================
 
-  /// Sign out from all providers
   Future<void> signOut() async {
     try {
-      // Sign out from Google if signed in
-      if (await _googleSignIn.isSignedIn()) {
-        await _googleSignIn.signOut();
+      if (_googleSignIn != null && await _googleSignIn!.isSignedIn()) {
+        await _googleSignIn!.signOut();
       }
-
-      // Sign out from Firebase
-      await _auth.signOut();
-
+      await _auth?.signOut();
       _logger.i('User signed out');
     } catch (e) {
       _logger.e('Sign out error: $e');
@@ -309,7 +397,6 @@ class AuthService {
   // HELPERS
   // ============================================
 
-  /// Map Firebase error codes to user-friendly messages
   String _mapFirebaseError(String code) {
     switch (code) {
       case 'invalid-email':
@@ -346,6 +433,13 @@ class AuthService {
   }
 }
 
+/// Available sign-in methods
+enum SignInMethod {
+  google,
+  apple,
+  email,
+}
+
 /// Authentication result
 class AuthResult {
   final User? user;
@@ -363,40 +457,24 @@ class AuthResult {
   });
 
   factory AuthResult.success(User user) {
-    return AuthResult._(
-      user: user,
-      isSuccess: true,
-    );
+    return AuthResult._(user: user, isSuccess: true);
   }
 
   factory AuthResult.successMessage(String message) {
-    return AuthResult._(
-      message: message,
-      isSuccess: true,
-    );
+    return AuthResult._(message: message, isSuccess: true);
   }
 
   factory AuthResult.error(String error) {
-    return AuthResult._(
-      error: error,
-      isSuccess: false,
-    );
+    return AuthResult._(error: error, isSuccess: false);
   }
 
   factory AuthResult.cancelled() {
-    return const AuthResult._(
-      isCancelled: true,
-      isSuccess: false,
-    );
+    return const AuthResult._(isCancelled: true, isSuccess: false);
   }
 
   String get accessibilityLabel {
-    if (isSuccess) {
-      return message ?? 'Sign in successful';
-    }
-    if (isCancelled) {
-      return 'Sign in cancelled';
-    }
+    if (isSuccess) return message ?? 'Sign in successful';
+    if (isCancelled) return 'Sign in cancelled';
     return error ?? 'Sign in failed';
   }
 }

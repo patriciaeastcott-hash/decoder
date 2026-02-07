@@ -1,4 +1,5 @@
 /// Speaker avatar widget for displaying speaker icons
+library;
 
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,7 @@ class SpeakerAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = speaker.color != null
-        ? Color(int.parse(speaker.color!.replaceFirst('#', '0xFF')))
-        : Theme.of(context).primaryColor;
+    final color = speaker.color;
 
     return Semantics(
       label: speaker.effectiveName,
@@ -38,7 +37,7 @@ class SpeakerAvatar extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Theme.of(context).primaryColor.withOpacity(0.3),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                     blurRadius: 8,
                     spreadRadius: 2,
                   ),
@@ -72,24 +71,6 @@ class SpeakerAvatar extends StatelessWidget {
                     Icons.person,
                     color: Colors.white,
                     size: size * 0.25,
-                  ),
-                ),
-              ),
-            if (showBadge && speaker.isVerified)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: size * 0.2,
                   ),
                 ),
               ),
@@ -192,9 +173,7 @@ class SpeakerChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = speaker.color != null
-        ? Color(int.parse(speaker.color!.replaceFirst('#', '0xFF')))
-        : Theme.of(context).primaryColor;
+    final color = speaker.color;
 
     return ActionChip(
       avatar: CircleAvatar(
@@ -211,7 +190,7 @@ class SpeakerChip extends StatelessWidget {
       ),
       label: Text(speaker.effectiveName),
       backgroundColor:
-          isSelected ? color.withOpacity(0.2) : null,
+          isSelected ? color.withValues(alpha: 0.2) : null,
       side: isSelected
           ? BorderSide(color: color, width: 2)
           : null,

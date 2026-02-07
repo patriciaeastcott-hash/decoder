@@ -1,4 +1,5 @@
 /// Auth provider for managing authentication state
+library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -19,10 +20,16 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
   String? _error;
   String? get error => _error;
 
   bool get isAuthenticated => _user != null;
+
+  /// Whether Firebase auth is available on this platform
+  bool get isFirebaseAvailable => _authService.isFirebaseAvailable;
 
   String? get userId => _user?.uid;
   String? get userEmail => _user?.email;
@@ -30,7 +37,14 @@ class AuthProvider extends ChangeNotifier {
   String? get userPhotoUrl => _user?.photoURL;
 
   AuthProvider() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _authService.initialize();
     _initAuthListener();
+    _isInitialized = true;
+    notifyListeners();
   }
 
   void _initAuthListener() {

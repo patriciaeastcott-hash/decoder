@@ -1,18 +1,33 @@
-/// Text Decoder MVP
+/// Text Decoder MVP — Digital ABCs AI App
 ///
 /// A cross-platform app for analyzing conversations, understanding
 /// communication patterns, and building better relationships.
 ///
+/// Supported platforms:
+/// - iOS (Apple App Store)
+/// - Android (Google Play Store)
+/// - Web (Progressive Web App)
+/// - Windows (Microsoft Store)
+/// - macOS (Mac App Store)
+/// - Linux (Desktop)
+///
 /// Compliant with:
-/// - Australian Privacy Act
-/// - International AI Standards
+/// - Australian Privacy Act 1988
+/// - International AI Standards (ISO/IEC 42001)
 /// - WCAG 2.1 AAA Accessibility
+/// - Apple App Store Review Guidelines
+/// - Google Play Developer Program Policies
+/// - Microsoft Store Policies
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:logger/logger.dart';
+
+import 'firebase_options.dart';
 
 import 'providers/app_state_provider.dart';
 import 'providers/auth_provider.dart';
@@ -24,36 +39,57 @@ import 'services/storage_service.dart';
 import 'services/accessibility_service.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
-import 'utils/accessibility_utils.dart';
+import 'utils/platform_utils.dart';
+
+final _logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive for local storage
+  // Initialize Hive for local storage (works on all platforms)
   await Hive.initFlutter();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase only on supported platforms
+  if (PlatformUtils.supportsFirebase) {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      _logger.i('Firebase initialized on ${PlatformUtils.platformName}');
+    } catch (e) {
+      _logger.w('Firebase initialization failed: $e');
+      // App continues without Firebase — auth will use email-only fallback
+    }
+  } else {
+    _logger.i(
+      'Firebase not supported on ${PlatformUtils.platformName}. '
+      'Using email authentication only.',
+    );
+  }
 
   // Initialize storage service
   final storageService = StorageService();
   await storageService.initialize();
 
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // Mobile: set system UI overlay style
+  if (PlatformUtils.isMobile) {
+    // Allow all orientations — tablets need landscape
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
 
-  // Set system UI overlay style for accessibility
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ),
-  );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+  }
 
   runApp(
     TextDecoderApp(storageService: storageService),
@@ -112,7 +148,7 @@ class TextDecoderApp extends StatelessWidget {
             title: 'Text Decoder',
             debugShowCheckedModeBanner: false,
 
-            // Theme configuration with accessibility
+            // Theme configuration with Digital ABCs branding + accessibility
             theme: AppTheme.lightTheme(
               highContrast: settings.highContrastMode,
               fontSize: settings.fontSizeMultiplier,
@@ -138,17 +174,40 @@ class TextDecoderApp extends StatelessWidget {
               );
             },
 
-            // Home screen
+            // Entry point
             home: const SplashScreen(),
 
-            // Localization (future)
-            // localizationsDelegates: [...],
-            // supportedLocales: [...],
+            // Keyboard shortcuts for desktop (Escape for quick exit, etc.)
+            shortcuts: {
+              ...WidgetsApp.defaultShortcuts,
+              // Ctrl+Q / Cmd+Q for quick exit on desktop
+              if (PlatformUtils.isDesktop)
+                LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyQ):
+                    const _QuickExitIntent(),
+            },
+            actions: {
+              ...WidgetsApp.defaultActions,
+              _QuickExitIntent: CallbackAction<_QuickExitIntent>(
+                onInvoke: (_) {
+                  final appState = context.read<AppStateProvider>();
+                  final settingsProvider = context.read<SettingsProvider>();
+                  if (settingsProvider.quickExitEnabled) {
+                    appState.triggerQuickExit();
+                  }
+                  return null;
+                },
+              ),
+            },
           );
         },
       ),
     );
   }
+}
+
+/// Intent for quick exit keyboard shortcut (desktop)
+class _QuickExitIntent extends Intent {
+  const _QuickExitIntent();
 }
 
 /// Wrapper widget for accessibility features

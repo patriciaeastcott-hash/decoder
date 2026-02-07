@@ -1,0 +1,46 @@
+<!--
+  Google Play Data Safety Configuration
+
+  This file documents the data safety declarations for the Google Play Console.
+  It is NOT automatically consumed by the Play Store — you must manually enter
+  these declarations in the Play Console under "App content > Data safety".
+
+  This file serves as the source of truth for what the app collects.
+
+  Text Decoder data handling:
+  ============================================================
+
+  DATA COLLECTED:
+  - Email address (optional, for authentication only)
+  - Name (optional, for display only)
+  - User-entered conversation text (stored locally only)
+
+  DATA NOT COLLECTED:
+  - Location data
+  - Financial information
+  - Health data
+  - Photos or videos
+  - Audio files
+  - Contacts
+  - Calendar events
+  - App activity (browsing, search history)
+  - Device identifiers
+  - Crash logs (no analytics SDK)
+
+  DATA SHARING:
+  - Conversation text is sent to Google Gemini API for analysis
+    (NOT stored by Google per Gemini API terms)
+  - No data is shared with third parties for advertising
+  - No data is sold
+
+  SECURITY:
+  - All local data encrypted with AES-256
+  - Secure storage uses Android Keystore
+  - Data transmitted over HTTPS only
+  - User can delete all data at any time
+
+  ACCOUNT DELETION:
+  - Users can delete their account and all data from Settings > Privacy > Delete All Data
+  - Firebase account deletion is also available
+  - Required by Google Play Developer Program Policies
+-->

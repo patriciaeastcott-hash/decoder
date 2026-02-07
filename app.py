@@ -548,11 +548,13 @@ def analyze_conversation():
         # Load behavior categories for reference
         behavior_categories = get_behavior_categories()
 
-        # Build the prompt
-        prompt = CONVERSATION_ANALYSIS_PROMPT.format(
-            speakers=json.dumps(speakers),
-            behavior_categories=json.dumps(behavior_categories),
-            conversation=conversation
+        # Build the prompt (use replace to avoid conflict with JSON braces in template)
+        prompt = CONVERSATION_ANALYSIS_PROMPT.replace(
+            '{speakers}', json.dumps(speakers)
+        ).replace(
+            '{behavior_categories}', json.dumps(behavior_categories)
+        ).replace(
+            '{conversation}', conversation
         )
 
         model = genai.GenerativeModel('gemini-1.5-pro')
@@ -613,10 +615,12 @@ def analyze_response_impact():
         user_speaker = sanitize_input(data['user_speaker'])
         draft_response = sanitize_input(data['draft_response'])
 
-        prompt = RESPONSE_IMPACT_PROMPT.format(
-            user_speaker=user_speaker,
-            draft_response=draft_response,
-            conversation=conversation
+        prompt = RESPONSE_IMPACT_PROMPT.replace(
+            '{user_speaker}', user_speaker
+        ).replace(
+            '{draft_response}', draft_response
+        ).replace(
+            '{conversation}', conversation
         )
 
         model = genai.GenerativeModel('gemini-1.5-pro')
@@ -671,7 +675,7 @@ def analyze_profile():
 
         profile_data = sanitize_input(json.dumps(data['profile_data']))
 
-        prompt = PROFILE_ANALYSIS_PROMPT.format(profile_data=profile_data)
+        prompt = PROFILE_ANALYSIS_PROMPT.replace('{profile_data}', profile_data)
 
         model = genai.GenerativeModel('gemini-1.5-pro')
 
@@ -725,7 +729,7 @@ def analyze_self_profile():
 
         user_data = sanitize_input(json.dumps(data['user_data']))
 
-        prompt = SELF_PROFILE_PROMPT.format(user_data=user_data)
+        prompt = SELF_PROFILE_PROMPT.replace('{user_data}', user_data)
 
         model = genai.GenerativeModel('gemini-1.5-pro')
 
